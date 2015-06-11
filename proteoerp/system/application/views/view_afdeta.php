@@ -129,10 +129,6 @@ if($form->_status <> 'show'){ ?>
 		<td class="littletablerowth"><?php echo $form->idfami->label;  ?></td>
 		<td class="littletablerow"  ><?php echo $form->idfami->output; ?></td>
 	</tr>
-	<tr>
-		<td class="littletablerowth"><?php echo $form->id->label;  ?></td>
-		<td class="littletablerow"  ><?php echo $form->id->output; ?></td>
-	</tr>
 </table>
 </fieldset>
 <?php echo $form_end; ?>
