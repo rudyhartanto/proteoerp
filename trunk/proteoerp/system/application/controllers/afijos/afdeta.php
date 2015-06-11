@@ -75,7 +75,7 @@ class Afdeta extends Controller {
 		//Wraper de javascript
 		$bodyscript .= $this->jqdatagrid->bswrapper($ngrid);
 
-		$bodyscript .= $this->jqdatagrid->bsfedita( $ngrid, '600', '400' );
+		$bodyscript .= $this->jqdatagrid->bsfedita( $ngrid, '500', '700' );
 		$bodyscript .= $this->jqdatagrid->bsfshow( '300', '400' );
 		$bodyscript .= $this->jqdatagrid->bsfborra( $ngrid, '300', '400' );
 
@@ -628,15 +628,15 @@ class Afdeta extends Controller {
 
 		$edit->codigo = new inputField('Codigo','codigo');
 		$edit->codigo->rule='';
-		$edit->codigo->size =22;
+		$edit->codigo->size =18;
 		$edit->codigo->maxlength =20;
 
-		$edit->descrip = new inputField('Descrip','descrip');
+		$edit->descrip = new inputField('Descripcion','descrip');
 		$edit->descrip->rule='';
-		$edit->descrip->size =102;
+		$edit->descrip->size =52;
 		$edit->descrip->maxlength =100;
 
-		$edit->fcompra = new dateonlyField('Fcompra','fcompra');
+		$edit->fcompra = new dateonlyField('Fecha de Compra','fcompra');
 		$edit->fcompra->rule='chfecha';
 		$edit->fcompra->calendar=false;
 		$edit->fcompra->size =10;
