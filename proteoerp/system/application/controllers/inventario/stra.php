@@ -1622,15 +1622,8 @@ class Stra extends Controller {
 			return;
 			
 		}
-/*
-			$rt['status']  = 'X';
-			$rt['mensaje'] = 'Almacen no existe '.$alma.' '.$id_prdo;
-			echo json_encode($rt);
-		return;
-*/
 		$this->rapyd->uri->keep_persistence();
 		$persistence = $this->rapyd->session->get_persistence($url, $this->rapyd->uri->gfid);
-		//$back= (isset($persistence['back_uri'])) ? $persistence['back_uri'] : $url;
 		$back= $url;
 
 		$this->genesal = true;
@@ -1650,7 +1643,7 @@ class Stra extends Controller {
 			$_POST=array(
 				'btn_submit' => 'Guardar',
 				'envia'      => $alma,
-				'fecha'      => dbdate_to_human($row->fecha),
+				'fecha'      => dbdate_to_human( $row->fecha ),
 				'recibe'     => 'PROD',
 				'observ1'    => 'INGREDIENTES OP NRO.'.$row->numero,
 				'ordp'       => $row->numero
@@ -1683,14 +1676,14 @@ class Stra extends Controller {
 				$rt['status']  = 'B';
 				$rt['mensaje'] = 'Problema al descontar: '.$jsal->mensaje;
 			}else{
-				$data = array('status' => 'I');
+				$data = array('status' => 'I','aingre' => $alma );
 				$this->db->where('id', $id_prdo);
 				$this->db->update('prdo', $data);
 				$rt['status']  = 'A';
 				$rt['mensaje'] = 'Ingredientes descontados: '.$jsal->mensaje;
 			}
 			echo json_encode($rt);;
-		}else{
+		} else{
 			$rt['status']  = 'X';
 			$rt['mensaje'] = 'Orden esta apta';
 			echo json_encode($rt);;
@@ -1705,8 +1698,7 @@ class Stra extends Controller {
 
 		$this->rapyd->uri->keep_persistence();
 		$persistence = $this->rapyd->session->get_persistence($url, $this->rapyd->uri->gfid);
-		//$back= (isset($persistence['back_uri'])) ? $persistence['back_uri'] : $url;
-		$back= $url;
+		$back = $url;
 
 		$this->genesal = true;
 
@@ -1714,7 +1706,7 @@ class Stra extends Controller {
 		$mSQL="INSERT IGNORE INTO caub  (ubica,ubides,gasto) VALUES ('PROD','PRODUCCION','S')";
 		$this->db->simple_query($mSQL);
 
-		$this->db->select(array('a.fecha','a.almacen','a.numero','a.status'));
+		$this->db->select(array('a.fecha','a.almacen','a.numero','a.status','a.aingre'));
 		$this->db->from('prdo AS a');
 		$this->db->where('a.status' , 'I');
 		$this->db->where('a.id' , $id_prdo);
@@ -1731,6 +1723,7 @@ class Stra extends Controller {
 				'ordp'       => $row->numero
 			);
 
+			$alma = $row->aingre;
 			$mSQL = "SELECT a.codigo, b.descrip, a.producido cantidad
 				FROM itprdop   a
 				JOIN sinv      b ON a.codigo = b.codigo
@@ -1752,6 +1745,7 @@ class Stra extends Controller {
 				$sal = ob_get_contents();
 			@ob_end_clean();
 			$jsal=json_decode($sal);
+
 			if($jsal->status=='B'){
 				$rt['status']  = 'B';
 				$rt['mensaje'] = 'Problema al descontar: '.$jsal->mensaje;
@@ -1762,6 +1756,61 @@ class Stra extends Controller {
 				$rt['status']  = 'C';
 				$rt['mensaje'] = 'Produccion cargada : '.$jsal->mensaje;
 
+				$this->db->select(array('a.fecha','a.almacen','a.numero','a.status'));
+				$this->db->from('prdo AS a');
+				$this->db->where('a.id' , $id_prdo);
+				//$this->db->where('a.status' , 'C');
+				$mSQL_1 = $this->db->get();
+		
+				if($mSQL_1->num_rows() == 1 ){
+					$row = $mSQL_1->row();
+					$_POST=array(
+						'btn_submit' => 'Guardar',
+						'envia'      => 'PROD',
+						'fecha'      => dbdate_to_human($row->fecha),
+						'recibe'     => $alma,
+						'observ1'    => 'INGREDIENTES SOBRANTE OP NRO.'.$row->numero,
+						'ordp'       => $row->numero
+					);
+		
+					$mSQL = "SELECT c.codigo, c.descrip, SUM((a.ordenado-a.producido) * c.cantidad) cantidad 
+						FROM itprdop    a
+						JOIN sinv      b ON a.codigo = b.codigo
+						JOIN sinvpitem c ON a.codigo = c.producto
+						WHERE a.numero = '".$row->numero."'
+						GROUP BY c.codigo
+						HAVING cantidad > 0";
+		
+					$mSQL_2 = $this->db->query($mSQL);
+					$items  = $mSQL_2->result();
+		
+					foreach ( $items as $id => $itrow ){
+						$ind='codigo_'.$id;
+						$_POST[$ind] = $itrow->codigo;
+						$ind='descrip_'.$id;
+						$_POST[$ind] = $itrow->descrip;
+						$ind='cantidad_'.$id;
+						$_POST[$ind] = $itrow->cantidad;
+					}
+					ob_start();
+						$this->dataedit();
+						$sal1 = ob_get_contents();
+					@ob_end_clean();
+					/*
+					$jsal1=json_decode($sal1);
+					if($jsal1->status=='B'){
+						$rt['status']  = 'B';
+						$rt['mensaje'] = 'Problema al descontar: '.$jsal->mensaje;
+					}else{
+						$data = array('status' => 'I');
+						$this->db->where('id', $id_prdo);
+						$this->db->update('prdo', $data);
+						$rt['status']  = 'A';
+						$rt['mensaje'] = 'Ingredientes descontados: '.$jsal->mensaje;
+					}
+					echo json_encode($rt);
+					*/
+				} 
 			}
 			echo json_encode($rt);;
 		}else{
