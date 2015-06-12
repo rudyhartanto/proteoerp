@@ -636,6 +636,11 @@ class Afdeta extends Controller {
 		$edit->descrip->size =52;
 		$edit->descrip->maxlength =100;
 
+		$edit->ficha = new textareaField('Ficha','ficha');
+		$edit->ficha->rule='';
+		$edit->ficha->cols = 50;
+		$edit->ficha->rows = 3;
+
 		$edit->fcompra = new dateonlyField('Fecha de Compra','fcompra');
 		$edit->fcompra->rule='chfecha';
 		$edit->fcompra->calendar=false;
@@ -698,12 +703,6 @@ class Afdeta extends Controller {
 		$edit->ubica->rule='';
 		$edit->ubica->size =32;
 		$edit->ubica->maxlength =30;
-
-		$edit->ficha = new textareaField('Ficha','ficha');
-		$edit->ficha->rule='';
-		$edit->ficha->cols = 70;
-		$edit->ficha->rows = 4;
-
 		$edit->cuentaa = new inputField('Cuentaa','cuentaa');
 		$edit->cuentaa->rule='';
 		$edit->cuentaa->size =32;
@@ -762,20 +761,48 @@ class Afdeta extends Controller {
 
 		$edit->motivo = new inputField('Motivo','motivo');
 		$edit->motivo->rule='';
-		$edit->motivo->size =202;
+		$edit->motivo->size =52;
 		$edit->motivo->maxlength =200;
 
-		$edit->idgr = new inputField('Idgr','idgr');
-		$edit->idgr->rule='integer';
-		$edit->idgr->css_class='inputonlynum';
-		$edit->idgr->size =13;
-		$edit->idgr->maxlength =11;
+/*
+		$AddDepto='<a href="javascript:add_depto();" title="Haz clic para Agregar un nuevo Departamento">'.image('list_plus.png','Agregar',array("border"=>"0")).'</a>';
+		$edit->depto = new dropdownField('Departamento', 'depto');
+		$edit->depto->rule ='required';
+		$edit->depto->style='width:230px;white-space:nowrap;';
+		$edit->depto->option('','Seleccione un Departamento');
+		$edit->depto->options('SELECT depto, CONCAT(depto,\'-\',descrip) descrip FROM dpto WHERE tipo=\'I\' ORDER BY depto');
+		$edit->depto->db_name='dptodepto';
+		$edit->depto->pointer=true;
 
-		$edit->idfami = new inputField('Idfami','idfami');
-		$edit->idfami->rule='integer';
-		$edit->idfami->css_class='inputonlynum';
-		$edit->idfami->size =13;
-		$edit->idfami->maxlength =11;
+		$AddLinea='<a href="javascript:add_linea();" title="Haz clic para Agregar una nueva Linea;">'.image('list_plus.png','Agregar',array("border"=>"0")).'</a>';
+		$edit->linea = new dropdownField('L&iacute;nea','linea');
+		$edit->linea->rule    = 'required';
+		$edit->linea->style   = 'width:230px;';
+		$edit->linea->db_name = 'linelinea';
+		$edit->linea->pointer = true;
+		$depto=$edit->getval('depto');
+		if($depto!==false){
+			$dbdepto=$this->db->escape($depto);
+			$edit->linea->options("SELECT linea, CONCAT(LINEA,'-',descrip) descrip FROM line WHERE depto=$dbdepto ORDER BY descrip");
+		}else{
+			$edit->linea->option('','Seleccione un Departamento primero');
+		}
+
+
+*/
+
+		$edit->idgr = new dropdownField('Idgr','idgr');
+		$edit->idgr->style='width:150px;white-space:nowrap;';
+		$edit->idgr->option('','Seleccione un Grupo');
+		$edit->idgr->options('SELECT id, descrip FROM afgr ORDER BY descrip');
+
+
+		$edit->idfami = new dropdownField('Idfami','idfami');
+		$edit->idfami->style='width:230px;white-space:nowrap;';
+		$edit->idfami->option('','Seleccione una Familia');
+		$edit->idfami->options('SELECT id, nombre FROM afami WHERE grupo=\'1\' ORDER BY nombre');
+
+
 
 		$edit->build();
 

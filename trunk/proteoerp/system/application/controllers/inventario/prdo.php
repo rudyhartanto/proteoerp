@@ -922,7 +922,8 @@ class Prdo extends Controller {
 			$this->db->query($mSQL);
 		}
 		$itcampos=$this->db->list_fields('prdo');
-		if(!in_array('fechap',$itcampos)) $this->db->query("ALTER TABLE prdo ADD COLUMN fechap DATE  NULL DEFAULT NULL COMMENT 'Fecha de Produccion' AFTER instrucciones");
+		if(!in_array('fechap',$itcampos)) $this->db->query("ALTER TABLE prdo ADD COLUMN fechap DATE       NULL DEFAULT NULL COMMENT 'Fecha de Produccion'     AFTER instrucciones");
+		if(!in_array('aingre',$itcampos)) $this->db->query("ALTER TABLE prdo ADD COLUMN aingre VARCHAR(4) NULL DEFAULT NULL COMMENT 'Almacen de Ingredientes' AFTER almacen");
 
 
 		if (!$this->db->table_exists('itprdo')) {
