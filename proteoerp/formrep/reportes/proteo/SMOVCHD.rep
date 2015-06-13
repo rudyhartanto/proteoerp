@@ -25,14 +25,15 @@ $select=array(
 	'a.vence','a.cod_cli','b.nombre AS nomcli',
 	'a.monto','a.abonos',
 	'DATEDIFF(CURDATE(),a.vence) AS dv',
-	'IF(tipo_doc IN (\'FC\',\'GI\',\'ND\'), monto, 0) AS importe',
-	'(a.monto-a.abonos) AS saldo'
+	'IF(a.tipo_doc IN (\'FC\',\'GI\',\'ND\'), a.monto, 0) AS importe',
+	'(a.monto-a.abonos) AS saldo','a.observa1','d.numero AS numche'
 );
 
 $filter->db->select($select);
 $filter->db->from('smov AS a');
 $filter->db->join('scli AS b','a.cod_cli=b.cliente');
 $filter->db->join('prmo AS c','a.transac=c.transac');
+$filter->db->join('bmov AS d','a.transac=d.transac','LEFT');
 $filter->db->where('a.abonos < a.monto');
 $filter->db->where('a.tipo_doc','ND');
 $filter->db->where('c.tipop','3');
@@ -49,7 +50,7 @@ $filter->fechad = new dateField('Desde', 'fechad','d/m/Y');
 $filter->fechah = new dateField('Hasta', 'fechah','d/m/Y');
 $filter->fechad->clause  =$filter->fechah->clause='where';
 $filter->fechad->db_name =$filter->fechah->db_name='a.fecha';
-$fitter->fechad->rule    =$fitter->fechah->rule='required';
+$filter->fechad->rule    =$filter->fechah->rule='required';
 $filter->fechad->insertValue = date('Y-m-d');
 $filter->fechah->insertValue = date('Y-m-d');
 $filter->fechad->operator = '>=';
@@ -82,13 +83,16 @@ if($this->rapyd->uri->is_set('search') && $filter->is_valid()){
 	$pdf->AddPage();
 	$pdf->setTableTitu(10,'Times');
 
-	$pdf->AddCol('tipo_doc',20,'Tipo'    ,'L',9);
-	$pdf->AddCol('numero'  ,32,'Número'  ,'L',9);
-	$pdf->AddCol('fecha'   ,32,'Emisión' ,'C',9);
-	$pdf->AddCol('vence'   ,32,'Vence'   ,'C',9);
-	$pdf->AddCol('dv'      ,15,'Dias Vto','R',9);
-	$pdf->AddCol('importe' ,28,'Importe' ,'R',9);
-	$pdf->AddCol('saldo'   ,28,'Saldo'   ,'R',9);
+	$pdf->AddCol('tipo_doc',20,'Tipo'     ,'L',9);
+	$pdf->AddCol('numero'  ,32,'Número'   ,'L',9);
+	$pdf->AddCol('fecha'   ,32,'Emisión'  ,'C',9);
+	$pdf->AddCol('vence'   ,32,'Vence'    ,'C',9);
+	$pdf->AddCol('dv'      ,15,'Dias Vto' ,'R',9);
+	$pdf->AddCol('importe' ,28,'Importe'  ,'R',9);
+	$pdf->AddCol('saldo'   ,28,'Saldo'    ,'R',9);
+	$pdf->AddCol('numche',  25,'N.Cheque' ,'R',9);
+	//$pdf->AddCol('observa1',65,'Observa'  ,'L',9);
+
 	$pdf->setTotalizar('importe','saldo');
 	$pdf->setGrupoLabel('Cliente  <#nomcli#>   [<#cod_cli#>]',12);
 	$pdf->setGrupo('cod_cli');
