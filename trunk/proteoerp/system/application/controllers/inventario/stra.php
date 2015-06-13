@@ -1620,7 +1620,7 @@ class Stra extends Controller {
 			$rt['mensaje'] = 'Almacen no existe';
 			echo json_encode($rt);
 			return;
-			
+
 		}
 		$this->rapyd->uri->keep_persistence();
 		$persistence = $this->rapyd->session->get_persistence($url, $this->rapyd->uri->gfid);
@@ -1761,7 +1761,7 @@ class Stra extends Controller {
 				$this->db->where('a.id' , $id_prdo);
 				//$this->db->where('a.status' , 'C');
 				$mSQL_1 = $this->db->get();
-		
+
 				if($mSQL_1->num_rows() == 1 ){
 					$row = $mSQL_1->row();
 					$_POST=array(
@@ -1772,18 +1772,18 @@ class Stra extends Controller {
 						'observ1'    => 'INGREDIENTES SOBRANTE OP NRO.'.$row->numero,
 						'ordp'       => $row->numero
 					);
-		
-					$mSQL = "SELECT c.codigo, c.descrip, SUM((a.ordenado-a.producido) * c.cantidad) cantidad 
+
+					$mSQL = "SELECT c.codigo, c.descrip, SUM((a.ordenado-a.producido) * c.cantidad) cantidad
 						FROM itprdop    a
 						JOIN sinv      b ON a.codigo = b.codigo
 						JOIN sinvpitem c ON a.codigo = c.producto
 						WHERE a.numero = '".$row->numero."'
 						GROUP BY c.codigo
 						HAVING cantidad > 0";
-		
+
 					$mSQL_2 = $this->db->query($mSQL);
 					$items  = $mSQL_2->result();
-		
+
 					foreach ( $items as $id => $itrow ){
 						$ind='codigo_'.$id;
 						$_POST[$ind] = $itrow->codigo;
@@ -1810,7 +1810,7 @@ class Stra extends Controller {
 					}
 					echo json_encode($rt);
 					*/
-				} 
+				}
 			}
 			echo json_encode($rt);;
 		}else{
@@ -2037,7 +2037,13 @@ class Stra extends Controller {
 			return false;
 		}
 
-		if(!is_array($propos['caub']) && count($propos['caub'])>0){
+		if(isset($propos['caub'])){
+			if(!is_array($propos['caub']) && count($propos['caub'])>0){
+				$rt['mensaje']='No ha seleccionado almacenes';
+				echo json_encode($rt);
+				return false;
+			}
+		}else{
 			$rt['mensaje']='No ha seleccionado almacenes';
 			echo json_encode($rt);
 			return false;

@@ -10,7 +10,7 @@
 var itstra_cont=0;
 
 var htm ="<tr id='tr_itstra_<#i#>'>";
-    htm =htm+"<td valign='center' style='background:#F5FFFA;text-align:center'><a style='text-decoration:none' href='#' title='Eliminar' onclick='del_itstra(\"<#i#>\");return false;'><span style='color:red;font-wigth:bold;text-decoration:none;font-family:verdana;font-size:1.3em'>X</span></a></td>";
+    htm =htm+"<td valign='center' style='background:#F5FFFA;text-align:center'><a style='text-decoration:none;font-weight: bold;' href='#' title='Eliminar' onclick='del_itstra(\"<#i#>\");return false;'><span style='color:red;font-wigth:bold;text-decoration:none;font-family:verdana;font-size:1.3em'>X</span></a></td>";
     htm =htm+"<td><input type='text' name='codigo_<#i#>' id='codigo_<#i#>'><p id='descrip_val_<#i#>' style='margin:0;padding:0;border:0'></p></td>";
     htm =htm+"<td><span id='existen_val_<#i#>'></span><input type='hidden' name='existen_<#i#>' id='existen_<#i#>'><input type='hidden' name='descrip_<#i#>' id='descrip_<#i#>'></td>";
 	htm =htm+"</tr>";
@@ -211,6 +211,22 @@ function valida(){
 
 $(function(){
 	add_itstra();
+	$("select[name='envia']").change(function (){
+		$("input[type=checkbox]").prop('disabled', false);
+		if(this.value!=''){
+			var iid='#c'+this.value;
+
+			if($(iid).is(':checked')){
+				$("#itstras [title='"+this.value+"']").remove();
+				$("col [title='"+this.value+"']").remove();
+			}
+
+			$(iid).prop('checked' , false);
+			$(iid).prop('disabled',true);
+		}
+	});
+
+	$("select[name='envia']").change();
 });
 </script>
 
@@ -224,11 +240,12 @@ if ($query->num_rows() > 0){
 	foreach ($query->result() as $i=>$row){
 		$color= ($i%2==0)? '#9ACD32':'#FAF0E6';
 		$options[$row->ubica]=trim($row->ubides);
-		$check[] = '<nobr style="background-color:'.$color.';">'.$row->ubica.' '.form_checkbox('caub[]', $row->ubica, false,'onclick="add_caub(this)" id="'.addslashes('c'.$row->ubica).'"').'</nobr>';
+		$check[] = '<div style="text-align: right;display:inline-block;background-color:'.$color.';margin:1px;border-radius: 5%;min-width: 55px;"><label style="font-weight:bold;" for="'.addslashes('c'.$row->ubica).'">'.$row->ubica.'</label>'.form_checkbox('caub[]', $row->ubica, false,'onclick="add_caub(this)" id="'.addslashes('c'.$row->ubica).'" title="'.addslashes($row->ubides).'"').'</div>';
 	}
 }
 
-echo 'Almac&eacute;n que envia: '.form_dropdown('envia', $options,trim($this->datasis->traevalor('ALMACEN')));
+echo '<b>Almac&eacute;n que env&iacute;a: </b>'.form_dropdown('envia', $options,trim($this->datasis->traevalor('ALMACEN')));
+echo ' Seleccione en la siguiente tabla los almacenes hacia los cuales desea repartir la mercanc&iacute;a:';
 echo '<p style="font-size:0.8em">'.implode(' ',$check).'</p>';
 ?>
 <table style='' id='itstras'>
@@ -236,7 +253,7 @@ echo '<p style="font-size:0.8em">'.implode(' ',$check).'</p>';
 		<col span='3'>
 	</colgroup>
 	<tr id='_PTPL_'>
-		<th style='background:#F5FFFA;'><a href='#' id='addlink' onclick='add_itstra()' title='Agregar otro producto'><?php echo img(array('src' =>"images/agrega4.png", 'height' => 18, 'alt'=>'Agregar otro producto', 'title' => 'Agregar otro producto', 'border'=>'0')); ?></a></th>
+		<th style='background:#F5FFFA;'><a href='#' id='addlink' onclick='add_itstra()' title='Agregar otro producto'><?php echo img(array('src' =>'images/agrega4.png', 'height' => 18, 'alt'=>'Agregar otro producto', 'title' => 'Agregar otro producto', 'border'=>'0')); ?></a></th>
 		<th style='background:#E4E4E4;'>Producto</th>
 		<th style='background:#E4E4E4;'>Disp.</th>
 	</tr>
