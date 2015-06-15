@@ -1139,7 +1139,7 @@ class Prdo extends Controller {
 
 	function guardar(){
 		alert("Guardar");
-		$.post( "'.base_url().'inventario/prdo/guardaoe", $("form#guardar").serialize(),
+		$.post( "'.base_url().'inventario/prdo/guardaoe", $("#guardar").serialize(),
 			function(data) {
 				alert(data);
 				location.reload();

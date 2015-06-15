@@ -42,9 +42,10 @@ class Spre extends Controller {
 		$bodyscript = $this->bodyscript( $param['grids'][0]['gridname'], $param['grids'][1]['gridname'] );
 
 		//Botones Panel Izq
-		$grid->wbotonadd(array('id'=>'boton1',  'img'=>'assets/default/images/print.png',   'alt' => 'Reimprimir',   'label'=>'Reimprimir'));
-		$grid->wbotonadd(array('id'=>'bffact',  'img'=>'images/star.png',                   'alt' => 'Facturar',     'label'=>'Facturar'));
-		$grid->wbotonadd(array('id'=>'bcorreo', 'img'=>'assets/default/images/mail_btn.png','alt' => 'Notificacion', 'label'=>'Notificar por email'));
+		$grid->wbotonadd(array('id'=>'boton1',  'img'=>'assets/default/images/print.png',   'alt' => 'Reimprimir',      'label'=>'Reimprimir'));
+		$grid->wbotonadd(array('id'=>'bffact',  'img'=>'images/star.png',                   'alt' => 'Facturar',        'label'=>'Facturar'));
+		$grid->wbotonadd(array('id'=>'bsnte',   'img'=>'images/star.png',                   'alt' => 'Nota de Entrega', 'label'=>'N.Entrega'));
+		$grid->wbotonadd(array('id'=>'bcorreo', 'img'=>'assets/default/images/mail_btn.png','alt' => 'Notificacion',    'label'=>'Notificar por email'));
 
 		$WestPanel = $grid->deploywestp();
 
@@ -185,6 +186,20 @@ class Spre extends Controller {
 				});
 			} else { $.prompt("<h1>Por favor Seleccione un Presupuesto</h1>");}
 		});';
+
+		$bodyscript .= '
+		$("#bsnte").click(function(){
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			if(id){
+				var ret    = $("#newapi'.$grid0.'").getRowData(id);
+				$.post("'.site_url('ventas/snte/creafromspre/N').'/"+ret.numero+"/create",
+				function(data){
+					$("#ffact").html(data);
+					$("#ffact").dialog( "open" );
+				});
+			} else { $.prompt("<h1>Por favor Seleccione un Presupuesto</h1>");}
+		});';
+
 
 		$bodyscript .= '
 		$("#bcorreo").click(function(){
