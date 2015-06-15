@@ -3933,7 +3933,6 @@ MAPGO;
 		if(!in_array('registrado', $campos)) $this->db->query('ALTER TABLE scli ADD COLUMN registrado  DATE        NULL DEFAULT NULL AFTER aniversario');
 		if(!in_array('longitud',   $campos)) $this->db->query('ALTER TABLE scli ADD COLUMN longitud    FLOAT       NULL DEFAULT NULL');
 		if(!in_array('latitud',    $campos)) $this->db->query('ALTER TABLE scli ADD COLUMN latitud     FLOAT       NULL DEFAULT NULL');
-		if(!in_array('longitud',   $campos)) $this->db->query('ALTER TABLE scli ADD COLUMN longitud    FLOAT       NULL DEFAULT NULL');
 		if(!in_array('fpago',      $campos)) $this->db->query("ALTER TABLE scli ADD COLUMN fpago       VARCHAR(20) NULL DEFAULT NULL");
 		if(!in_array('sada',       $campos)) $this->db->query('ALTER TABLE scli ADD COLUMN sada        VARCHAR(20) NULL');
 		if(!in_array('visita',     $campos)) $this->db->query('ALTER TABLE scli ADD COLUMN visita      VARCHAR(40) NULL');
