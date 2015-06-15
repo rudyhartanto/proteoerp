@@ -2675,6 +2675,11 @@ class Sprm extends Controller {
 		$codban = $this->input->post('banco');
 		$tipo   = $this->input->post('tipo_op');
 		$numero = str_pad(trim($numref), 12,'0', STR_PAD_LEFT);
+		$dbcodban = $this->db->escape($codban);
+
+		$sql     = "SELECT tbanco FROM banc WHERE codbanc=${dbcodban}";
+		$tipoban = $this->datasis->dameval($sql);
+		if($tipoban=='CAJ') return true;
 
 		if(empty($numref) && $tipo=='CH'){
 			$this->validation->set_message('chbmovrep', 'El campo %s es obligatorio');
@@ -2685,7 +2690,6 @@ class Sprm extends Controller {
 
 		$dbtipo   = $this->db->escape($tipo);
 		$dbnumero = $this->db->escape($numero);
-		$dbcodban = $this->db->escape($codban);
 
 		$mSQL = "SELECT COUNT(*) AS cana FROM bmov WHERE tipo_op=${dbtipo} AND numero=${dbnumero} AND codbanc=${dbcodban}";
 		$cana = intval($this->datasis->dameval($mSQL));
@@ -2974,7 +2978,7 @@ class Sprm extends Controller {
 		}
 		//Fin de las validaciones
 
-
+		$tbanco   = '';
 		$transac  = $this->datasis->prox_sql('ntransa',8);
 		$mcontrol = $this->datasis->prox_sql('nsprm'  ,8);
 		if($tipo_doc!='NC'){
@@ -3073,7 +3077,11 @@ class Sprm extends Controller {
 		}
 		$do->set('transac', $transac);
 		if($tipo_doc!='NC'){
-			$do->set('numche' , str_pad($do->get('numche'), 12,'0', STR_PAD_LEFT));
+			if($tipo_op=='ND' && $tbanco=='CAJ'){
+				$do->set('numche' , str_pad($this->datasis->banprox($banco), 12,'0', STR_PAD_LEFT));
+			}else{
+				$do->set('numche' , str_pad($do->get('numche'), 12,'0', STR_PAD_LEFT));
+			}
 		}
 		if(!empty($codigo)){
 			$dbcodigo = $this->db->escape($codigo);

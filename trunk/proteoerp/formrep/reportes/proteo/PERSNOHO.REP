@@ -42,34 +42,37 @@ $filter->submit('btnsubmit',RAPYD_BUTTON_SEARCH);
 $filter->build_form();
 
 if($this->rapyd->uri->is_set('search') && $filter->is_valid()){
-	$noco  =$filter->contrato->newValue;
-	$dbnoco=$this->db->escape($noco);
+	$noco  = $filter->contrato->newValue;
+	$dbnoco= $this->db->escape($noco);
+	$fdesde= $this->db->escape($filter->fechad->newValue);
+	$fhasta= $this->db->escape($filter->fechah->newValue);
 
 	// Consulta las Columnas
 	$mSQL  = "SELECT a.concepto, b.encab1, b.encab2,  sum(a.valor) valor FROM nomina a JOIN conc b ON a.concepto=b.concepto ";
-	$mSQL .= "WHERE MID(a.concepto,1,1)!='9' AND a.contrato=${dbnoco} AND a.fecha BETWEEN '".$filter->fechad->newValue."' AND '".$filter->fechah->newValue."'  GROUP BY concepto HAVING valor<>0 ";
+	$mSQL .= "WHERE MID(a.concepto,1,1)!='9' AND a.contrato=${dbnoco} AND a.fecha BETWEEN ${fdesde} AND ${fhasta}  GROUP BY concepto HAVING valor<>0 ";
 	$mEnca = $this->db->query($mSQL);
 	$cfilas=$mEnca->num_rows();
 	if($cfilas==0) die ('Nomina no generada o vacia');
-	$cell_size=164/$cfilas;
-	//$mFONT2 = 6;
+	$cell_size=150/$cfilas;
 	$mFONT1 = 6;
 	if($cfilas<=5)$cfilas=8;
 	$mFONT2 = 66/$cfilas;
-	if ($mFONT2>14) $mFONT2=14;
+	if($mFONT2>14) $mFONT2=14;
 
 	$mSQL = "SELECT b.cedula,b.rif,a.fecha,b.divi, b.depto, a.codigo,a.numero , CONCAT(RTRIM(b.nombre),' ' ,b.apellido)  nombre, CONCAT(b.divi, b.depto) dividep  ";
 	foreach ($mEnca->result() as $row){
 		$mSQL .= ", SUM(valor*(concepto='".$row->concepto."'))  C".$row->concepto ;
 	}
-	//$fecha=$this->datasis->dameval("SELECT DATE_FORMAT(fecha, '%d/%m/%Y') FROM nomina ORDER BY fecha DESC LIMIT 1");
-	$mSQL .= ", SUM(a.valor) totalnom, ";
-	$mSQL .= "COALESCE(( SELECT SUM(d.monto) neto FROM smov d WHERE d.cod_cli=b.enlace AND d.transac=a.transac),0)   prestamo ";
+
+	$mSQL .= ", SUM(a.valor) AS totalnom ";
+	$mSQL .= ", ABS(SUM(a.valor*(concepto='PRES'))) AS prestamo ";
+	//$mSQL .= "COALESCE((SELECT SUM(d.monto) neto FROM smov d WHERE d.cod_cli=b.enlace AND d.transac=a.transac),0)*(-1)  AS prestamo ";
 	$mSQL .= "FROM nomina a JOIN pers b ON a.codigo=b.codigo ";
-	$mSQL .= "WHERE MID(a.concepto,1,1) != '9' AND a.contrato='".$filter->contrato->newValue."' AND a.fecha BETWEEN '".$filter->fechad->newValue."' AND '".$filter->fechah->newValue."' ";
+	$mSQL .= "WHERE MID(a.concepto,1,1) != '9' AND a.contrato=${dbnoco} AND a.fecha BETWEEN ${fdesde} AND ${fhasta} ";
 	$mSQL .= "GROUP BY a.numero, a.codigo ORDER BY  a.numero,a.codigo ";
-	$mContrato = $this->datasis->dameval("SELECT CONCAT(codigo,' ',nombre) FROM noco WHERE codigo='".$filter->contrato->newValue."' LIMIT 1");
 	//echo $mSQL; exit();
+
+	$mContrato = $this->datasis->dameval("SELECT CONCAT(nombre,' (',codigo,')') FROM noco WHERE codigo=${dbnoco} LIMIT 1");
 
 	$pdf = new PDFReporte($mSQL,'L');
 	$pdf->setHeadValores('TITULO1');
@@ -91,6 +94,7 @@ if($this->rapyd->uri->is_set('search') && $filter->is_valid()){
 
 	$pdf->AddCol('prestamo' , 20,  array('Prestamos',' ')  ,'R', $mFONT2);
 	$pdf->AddCol('totalnom' , 20,  array('Total','Nomina') ,'R', $mFONT2);
+	//$pdf->AddCof('<#totalnom#>+<#prestamo#>' , 20,  array('Total','Nomina') ,'R', $mFONT2);
 	$pdf->setTotalizar('totalnom','prestamo');
 	$pdf->setGrupoLabel('Numero: <#numero#>   Fecha: <#fecha#>');
 	$pdf->setGrupo('numero');

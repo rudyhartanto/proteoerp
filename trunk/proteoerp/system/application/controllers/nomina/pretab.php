@@ -970,7 +970,7 @@ class Pretab extends Controller {
 		}
 
 		$tipo       = $this->datasis->dameval("SELECT tipo FROM noco WHERE codigo=${dbcontrato}");
-		$existe     = $this->datasis->dameval("SELECT COUNT(*) AS cana FROM nomina WHERE contrato=${dbcontrato} AND fecha=${dbfecha} AND trabaja=${dbtrabaja}");
+		$existe     = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM nomina WHERE contrato=${dbcontrato} AND fecha=${dbfecha} AND trabaja=${dbtrabaja}"));
 
 		if($existe > 0 && $tipo <> 'O'){
 			echo 'Nomina ya Guardada debe eliminarla primero!!';
@@ -980,6 +980,7 @@ class Pretab extends Controller {
 		$mNOMINA  = $this->datasis->fprox_numero('nnomina');
 		$mGSERNUM = $this->datasis->fprox_numero('ngser');
 		$mFREC    = $tipo;
+		$dbmFREC  = $this->db->escape($mFREC);
 
 		$transac  = $this->datasis->fprox_numero('ntransa');
 		$estampa  = date('Ymd');
@@ -990,7 +991,7 @@ class Pretab extends Controller {
 		// GENERAR ITEMS GITSER
 		$mGSER = $this->datasis->fprox_numero('ngser');
 		$mSQL= "INSERT INTO gitser (fecha, numero, proveed, codigo, descrip, precio,   iva, importe, unidades, fraccion, almacen, departa, sucursal, usuario, estampa, transac)
-				SELECT fechap, '".$mNOMINA."',ctaac, ctade,   CONCAT(RTRIM(b.descrip),' ',d.depadesc), SUM(valor), 0, SUM(valor), 0,        0,        '',     d.enlace, c.sucursal, ${dbusuario}, '".$estampa."','".$transac."'
+				SELECT fechap, '${mNOMINA}',ctaac, ctade,   CONCAT(RTRIM(b.descrip),' ',d.depadesc), SUM(valor), 0, SUM(valor), 0,        0,        '',     d.enlace, c.sucursal, ${dbusuario}, '${estampa}','${transac}'
 				FROM prenom a
 				JOIN conc b ON a.concepto=b.concepto
 				JOIN pers c ON a.codigo=c.codigo
@@ -1006,22 +1007,23 @@ class Pretab extends Controller {
 				JOIN pers c ON a.codigo=c.codigo
 				WHERE valor<>0 AND tipod!='G' ";
 
-		$mDEDU = $this->datasis->dameval($mSQL);
+		$mDEDU = floatval($this->datasis->dameval($mSQL));
 
 		// CALCULA LOS PRESTAMOS
-		$mSQL = "SELECT SUM(IF(b.monto-b.abonos-a.cuota>0,a.cuota,b.monto-b.abonos))
+		$mSQL = "SELECT SUM(IF(b.monto-b.abonos-a.cuota>0,a.cuota,b.monto-b.abonos)) AS pres
 				FROM pres a
 				JOIN smov b ON a.cod_cli=b.cod_cli AND a.tipo_doc=b.tipo_doc AND a.numero=b.numero
 				WHERE a.codigo IN (SELECT codigo FROM prenom GROUP BY codigo)
 				AND b.monto>b.abonos AND a.apartir<=${dbfecha}";
 
-		$mPRE   = $this->datasis->dameval($mSQL);
+		$mPRE   = floatval($this->datasis->dameval($mSQL));
 		$mDEDU  = abs($mDEDU)+$mPRE;
 		$mNOMI  = $this->datasis->dameval("SELECT ctaac FROM conc WHERE tipo='A' LIMIT 1");
+		$dbmNOMI= $this->db->escape($mNOMI);
 
 		// GENERA EL ENCABEZADO DE GSER
 		$mSQL = "INSERT INTO gser (fecha, numero, proveed, nombre, vence, totpre,   totiva, totbruto, reten, totneto,    codb1, tipo1, cheque1, monto1, credito, anticipo, orden, tipo_doc, usuario, estampa, transac)
-				SELECT a.fechap, '".$mNOMINA."', b.ctaac, d.nombre, a.fechap, SUM(a.valor), 0, SUM(a.valor), 0, SUM(a.valor), '', '' , '', ".$mDEDU."*(b.ctaac='".$mNOMI."'), SUM(a.valor)-".$mDEDU."*(b.ctaac='".$mNOMI."'), 0, '', 'GA',${dbusuario}, '".$estampa."', '".$transac."'
+				SELECT a.fechap, '${mNOMINA}', b.ctaac, d.nombre, a.fechap, SUM(a.valor), 0, SUM(a.valor), 0, SUM(a.valor), '', '' , '', ${mDEDU}*(b.ctaac=${dbmNOMI}), SUM(a.valor)-${mDEDU}*(b.ctaac=${dbmNOMI}), 0, '', 'GA',${dbusuario}, '${estampa}', '${transac}'
 				FROM prenom a
 				JOIN conc b ON a.concepto=b.concepto
 				JOIN pers c ON a.codigo=c.codigo
@@ -1033,9 +1035,9 @@ class Pretab extends Controller {
 		// GENERA CXP
 		$mNUMCXP = $mNOMINA;
 		$mSQL ="INSERT INTO sprm (tipo_doc, fecha, numero, cod_prv, nombre, vence, monto, impuesto, tipo_ref, num_ref, codigo, descrip, usuario, estampa, transac, observa1 )
-				SELECT 'ND' tipo_doc, fecha, CONCAT('N',MID(numero,2,7)), proveed, nombre, vence, credito, 0, 'GA', '' ,'NOCON', 'NOMINA', ${dbusuario}, '".$estampa."', '".$transac."', 'NOMINA '
+				SELECT 'ND' tipo_doc, fecha, CONCAT('N',MID(numero,2,7)), proveed, nombre, vence, credito, 0, 'GA', '' ,'NOCON', 'NOMINA', ${dbusuario}, '${estampa}', '${transac}', 'NOMINA '
 				FROM gser
-				WHERE tipo_doc='GA' AND numero='".$mNOMINA."' AND transac='".$transac."'";
+				WHERE tipo_doc='GA' AND numero='${mNOMINA}' AND transac='${transac}'";
 		$this->db->query($mSQL);
 
 		// GENERA LAS ND EN PROVEEDORES SPRM
@@ -1143,24 +1145,21 @@ class Pretab extends Controller {
 				$data['hora']     = $hora;
 				$data['transac']  = $transac;
 				$this->db->insert('itccli',$data);
-				$mPRESTAMO[] = array( $row->codigo, $row->nombre, $row->cuota );
+				$mPRESTAMO[] = array( $row->codigo, $row->nombre, floatval($row->cuota) );
 			}
 		}
 
 		// MANDA LA NOMINA AL HISTORICO
 		$mSQL= "INSERT INTO nomina (numero, frecuencia,        contrato,   depto,   codigo,   nombre,   concepto,   tipo,   descrip,   grupo,   formula,   monto,   fecha,   valor, estampa, usuario,          transac,      hora, fechap, trabaja )
-				SELECT '".$mNOMINA."' numa, '".$mFREC."' frecu, a.contrato, b.depto, a.codigo, a.nombre, a.concepto, a.tipo, a.descrip, a.grupo, a.formula, a.monto, a.fecha, a.valor, now(), ${dbusuario}, '".$transac."', CURTIME(), a.fechap,${dbtrabaja}
+				SELECT '${mNOMINA}' numa, '${dbmFREC}' frecu, a.contrato, b.depto, a.codigo, a.nombre, a.concepto, a.tipo, a.descrip, a.grupo, a.formula, a.monto, a.fecha, a.valor, now(), ${dbusuario}, '${transac}', CURTIME(), a.fechap,${dbtrabaja}
 				FROM prenom a
 				JOIN pers b ON a.codigo=b.codigo
 				WHERE a.valor<>0 ";
 		$this->db->query($mSQL);
 
-
-		$mVALOR = "SUM(IF(b.monto-b.abonos-a.cuota>0,a.cuota,b.monto-b.abonos))";
-
 		// MANDA LOS PRESTAMOS
 		foreach($mPRESTAMO as $meco){
-			$dbcodpr = $this->db->escape($mPRESTAMO[0]);
+			$dbcodpr = $this->db->escape($meco[0]);
 			$mDEPTO  = $this->datasis->dameval("SELECT depto FROM pers WHERE codigo=${dbcodpr}");
 
 			$data = array();
@@ -1180,7 +1179,6 @@ class Pretab extends Controller {
 			$data['valor']      = -1*$meco[2];
 			$data['estampa']    = $estampa;
 			$data['usuario']    = $usuario;
-
 			$data['transac']    = $transac;
 			$data['hora']       = $hora;
 			$data['fechap']     = $fechap;
