@@ -1108,7 +1108,7 @@ class Prdo extends Controller {
 
 		$(function() {
 			$("button").button().click(function(event) {event.preventDefault();});
-			$( "#almacen" ).combobox();
+			//$( "#almacen" ).combobox();
 		});
 
 
