@@ -135,7 +135,8 @@ class gastosycxp{
 		$mFECHAF = $CI->datasis->dameval("SELECT max(fecha) FROM civa WHERE fecha<=$mes"."01");
 		$mFECHAF = preg_replace('/[^0-9]+/','', $mFECHAF);
 
-		$mSQL = "SELECT a.cod_prv, a.tipo_doc, a.numero,a.nfiscal,a.transac,a.montasa,a.tasa,a.monredu,a.reducida,a.monadic,
+		$mSQL = "
+		SELECT a.cod_prv, a.tipo_doc, a.numero,a.nfiscal,a.transac,a.montasa,a.tasa,a.monredu,a.reducida,a.monadic,
 		a.sobretasa, a.exento, a.impuesto, a.monto, a.reteiva, a.fecha, a.fecapl, b.rif, b.nomfis,
 		GROUP_CONCAT(TRIM(c.numero)) AS afecta,a.codigo,a.serie
 		FROM sprm AS a
@@ -144,7 +145,19 @@ class gastosycxp{
 		JOIN scst AS d ON c.tipo_doc=d.tipo_doc AND c.numero=d.numero
 		WHERE a.fecha BETWEEN ${fdesde} AND ${fhasta} AND b.tipo<>'5'
 		AND a.tipo_doc='NC' AND  a.codigo NOT IN ('NOCON','')
-		GROUP BY cod_prv,tipo_doc,numero";
+		GROUP BY cod_prv,tipo_doc,numero
+		UNION ALL
+		SELECT a.cod_prv, a.tipo_doc, a.numero,a.nfiscal,a.transac,a.montasa,a.tasa,a.monredu,a.reducida,a.monadic,
+		a.sobretasa, a.exento, a.impuesto, a.monto, a.reteiva, a.fecha, a.fecapl, b.rif, b.nomfis,
+		GROUP_CONCAT(TRIM(c.numero)) AS afecta,a.codigo,a.serie
+		FROM sprm AS a
+		LEFT JOIN sprv AS b ON a.cod_prv=b.proveed
+		JOIN itppro  AS c ON a.numero=c.numppro AND a.tipo_doc=c.tipoppro AND c.cod_prv=a.cod_prv
+		JOIN gser AS d ON c.tipo_doc=d.tipo_doc AND c.numero=d.numero
+		WHERE a.fecha BETWEEN ${fdesde} AND ${fhasta} AND b.tipo<>'5'
+		AND a.tipo_doc='NC' AND  a.codigo NOT IN ('NOCON','')
+		GROUP BY cod_prv,tipo_doc,numero
+		";
 		$query = $CI->db->query($mSQL);
 
 		if ( $query->num_rows() > 0 ){
