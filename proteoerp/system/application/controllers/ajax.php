@@ -74,7 +74,7 @@ class Ajax extends Controller {
 
 			$mSQL="SELECT id,TRIM(nombre) AS nombre, TRIM(rif) AS rif, proveed, direc1 AS direc, reteiva
 				FROM sprv WHERE (rif LIKE ${qdb} OR nombre LIKE ${qdb} OR proveed=${qdbi}) ${ww}
-				ORDER BY rif LIMIT ".$this->autolimit;
+				ORDER BY nombre LIMIT ".$this->autolimit;
 			$query = $this->db->query($mSQL);
 			if ($query->num_rows() > 0){
 				foreach( $query->result_array() as  $row ) {
@@ -243,7 +243,7 @@ class Ajax extends Controller {
 
 			$mSQL="SELECT ${sel}
 				FROM scli WHERE (cliente LIKE ${qdb} OR rifci LIKE ${qdb} OR nombre LIKE ${qdb}) AND tipo<>0 ${ww}
-				ORDER BY rifci LIMIT ".$this->autolimit;
+				ORDER BY nombre LIMIT ".$this->autolimit;
 
 			$query = $this->db->query($mSQL);
 			if ($query->num_rows() > 0){
