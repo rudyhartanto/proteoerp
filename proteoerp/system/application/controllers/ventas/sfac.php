@@ -5554,8 +5554,8 @@ class Sfac extends Controller {
 	//******************************************************************
 	// Crea una factura desde una nota de entrega
 	function creafrommovil($manual,$status=null){
-		$this->_url= $this->url.'dataedit/insert';
-		$this->genesal=false;
+		$this->_url    = $this->url.'dataedit/insert';
+		$this->genesal = false;
 
 		$rt=array(
 			'status' => 'B',

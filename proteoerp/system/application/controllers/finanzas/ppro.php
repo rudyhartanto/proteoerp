@@ -1058,7 +1058,6 @@ class Ppro extends Controller {
 	//******************************************************************
 	// Guarda el Abono
 	//
-	//
 	function abono(){
 		$numche  = $this->input->post('fcomprob');
 		$tipo_op = $this->input->post('ftipo');
@@ -1093,6 +1092,7 @@ class Ppro extends Controller {
 			echo '{"status":"E","id":"'.$id.'" ,"mensaje":"Falta colocar el numero de Documento"}';
 			return;
 		}
+
 		foreach( $meco as $row ){
 			parse_str($row,$linea[]);
 		}
@@ -1263,10 +1263,6 @@ class Ppro extends Controller {
 
 		$this->db->insert('bmov',$data);
 		$this->datasis->actusal($codbanc, $fecha, -$totalab);
-
-		//IF UPPER(SUBSTR(XBENEFI,1,18)) != "TESORERIA NACIONAL"
-		//	CARGAIDB(XBANCO, XFECHA, XMONTO, XNUMCHE , XNUMERO, mTRANSAC)
-		//ENDIF
 
 		foreach( $linea as $efecto ){
 			if ( $efecto['abonar'] > 0 ) {
