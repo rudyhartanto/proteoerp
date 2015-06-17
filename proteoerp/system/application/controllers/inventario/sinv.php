@@ -5028,18 +5028,32 @@ class Sinv extends Controller {
 
 	//Manda una tabla para la consulta
 	function sinvitems($id = 0){
-		$dbid=intval($id);
-		$salida = 'No hay Existencias';
-		$codigo = $this->datasis->dameval("SELECT codigo FROM sinv WHERE id=${dbid}");
+		$dbid   = intval($id);
 
-		if(!empty($codigo)){
+		$codigo=$tipo= null;
+		$existen=$itexist=0;
+		$row    = $this->datasis->damerow("SELECT codigo,existen,tipo FROM sinv WHERE id=${dbid}");
+		if(!empty($row)){
+			$codigo = $row['codigo'];
+			$existen= floatval($row['existen']);
+			$tipo   = substr($row['tipo'],0,1);
+		}
+
+		if($tipo!='S'){
+			$salida = 'Sin Existencias';
+		}else{
+			$salida='';
+		}
+
+		if(!empty($codigo) && $tipo!='S'){
 			$mSQL  = "SELECT a.codigo, a.alma, a.existen, IF(b.ubides IS NULL,'SIN ALMACEN',b.ubides) AS nombre ";
 			$mSQL .= "FROM itsinv AS a LEFT JOIN caub as b ON a.alma=b.ubica ";
 			$mSQL .= "WHERE a.existen>0 AND codigo=".$this->db->escape($codigo);
 
 			$query = $this->db->query($mSQL);
 
-			if( $query->num_rows() > 0 ){
+			if($query->num_rows()>0){
+
 			    $salida  = "<table class='bordetabla' cellpadding=1 cellspacing=0 width='200'>";
 			    $salida .= "<tr class='tableheader'><th colspan='3'>Almacenes</th></tr>";
 				$i = 0;
@@ -5051,6 +5065,7 @@ class Sinv extends Controller {
 						$salida .= '</td><td>';
 						$salida .= $row->existen;
 						$salida .= "</td></tr>\n";
+						$itexist+= $row->existen;
 						$i++;
 				}
 				while($i<5){
@@ -5063,6 +5078,11 @@ class Sinv extends Controller {
 
 				$salida .= '</table>';
 			}
+		}
+
+		if($itexist != $existen){
+			$sql="UPDATE sinv SET existen=${itexist} WHERE id=${dbid}";
+			$this->db->simple_query($sql);
 		}
 		echo $salida;
 	}
