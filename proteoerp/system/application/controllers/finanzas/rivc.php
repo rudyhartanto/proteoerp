@@ -1651,9 +1651,9 @@ class Rivc extends Controller {
 		return true;
 	}
 
-	//*****************************
-	//Metodos para autocomplete
-	//*****************************
+	//******************************************************************
+	// Metodos para autocomplete
+	//
 	function buscasfac(){
 		session_write_close();
 		$mid   = trim($this->input->post('q'));
@@ -1708,7 +1708,7 @@ class Rivc extends Controller {
 
 			$mSQLs=array();
 			if(empty($match['tipo']) || $match['tipo']=='F' || $match['tipo']=='D' || $match['tipo']=='T'){
-				$mSQLs[] = "SELECT a.tipo_doc, a.numero, a.totalg, a.fecha,a.iva, a.iva*${rete} AS reiva
+				$mSQLs[] = "SELECT a.tipo_doc, a.numero, a.nfiscal, a.totalg, a.fecha,a.iva, a.iva*${rete} AS reiva
 				FROM  rivc AS c
 				JOIN itrivc AS b ON c.id=b.idrivc AND c.anulado='N'
 				RIGHT JOIN sfac AS a ON a.tipo_doc=b.tipo_doc AND a.numero=b.numero
@@ -1716,7 +1716,7 @@ class Rivc extends Controller {
 			}
 
 			if(empty($match['tipo']) || $match['tipo']=='NC' || $match['tipo']=='ND'){
-				$mSQLs[] = "SELECT a.tipo_doc, a.numero, a.monto AS totalg, a.fecha, a.impuesto AS iva,a.impuesto*${rete} AS reiva
+				$mSQLs[] = "SELECT a.tipo_doc, a.numero, a.nfiscal, a.monto AS totalg, a.fecha, a.impuesto AS iva,a.impuesto*${rete} AS reiva
 				FROM  rivc AS c
 				JOIN itrivc AS b ON c.id=b.idrivc AND c.anulado='N'
 				RIGHT JOIN smov AS a ON a.tipo_doc=b.tipo_doc AND a.numero=b.numero
@@ -1732,7 +1732,7 @@ class Rivc extends Controller {
 				$query = $this->db->query($mSQL);
 				if ($query->num_rows() > 0){
 					foreach( $query->result_array() as  $row ) {
-						$retArray['label']   = $row['tipo_doc'].'-'.$row['numero'].' '.$row['totalg'].' Bs.';
+						$retArray['label']   = $row['tipo_doc'].'-'.$row['numero'].' NF: '.$row['nfiscal'].' '.$row['totalg'].' Bs.';
 						$retArray['value']   = $row['numero'];
 						$retArray['gtotal']  = $row['totalg'];
 						$retArray['reiva']   = (($row['tipo_doc']=='D' || $row['tipo_doc']=='NC')? -1: 1)*round($row['reiva'],2);
