@@ -1064,7 +1064,6 @@ class Sprm extends Controller {
 			'edittype'      => "'select'",
 			'editrules'     => '{ required:false}',
 			'editoptions'   => '{value: '.$tbanco.',  style:"width:300px" }',
-			'editrules'     => '{ required:true}',
 		));
 
 
