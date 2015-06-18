@@ -3669,6 +3669,7 @@ class Sinv extends Controller {
 	function _pre_insert($do){
 		$codigo = $do->get('codigo');
 		$do->set('existen',0);
+		$do->set('etiqueta','S');
 
 		$meco = $do->get('peso');
 		if(empty($meco))  $do->set('peso',0);
@@ -3793,9 +3794,6 @@ class Sinv extends Controller {
 		else
 			$mp = ($precio1 >= $precio2 && $precio2 >= $precio3 && $precio3 >= $precio4);
 
-		//if($precio1 >= $precio2 && $precio2 >= $precio3 && $precio3 >= $precio4){
-		//if($precio1 >= $precio4 && $precio2 >= $precio4 && $precio3 >= $precio4){04160877377
-
 		if ( $mp ){
 			$formcal= $do->get('formcal');
 			$iva    = $do->get('iva');
@@ -3866,6 +3864,8 @@ class Sinv extends Controller {
 
 		$existen=floatval($this->datasis->dameval('SELECT SUM(existen) AS exist FROM itsinv WHERE codigo='.$this->db->escape($codigo)));
 		$do->set('existen',$existen);
+		$do->set('etiqueta','S');
+
 		return true;
 	}
 
@@ -6724,17 +6724,17 @@ class Sinv extends Controller {
 
 		if(!$this->db->table_exists('invfelr')){
 			$query="CREATE TABLE `invfelr` (
-				`codigo` CHAR(15) NOT NULL DEFAULT '',
-				`fecha` DATE NOT NULL DEFAULT '0000-00-00',
-				`precio` DECIMAL(17,2) NOT NULL DEFAULT '0.00',
-				`existen` DECIMAL(17,2) NULL DEFAULT NULL,
+				`codigo`   CHAR(15) NOT NULL DEFAULT '',
+				`fecha`    DATE NOT NULL DEFAULT '0000-00-00',
+				`precio`   DECIMAL(17,2) NOT NULL DEFAULT '0.00',
+				`existen`  DECIMAL(17,2) NULL DEFAULT NULL,
 				`anterior` DECIMAL(17,2) NULL DEFAULT NULL,
-				`parcial` DECIMAL(17,2) NULL DEFAULT NULL,
-				`alma` CHAR(4) NOT NULL DEFAULT '',
-				`tipo` CHAR(1) NULL DEFAULT NULL,
-				`fhora` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
-				`usuario` CHAR(12) NULL DEFAULT NULL,
-				`ubica` CHAR(10) NOT NULL DEFAULT ''
+				`parcial`  DECIMAL(17,2) NULL DEFAULT NULL,
+				`alma`     CHAR(4) NOT NULL DEFAULT '',
+				`tipo`     CHAR(1) NULL DEFAULT NULL,
+				`fhora`    TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+				`usuario`  CHAR(12) NULL DEFAULT NULL,
+				`ubica`    CHAR(10) NOT NULL DEFAULT ''
 			)
 			COLLATE='latin1_swedish_ci'
 			ENGINE=MyISAM
