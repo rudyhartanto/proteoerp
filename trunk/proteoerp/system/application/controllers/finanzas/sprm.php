@@ -454,8 +454,6 @@ class Sprm extends Controller {
 	}
 
 
-
-
 	//******************************************************************
 	//Definicion del Grid y la Forma
 	//
@@ -552,7 +550,7 @@ class Sprm extends Controller {
 		$grid->label('Abonos');
 		$grid->params(array(
 			'search'        => 'true',
-			'editable'      => $editar,
+			'editable'      => 'true',
 			'align'         => "'right'",
 			'edittype'      => "'text'",
 			'width'         => 100,
@@ -1870,7 +1868,7 @@ class Sprm extends Controller {
 
 	//*****************************************
 	// Nota de credito a factura pagada
-	//*****************************************
+	//
 	function ncppro(){
 		$this->rapyd->load('dataedit');
 

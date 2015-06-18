@@ -88,8 +88,6 @@ class Sfac extends Controller {
 		};';
 
 		$param['WestPanel']    = $WestPanel;
-		//$param['script']       = script('plugins/jquery.ui.autocomplete.autoSelectOne.js');
-		//$param['EastPanel']  = $EastPanel;
 		$param['readyLayout']  = $readyLayout;
 		$param['SouthPanel']   = $SouthPanel;
 		$param['listados']     = $this->datasis->listados('SFAC', 'JQ');
@@ -2625,6 +2623,12 @@ class Sfac extends Controller {
 		$dbnumero  = $this->db->escape($numero);
 		$dbfecha   = $this->db->escape($fecha);
 
+		// Elimina de SMOV
+		if( $referen== 'C' && $orgtipo == 'X' ){
+			$mSQL = "DELETE FROM smov WHERE transac=${dbtransac} AND cod_cli=${dbcliente} AND numero=${dbnumero} LIMIT 1";
+			$this->db->simple_query($mSQL);
+		}
+
 		if($referen=='C' && in_array($tipo_doc,array('NC','FC'))){
 			$mSQL = "SELECT COUNT(*) AS cana FROM smov WHERE transac=${dbtransac} AND cod_cli=${dbcliente} AND tipo_doc=${dbtipo_doc}";
 			$cana = intval($this->datasis->dameval($mSQL));
@@ -2797,7 +2801,6 @@ class Sfac extends Controller {
 				$salida .= '<p style=\'text-align:center\'>Reparto: <b>'.$rrow['tipo'].' '.str_pad($reparto,8,'0',0).'</b> Chofer: <b>'.$rrow['nombre'].'</b>'.$telf.'</p>';
 			}
 		}
-
 		$row=$this->datasis->damerow("SELECT SUM(tipo_doc IN ('F','T')) AS fac,SUM(tipo_doc='D') AS dev,SUM(tipo_doc='X') AS anu FROM sfac WHERE fecha=${dbfecha} AND MID(numero,1,1)<>'_'");
 		if(!empty($row)){
 			$salida .= "<p style='text-align:center'>Transacciones del d&iacute;a ".$fecha.": Facturas <b>$row[fac]</b>, Devoluciones <b>$row[dev]</b>, Anuladas <b>$row[anu]</b></p>";
