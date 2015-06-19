@@ -511,6 +511,7 @@ class Reparto extends Controller {
 						$this->db->where('id', $id);
 						$this->db->update('reparto', array( 'tipo' => 'C', 'carga' => $fecha, 'eliminadas' => $rep ));
 						echo 'Guardada';
+						logusu('reparto',"Reparto ${id} estatus modificado ${oper}");
 					}else{
 						echo 'No puede cargar un reparto sin facturas asociadas';
 					}
@@ -526,6 +527,7 @@ class Reparto extends Controller {
 					$this->db->where('id', $id);
 					$this->db->update('reparto', array('tipo' => 'E', 'entregado' => $fecha));
 					echo 'Guardada';
+					logusu('reparto',"Reparto ${id} estatus modificado ${oper}");
 				}
 			}else{
 				echo 'No esta Cargada';
@@ -541,6 +543,7 @@ class Reparto extends Controller {
 					$dbentrega= $this->db->escape($entrega);
 					$this->db->query("UPDATE sfac SET entregado=${dbentrega} WHERE reparto=${id} AND COALESCE(repcob,'') NOT IN ('EF','MI','CH','FP')");
 					echo 'Guardada';
+					logusu('reparto',"Reparto ${id} estatus modificado ${oper}");
 				}
 			}else{
 				echo 'No esta Entregada';
@@ -560,6 +563,7 @@ class Reparto extends Controller {
 					$this->db->update('reparto', $upd);
 					$this->db->query("UPDATE sfac SET entregado=0, reparto=0 WHERE reparto=${id}");
 					echo 'Reparto Anulado';
+					logusu('reparto',"Reparto ${id} anulado");
 				}else{
 					echo 'No se puede anular el reparto por tener efectos cobrados';
 				}
@@ -572,6 +576,7 @@ class Reparto extends Controller {
 				$this->db->where('id', $id);
 				$this->db->update('reparto', array('tipo' => 'I'));
 				echo 'Reparto Finalizado';
+				logusu('reparto',"Reparto ${id} estatus modificado ${oper}");
 			}else{
 				echo 'Reparto no se puede finalizar';
 			}
