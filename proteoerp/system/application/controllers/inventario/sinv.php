@@ -48,7 +48,11 @@ class Sinv extends Controller {
 				<tr>
 					<td style='vertical-align:top;'><div class='botones'><a style='width:94px;text-align:left;vertical-align:top;' href='#' id='hinactivo'>".img(array('src' =>"images/basura.png", 'height' => 15, 'alt'=>'Mostrar/Ocultar Inactivos', 'title' => 'Mostrar/Ocultar Inactivos', 'border'=>'0'))."Inactivos</a></div></td>
 					<td style='vertical-align:top;'><div class='botones'><a style='width:94px;text-align:left;vertical-align:top;' href='#' id='bbarras'  >".img(array('src' =>"images/barcode.png",'height' => 15, 'alt'=>'Barras Adicionales',        'title' => 'Barras Adicionales',        'border'=>'0'))."Barras</a></div></td>
+				</tr>
+				<tr>
+					<td style='vertical-align:top;' colspan='2'><div class='botones'><a style='width:190px;text-align:left;vertical-align:top;' href='#' id='subica'>".img(array('src' =>"images/ojo.png", 'height' => 15, 'alt'=>'Ubicaciones', 'title' => 'Ubicaciones', 'border'=>'0'))."Ubicaciones</a></div></td>
 				</tr>";
+
 
 		if ( $this->datasis->traevalor('SUNDECOP') == 'S'){
 			$WpAdic .= "
@@ -1137,6 +1141,17 @@ class Sinv extends Controller {
 			});
 		});';
 
+		// Boton de Agregar
+		$bodyscript .= '
+		$("#subica").click(function(){
+			$.post("'.site_url('inventario/sinv/subicaform').'",
+			function(data){
+				$("#fshow").html(data);
+				$("#fshow").dialog({height: 450, width: 510, title: "subica"});
+				$("#fshow").dialog( "open" );
+			});
+		});';
+
 		// Inactivos
 		$bodyscript .= '
 		$("#hinactivo").click( function(){
@@ -1348,7 +1363,6 @@ class Sinv extends Controller {
 			'editoptions'   => '{ size:8, maxlength: 8 }'
 		));
 
-
 		$grid->addField('ubica');
 		$grid->label('Ubica');
 		$grid->params(array(
@@ -1359,7 +1373,6 @@ class Sinv extends Controller {
 			'editrules'     => '{ required:true}',
 			'editoptions'   => '{ size:9, maxlength: 9 }',
 		));
-
 
 		$grid->addField('clave');
 		$grid->label('Clave');
@@ -2856,10 +2869,16 @@ class Sinv extends Controller {
 		$edit->clave->maxlength=8;
 		$edit->clave->rule = 'trim|strtoupper';
 
-		$edit->ubica = new inputField('Ubicaci&oacute;n', 'ubica');
+
+		$edit->ubica = new dropdownField('Ubicaci&oacute;n', 'ubica');
 		$edit->ubica->size=9;
-		$edit->ubica->maxlength=9;
-		$edit->ubica->rule = 'trim|strtoupper';
+		$edit->ubica->option('','Seleccione un Departamento');
+		$edit->ubica->options('SELECT ubica, CONCAT(ubica,\'-\',descrip) descrip FROM sinvubica ORDER BY ubica');
+		$edit->ubica->style='width:100px;white-space:nowrap;';
+
+
+//		$edit->ubica->maxlength=9;
+//		$edit->ubica->rule = 'trim|strtoupper';
 
 		$AddDepto='<a href="javascript:add_depto();" title="Haz clic para Agregar un nuevo Departamento">'.image('list_plus.png','Agregar',array("border"=>"0")).'</a>';
 		$edit->depto = new dropdownField('Departamento', 'depto');
@@ -6286,7 +6305,8 @@ class Sinv extends Controller {
 		}
 	}
 
-	//Para realizarr auditorias de inventario
+	//******************************************************************
+	// Para realizar auditorias de inventario
 	function sinvaudit(){
 		$error=0;
 		$arr_sinvs=$this->input->post('sinvs');
@@ -6357,25 +6377,153 @@ class Sinv extends Controller {
 		}
 	}
 
-/*
-	// Principios Activos
-	function prinactivo() {
-		$mid      = $this->input->post('id');
-		$mpactivo = trim(rawurldecode($this->input->post('pactivo')));
-		$mpaid    = trim($this->datasis->dameval("SELECT id FROM pactivo WHERE nombre=".$this->db->escape($mpactivo) ));
+			
+	//******************************************************************
+	// Forma de Grupos
+	//
+	function subicaform(){
+		$grid  = new $this->jqdatagrid;
+		$editar = 'true';
 
-		$mcodigo  = trim($this->datasis->dameval("SELECT codigo FROM sinv WHERE id=$mid"));
-		$htmlcod  = $this->db->escape($mcodigo);
+		// ejemplos de dropdown
+		//$mSQL  = "SELECT id, CONCAT(codigo,' ',nombre) nombre FROM tabla ORDER BY codigo";
+		//$cargo = $this->datasis->llenajqselect($mSQL, true );
 
-		//Busca si ya esta
-		$mSQL = "INSERT IGNORE INTO sinvpa SET codigo=".$htmlcod.", pactivo=$mpaid";
-		$this->db->query($mSQL);
-		logusu("SINV","Principio Activo Agregado".$mcodigo."-->".$mpactivo);
-		echo "Registro de Codigo Exitoso";
+		//$activo = ''{"S": "Activo", "N": "Inactivo"}'';
+		
+		$grid->addField('id');
+		$grid->label('Id');
+		$grid->params(array(
+			'align'         => "'center'",
+			'hidden'        => 'true',
+			'frozen'        => 'true',
+			'width'         => 40,
+			'editable'      => 'false',
+			'search'        => 'false'
+		));
+
+		$grid->addField('ubica');
+		$grid->label('Codigo');
+		$grid->params(array(
+			'search'        => 'true',
+			'editable'      => $editar,
+			'width'         => 80,
+			'edittype'      => "'text'",
+			'editrules'     => '{ required:true}',
+			'editoptions'   => '{ size:9, maxlength: 9 }',
+		));
+
+		$grid->addField('descrip');
+		$grid->label('Descripcion');
+		$grid->params(array(
+			'search'        => 'true',
+			'editable'      => $editar,
+			'width'         => 200,
+			'edittype'      => "'text'",
+			'editrules'     => '{ required:true}',
+			'editoptions'   => '{ size:50, maxlength: 50 }',
+		));
+
+		$grid->showpager(true);
+		$grid->setViewRecords(false);
+		$grid->setWidth('490');
+		$grid->setHeight('280');
+
+		$grid->setUrlget(site_url('inventario/sinv/subicaget'));
+		$grid->setUrlput(site_url('inventario/sinv/subicaset'));
+
+		$mgrid = $grid->deploy();
+
+		$msalida  = '<script type="text/javascript">'."\n";
+		$msalida .= '
+		$("#newapi'.$mgrid['gridname'].'").jqGrid({
+			ajaxGridOptions : {type:"POST"}
+			,jsonReader : { root:"data", repeatitems: false }
+			'.$mgrid['table'].'
+			,scroll: true
+			,pgtext: null, pgbuttons: false, rowList:[]
+		})
+		$("#newapi'.$mgrid['gridname'].'").jqGrid(\'navGrid\',  "#pnewapi'.$mgrid['gridname'].'",{edit:false, add:false, del:true, search: false});
+		$("#newapi'.$mgrid['gridname'].'").jqGrid(\'inlineNav\',"#pnewapi'.$mgrid['gridname'].'");
+		$("#newapi'.$mgrid['gridname'].'").jqGrid(\'filterToolbar\');
+		';
+
+		$msalida .= '</script>';
+		$msalida .= '<div class="anexos"><table id="newapi'.$mgrid['gridname'].'"></table>';
+		$msalida .= '<div id="pnewapi'.$mgrid['gridname'].'"></div></div>';
+
+		echo $msalida;
 
 	}
-*/
+			
+	//******************************************************************
+	// Busca la data en el Servidor por json
+	//
+	function subicaget(){
+		$grid       = $this->jqdatagrid;
+		// CREA EL WHERE PARA LA BUSQUEDA EN EL ENCABEZADO
+		$mWHERE = $grid->geneTopWhere('sinvubica');
+		$response   = $grid->getData('sinvubica', array(array()), array(), false, $mWHERE );
+		$rs = $grid->jsonresult( $response);
+		echo $rs;
+	}
 
+			
+	//******************************************************************
+	// Guarda los cambios
+	//
+	function subicaset(){
+		$this->load->library('jqdatagrid');
+		$oper   = $this->input->post('oper');
+		$id     = intval($this->input->post('id'));
+		$data   = $_POST;
+		$mcodp  = 'ubica';
+		$check  = 0;
+
+		unset($data['oper']);
+		unset($data['id']);
+		if($oper == 'add'){
+			if(false == empty($data)){
+				$check = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM sinvubica WHERE ubica=".$this->db->escape($data['ubica'])));
+				if($check == 0){
+					$this->db->insert('sinvubica', $data);
+					echo 'Registro Agregado';
+
+					logusu('SINVUBICA','Registro '.$data['descrip'].' INCLUIDO');
+				}else{
+					echo "Ya existe una ubicacion con ese codigo";
+				}
+			}else{
+				echo 'Fallo Agregado!!!';
+			}
+		}elseif($oper == 'edit'){
+			if($id<=0){
+				return false;
+			}
+
+			$nuevo  = $data[$mcodp];
+			unset($data[$mcodp]);
+			$this->db->where('id', $id);
+			$this->db->update('sinvubica', $data);
+
+			logusu('SINVUBICA','Ubicacion '.$nuevo.' MODIFICADO');
+			echo $nuevo." Modificada";
+
+		}elseif($oper == 'del'){
+			if($id<=0){
+				return false;
+			}
+			$this->db->delete('sinvubica', $id);
+
+			logusu('SINVUBICA',"Registro ELIMINADO");
+			echo 'Registro Eliminado';
+		}
+	}
+			
+
+
+	//******************************************************************
+	//
 	function instalar(){
 
 		$campos = $this->db->list_fields('sinv');
@@ -6759,6 +6907,28 @@ class Sinv extends Controller {
 			ENGINE=MyISAM";
 		}
 
+		if ( !$this->datasis->istabla('sinvubica') ) {
+			$mSQL = "
+			CREATE TABLE sinvubica (
+					ubica   VARCHAR(9)  NOT NULL DEFAULT '',
+					descrip VARCHAR(30) NOT NULL DEFAULT '',
+					id      INT(11) NOT NULL AUTO_INCREMENT,
+					PRIMARY KEY (id),
+					UNIQUE INDEX (ubica)
+					)
+			COLLATE='latin1_swedish_ci' ENGINE=MyISAM";
+			$this->db->query($mSQL);
+
+			$mSQL = "
+			INSERT INTO sinvubica (ubica, descrip)
+			SELECT ubica, ubica descrip FROM sinv 
+			WHERE ubica IS NOT NULL AND ubica <> '' 
+			GROUP BY ubica";
+			$this->db->query($mSQL);
+			
+			
+		}
+
 		if(!$this->db->table_exists('sadacod')){
 			$mSQL="CREATE TABLE `sadacod` (
 				`id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -7027,7 +7197,5 @@ class Sinv extends Controller {
 			$this->db->simple_query("INSERT INTO `sadacod` (`codigo`, `descrip`) VALUES ('109', 'Embutidos')");
 			$this->db->simple_query("INSERT INTO `sadacod` (`codigo`, `descrip`) VALUES ('108', 'Afrecho y afrechillo para consumo humano')");
 		}
-
-
 	}
 }
