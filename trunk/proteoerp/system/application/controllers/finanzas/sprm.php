@@ -1408,7 +1408,7 @@ class Sprm extends Controller {
 
 		switch($tipo){
 			case 'NC':
-				//Chequea si viene de una retension
+				//Chequea si viene de una retencion
 				$mSQL='SELECT a.id
 				FROM riva AS a
 				JOIN sprm AS b ON a.transac=b.transac AND a.emision=b.fecha
@@ -1417,10 +1417,42 @@ class Sprm extends Controller {
 				if(!empty($rivc_id)){
 					redirect('formatos/ver/RIVA/'.$rivc_id);
 					break;
-				}else{
-					redirect('formatos/descargar/PPRONC/'.$id);
-					echo 'Formato no definido';
 				}
+
+				//Chequea si viene de una retencion ISLR de cliente
+				$mSQL='SELECT a.id
+				FROM retc AS a
+				JOIN sprm AS b ON a.transac=b.transac AND a.fecha=b.fecha
+				WHERE b.id='.$dbid;
+				$retc_id=$this->datasis->dameval($mSQL);
+				if(!empty($retc_id)){
+					redirect('formatos/ver/RETC/'.$retc_id);
+					break;
+				}
+
+				//Chequea si viene de un cruce de cuenta
+				$mSQL='SELECT a.id
+				FROM cruc AS a
+				JOIN sprm AS b ON a.transac=b.transac AND a.fecha=b.fecha
+				WHERE b.id='.$dbid;
+				$cruc_id=$this->datasis->dameval($mSQL);
+				if(!empty($cruc_id)){
+					redirect('formatos/ver/CRUCDE/'.$cruc_id);
+					break;
+				}
+
+				//Chequea si vino de scst
+				$mSQL='SELECT a.id
+				FROM scst AS a
+				JOIN sprm AS b ON a.transac=b.transac AND a.tipo_doc="NC" AND a.numero=b.numero AND a.recep=b.fecha
+				WHERE b.id='.$dbid;
+				$scst_id=$this->datasis->dameval($mSQL);
+				if(!empty($sfac_id)){
+					redirect('formatos/descargar/COMPRA/'.$scst_id);
+					break;
+				}
+
+				redirect('formatos/descargar/PPRONC/'.$id);
 
 				break;
 			case 'AN':
@@ -1454,7 +1486,7 @@ class Sprm extends Controller {
 
 				break;
 			case 'ND':
-				//Chequea si viene de una retencion
+				//Chequea si viene de una retencion IVA
 				$mSQL='SELECT a.id
 				FROM riva AS a
 				JOIN sprm AS b ON a.transac=b.transac AND a.emision=b.fecha
@@ -1463,9 +1495,19 @@ class Sprm extends Controller {
 				if(!empty($rivc_id)){
 					redirect('formatos/ver/RIVA/'.$rivc_id);
 					break;
-				}else{
-					echo 'Formato no definido';
 				}
+
+				//Chequea si viene de gser
+				$mSQL='SELECT a.id
+				FROM gser AS a
+				JOIN sprm AS b ON a.transac=b.transac AND a.tipo_doc="ND" AND a.numero=b.numero AND a.fecha=b.fecha
+				WHERE b.id='.$dbid;
+				$gser_id=$this->datasis->dameval($mSQL);
+				if(!empty($gser_id)){
+					redirect('formatos/descargar/GSER/'.$gser_id);
+					break;
+				}
+
 				break;
 			default:
 				echo 'Formato no definido';

@@ -1392,7 +1392,34 @@ class Smov extends Controller {
 					break;
 				}
 
-				redirect($this->url.'dataprint/modify/'.$id);
+				//Chequea si viene de una retencion ISLR de cliente
+				$mSQL='SELECT a.id
+				FROM retc AS a
+				JOIN smov AS b ON a.transac=b.transac AND a.fecha=b.fecha
+				WHERE b.id='.$dbid;
+				$retc_id=$this->datasis->dameval($mSQL);
+				if(!empty($retc_id)){
+					redirect('formatos/ver/RETC/'.$retc_id);
+					break;
+				}
+
+				//Chequea si viene de un cruce de cuenta
+				$mSQL='SELECT a.id
+				FROM cruc AS a
+				JOIN smov AS b ON a.transac=b.transac AND a.fecha=b.fecha
+				WHERE b.id='.$dbid;
+				$cruc_id=$this->datasis->dameval($mSQL);
+				if(!empty($cruc_id)){
+					redirect('formatos/ver/CRUCDE/'.$cruc_id);
+					break;
+				}
+
+				$codigo = trim($this->datasis->dameval('SELECT codigo FROM smov WHERE id='.$id));
+				if($codigo!='NOCON'){
+					redirect($this->url.'dataprint/modify/'.$id);
+				}else{
+					echo 'NC interna, no se imprime';
+				}
 				break;
 			case 'AN':
 				redirect('formatos/descargar/CCLIAN/'.$id);
@@ -1419,7 +1446,7 @@ class Smov extends Controller {
 				JOIN smov AS b ON a.transac=b.transac AND a.fecha=b.fecha
 				WHERE b.id='.$dbid;
 				$rivc_id=$this->datasis->dameval($mSQL);
-				if(!empty($sfac_id)){
+				if(!empty($rivc_id)){
 					redirect('formatos/ver/RIVC/'.$rivc_id);
 					break;
 				}
@@ -1432,6 +1459,27 @@ class Smov extends Controller {
 				$otin_id=$this->datasis->dameval($mSQL);
 				if(!empty($otin_id)){
 					redirect('ventas/otin/printotin/'.$otin_id);
+					break;
+				}
+				//Chequea si viene de una retencion ISLR de cliente
+				$mSQL='SELECT a.id
+				FROM retc AS a
+				JOIN smov AS b ON a.transac=b.transac AND a.fecha=b.fecha
+				WHERE b.id='.$dbid;
+				$retc_id=$this->datasis->dameval($mSQL);
+				if(!empty($retc_id)){
+					redirect('formatos/ver/RETC/'.$retc_id);
+					break;
+				}
+
+				//Chequea si viene de un cruce de cuenta
+				$mSQL='SELECT a.id
+				FROM cruc AS a
+				JOIN smov AS b ON a.transac=b.transac AND a.fecha=b.fecha
+				WHERE b.id='.$dbid;
+				$cruc_id=$this->datasis->dameval($mSQL);
+				if(!empty($cruc_id)){
+					redirect('formatos/ver/CRUCDE/'.$cruc_id);
 					break;
 				}
 
