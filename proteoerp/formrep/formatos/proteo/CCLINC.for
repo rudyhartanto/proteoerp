@@ -4,8 +4,9 @@ $maxlin=33; //Maximo de lineas de items.
 if(count($parametros) < 0) show_error('Faltan parametros');
 $id=$parametros[0];
 
-$sel=array('a.tipo_doc','a.numero','a.cod_cli','a.fecha','a.monto','a.abonos','a.exento','a.montasa','a.tasa'
-,'b.nombre','TRIM(b.nomfis) AS nomfis','CONCAT_WS(\'\',TRIM(b.dire11),b.dire12) AS direc','b.rifci','b.telefono'
+$sel=array('a.tipo_doc','a.numero','a.cod_cli','a.fecha','a.monto','a.abonos'
+,'a.exento','a.montasa','a.tasa','a.monredu','a.reducida','a.monadic','a.sobretasa'
+,'b.nombre','TRIM(b.nomfis) AS nomfis','CONCAT_WS(\'\',TRIM(b.dire11),b.dire12) AS direc','b.rifci','b.telefono','monredu'
 ,'CONCAT_WS(\' \',observa1,observa2) AS observa','b.rifci','a.transac','a.codigo','a.descrip','a.num_ref','a.tipo_ref');
 $this->db->select($sel);
 $this->db->from('smov AS a');
@@ -17,27 +18,49 @@ $mSQL_1 = $this->db->get();
 if($mSQL_1->num_rows()==0) show_error('Registro no encontrado');
 
 $row = $mSQL_1->row();
-$tipo_doc = trim($row->tipo_doc);
-$numero   = $row->numero;
-$cliente  = $this->us_ascii2html(trim($row->cod_cli));
-$tipo_doc = trim($row->tipo_doc);
-$fecha    = $row->fecha;
-$hfecha   = dbdate_to_human($row->fecha);
-$monto    = nformat($row->monto);
-$montole  = strtoupper(numletra($row->monto));
-$abonos   = $row->abonos;
-$nombre   = (empty($row->nomfis))? $this->us_ascii2html($row->nombre) : $this->us_ascii2html($row->nomfis);
-$rifci    = trim($row->rifci);
-$direc    = $this->us_ascii2html($row->direc);
-$observa  = wordwrap($this->us_ascii2html(str_replace(',',', ',$row->observa)), 100, '<br>');
-$transac  = $row->transac;
-$codigo   = $this->us_ascii2html(trim($row->codigo));
-$descrip  = $this->us_ascii2html($row->descrip);
-$telefono = htmlspecialchars(trim($row->telefono));
-$exento   = nformat($row->exento);
-$montasa  = nformat($row->montasa);
-$tasa     = nformat($row->tasa);
-$gtotal   = nformat($row->monto);
+$tipo_doc  = trim($row->tipo_doc);
+$numero    = $row->numero;
+$cliente   = $this->us_ascii2html(trim($row->cod_cli));
+$tipo_doc  = trim($row->tipo_doc);
+$fecha     = $row->fecha;
+$hfecha    = dbdate_to_human($row->fecha);
+$monto     = nformat($row->monto);
+$montole   = strtoupper(numletra($row->monto));
+$abonos    = $row->abonos;
+$nombre    = (empty($row->nomfis))? $this->us_ascii2html($row->nombre) : $this->us_ascii2html($row->nomfis);
+$rifci     = trim($row->rifci);
+$direc     = $this->us_ascii2html($row->direc);
+$observa   = wordwrap($this->us_ascii2html(str_replace(',',', ',$row->observa)), 100, '<br>');
+$transac   = $row->transac;
+$codigo    = $this->us_ascii2html(trim($row->codigo));
+$descrip   = $this->us_ascii2html($row->descrip);
+$telefono  = htmlspecialchars(trim($row->telefono));
+
+$exento    = floatval($row->exento   );
+$montasa   = floatval($row->montasa  );
+$tasa      = floatval($row->tasa     );
+$monredu   = floatval($row->monredu  );
+$reducida  = floatval($row->reducida );
+$monadic   = floatval($row->monadic  );
+$sobretasa = floatval($row->sobretasa);
+$alicuota1 = ($montasa  >0)? 100*round($tasa/$montasa,2)      : 0;
+$alicuota2 = ($monredu  >0)? 100*round($reducida/$monredu,2)  : 0;
+$alicuota3 = ($sobretasa>0)? 100*round($monadic/$sobretasa,2) : 0;
+$gtotal    = floatval($row->monto);
+$stotal    = $montasa+$monredu+$monadic+$exento;
+
+$s_exento    = nformat($exento   );
+$s_montasa   = nformat($montasa  );
+$s_monredu   = nformat($monredu  );
+$s_monadic   = nformat($monadic  );
+$s_tasa      = nformat($tasa     );
+$s_reducida  = nformat($reducida );
+$s_sobretasa = nformat($sobretasa);
+$s_alicuota1 = nformat($alicuota1);
+$s_alicuota2 = nformat($alicuota2);
+$s_alicuota3 = nformat($alicuota3);
+$s_exento    = nformat($exento   );
+$s_gtotal    = nformat($gtotal   );
 
 
 $sel=array('b.tipo_doc','b.numero','b.fecha','b.monto','b.abono','b.reten','b.ppago','b.cambio','b.mora','b.reteiva');
@@ -92,7 +115,7 @@ $encabezado = "
 			<td>Domicilio Fiscal: <b>${direc}</b></td>
 			<td>Tel&eacute;fono:  <b>${telefono}</b></td>
 		</tr><tr>
-			<td colspan='2'>Hemos acreditado en su cuenta la suma de Bs... <b>$monto</b></td>
+			<td colspan='2'>Hemos acreditado en su cuenta la suma de Bs... <b>${monto}</b></td>
 		</tr><tr>
 			<td colspan='2'>Imputable a: <b>${codigo} ${descrip}</b></td>
 		</tr><tr>
@@ -127,18 +150,51 @@ $pie_final=<<<piefinal
 		<tfoot style='border:1px solid;background:#EEEEEE;'>
 			<tr>
 				<td style="text-align: right;"></td>
-				<td style="text-align: right;"><b>Monto Total de la Base Imponible seg&uacute;n Alicuota :</b></td>
-				<td style="text-align: right;font-size:16px;font-weight:bold;" >${montasa}</td>
+				<td style="text-align: right;"><b>Monto Total de la Base Imponible seg&uacute;n Alicuota ${s_alicuota1}%:</b></td>
+				<td style="text-align: right;font-size:16px;font-weight:bold;" >${s_montasa}</td>
 			</tr>
 			<tr>
 				<td style="text-align: right;"></td>
 				<td style="text-align: right;"><b>Monto Total del Impuesto seg&uacute;n Alicuota:</b></td>
-				<td style="text-align: right;font-size:16px;font-weight:bold;">${tasa}</td>
+				<td style="text-align: right;font-size:16px;font-weight:bold;">${s_tasa}</td>
 			</tr>
+piefinal;
+
+
+if($alicuota2>0){
+		$pie_final .= "
+			<tr>
+				<td style='text-align: right;'></td>
+				<td style='text-align: right;'><b>Monto Total de la Base Imponible seg&uacute;n Alicuota ${s_alicuota2}%:</b></td>
+				<td style='text-align: right;font-size:16px;font-weight:bold;' >${s_reducida}</td>
+			</tr>
+			<tr>
+				<td style='text-align: right;'></td>
+				<td style='text-align: right;'><b>Monto Total del Impuesto seg&uacute;n Alicuota:</b></td>
+				<td style='text-align: right;font-size:16px;font-weight:bold;'>${s_monredu}</td>
+			</tr>";
+}
+
+if($alicuota3>0){
+		$pie_final .= "
+			<tr>
+				<td style='text-align: right;'></td>
+				<td style='text-align: right;'><b>Monto Total de la Base Imponible seg&uacute;n Alicuota ${s_alicuota3}%:</b></td>
+				<td style='text-align: right;font-size:16px;font-weight:bold;' >${s_sobretasa}</td>
+			</tr>
+			<tr>
+				<td style='text-align: right;'></td>
+				<td style='text-align: right;'><b>Monto Total del Impuesto seg&uacute;n Alicuota:</b></td>
+				<td style='text-align: right;font-size:16px;font-weight:bold;'>${s_monadic}</td>
+			</tr>";
+}
+
+
+$pie_final.=<<<piefinal
 			<tr style='border-top: 1px solid;background:#AAAAAA;'>
 				<td style="text-align: right;"></td>
 				<td style="text-align: right;"><b>MONTO TOTAL:</b></td>
-				<td style="text-align: right;font-size:20px;font-weight:bold;">${gtotal}</td>
+				<td style="text-align: right;font-size:20px;font-weight:bold;">${s_gtotal}</td>
 			</tr>
 		</tfoot>
 
@@ -172,12 +228,13 @@ foreach ($detalle2 AS $items2){ $i++;
 			echo $encabezado_tabla;
 			$npagina=false;
 		}
+		$partici = $items->abono/$gtotal;
 ?>
 			<tr class="<?php if(!$mod) echo 'even_row'; else  echo 'odd_row'; ?>">
 
 				<td style="text-align: center"><?php echo $items2->tipo_doc.$items2->numero;?></td>
 				<td style="text-align: center"><?php echo dbdate_to_human($items2->fecha);   ?></td>
-				<td style="text-align: right" ><?php echo nformat($items2->abono);           ?></td>
+				<td style="text-align: right" ><?php echo nformat($stotal*$partici);           ?></td>
 				<?php
 				$lineas++;
 				if($lineas > $maxlin){

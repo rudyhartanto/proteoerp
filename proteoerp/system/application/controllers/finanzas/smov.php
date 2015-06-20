@@ -1376,7 +1376,7 @@ class Smov extends Controller {
 				JOIN smov AS b ON a.transac=b.transac AND a.fecha=b.fecha
 				WHERE b.id='.$dbid;
 				$rivc_id=$this->datasis->dameval($mSQL);
-				if(!empty($sfac_id)){
+				if(!empty($rivc_id)){
 					redirect('formatos/ver/RIVC/'.$rivc_id);
 					break;
 				}
