@@ -6,7 +6,8 @@ $id   = $parametros[0];
 $dbid = $this->db->escape($id);
 
 
-$sel=array('a.tipo_doc','a.numero','a.cod_cli','a.fecha','a.monto','a.abonos','a.exento','a.montasa','a.tasa'
+$sel=array('a.tipo_doc','a.numero','a.cod_cli','a.fecha','a.monto','a.abonos'
+,'a.exento','a.montasa','a.tasa','a.monredu','a.reducida','a.monadic','a.sobretasa'
 ,'b.nombre','TRIM(b.nomfis) AS nomfis','CONCAT_WS(\'\',TRIM(b.dire11),b.dire12) AS direc','b.rifci','b.telefono'
 ,'CONCAT_WS(\' \',observa1,observa2) AS observa','b.rifci','a.transac','a.codigo','a.descrip');
 $this->db->select($sel);
@@ -25,8 +26,6 @@ $numero   = $row->numero;
 $cod_cli  = trim($row->cod_cli);
 $rifci    = trim($row->rifci);
 $nombre   = trim($row->nombre);
-$stotal   = nformat($row->montasa);
-$gtotal   = nformat($row->monto);
 $impuesto = nformat($row->tasa);
 $direccion= wordwrap(trim($row->direc),40,"\n");
 $tipo_doc = $row->tipo_doc;
@@ -34,11 +33,36 @@ $telefono = trim($row->telefono);
 $nomvend  = '';
 $factura  = ($tipo_doc=='D')? $row->factura :'';
 $base     = nformat($row->montasa);
-$exento   = nformat($row->exento);
 $observa  = wordwrap(str_replace(',',', ',$row->observa), 100, "\n");
 $codigo   = trim($row->codigo);
 $descrip  = $row->descrip;
 $monto    = nformat($row->monto);
+
+$exento    = floatval($row->exento   );
+$montasa   = floatval($row->montasa  );
+$tasa      = floatval($row->tasa     );
+$monredu   = floatval($row->monredu  );
+$reducida  = floatval($row->reducida );
+$monadic   = floatval($row->monadic  );
+$sobretasa = floatval($row->sobretasa);
+$alicuota1 = ($montasa  >0)? 100*round($tasa/$montasa,2)      : 0;
+$alicuota2 = ($monredu  >0)? 100*round($reducida/$monredu,2)  : 0;
+$alicuota3 = ($sobretasa>0)? 100*round($monadic/$sobretasa,2) : 0;
+$gtotal    = floatval($row->monto);
+$stotal    = $montasa+$monredu+$monadic+$exento;
+
+$s_exento    = nformat($exento   );
+$s_montasa   = nformat($montasa  );
+$s_monredu   = nformat($monredu  );
+$s_monadic   = nformat($monadic  );
+$s_tasa      = nformat($tasa     );
+$s_reducida  = nformat($reducida );
+$s_sobretasa = nformat($sobretasa);
+$s_alicuota1 = nformat($alicuota1);
+$s_alicuota2 = nformat($alicuota2);
+$s_alicuota3 = nformat($alicuota3);
+$s_exento    = nformat($exento   );
+$s_gtotal    = nformat($gtotal   );
 
 $dd=explode("\n",$direccion);
 foreach($dd as $iid=>$val){
@@ -81,7 +105,7 @@ if($art_cana==0){
 	$art_cana = $mSQL_2->num_rows();
 }
 
-$separador='Ä';
+$separador=chr(196);
 
 //************************
 //     Encabezado
@@ -108,10 +132,18 @@ $encabezado_tabla .= str_pad('', 80, $separador)."\n";
 //     Pie Pagina
 //************************
 $pie_final  = CHR(18).str_pad('', 80, $separador)."\n";
-$pie_final .= str_pad('MONTO EXENTO: ',                   64,' ',0).chr(15).chr(14).str_pad($exento , 13,' ',0).chr(18)."\n";
-$pie_final .= str_pad('BASE IMPONIBLE SEGUN ALICUOTA DEL 12%: ',      64,' ',0).chr(15).chr(14).str_pad($base,    13,' ',0).chr(18)."\n";
-$pie_final .= str_pad('MONTO TOTAL DEL IMPUESTO SEGUN ALICUOTA 12%: ',64,' ',0).chr(15).chr(14).str_pad($impuesto,13,' ',0).chr(18)."\n";
-$pie_final .= str_pad('MONTO TOTAL: ' ,     64,' ',0).chr(15).chr(14).str_pad($gtotal,  13,'*',0).chr(18)."\n";
+$pie_final .= str_pad('MONTO EXENTO: ',                   64,' ',0).chr(15).chr(14).str_pad($s_exento , 13,' ',0).chr(18)."\n";
+$pie_final .= str_pad("BASE IMPONIBLE SEGUN ALICUOTA DEL ${alicuota1}%: ",      64,' ',0).chr(15).chr(14).str_pad($s_tasa,    13,' ',0).chr(18)."\n";
+$pie_final .= str_pad("MONTO TOTAL DEL IMPUESTO SEGUN ALICUOTA ${alicuota1}%: ",64,' ',0).chr(15).chr(14).str_pad($s_montasa,13,' ',0).chr(18)."\n";
+if($alicuota2>0){
+	$pie_final .= str_pad("BASE IMPONIBLE SEGUN ALICUOTA DEL ${alicuota2}%: ",      64,' ',0).chr(15).chr(14).str_pad($s_monredu,    13,' ',0).chr(18)."\n";
+	$pie_final .= str_pad("MONTO TOTAL DEL IMPUESTO SEGUN ALICUOTA ${alicuota2}%: ",64,' ',0).chr(15).chr(14).str_pad($s_reducida,   13,' ',0).chr(18)."\n";
+}
+if($alicuota3>0){
+	$pie_final .= str_pad("BASE IMPONIBLE SEGUN ALICUOTA DEL ${alicuota3}%: ",      64,' ',0).chr(15).chr(14).str_pad($s_monadic,    13,' ',0).chr(18)."\n";
+	$pie_final .= str_pad("MONTO TOTAL DEL IMPUESTO SEGUN ALICUOTA ${alicuota3}%: ",64,' ',0).chr(15).chr(14).str_pad($s_sobretasa,  13,' ',0).chr(18)."\n";
+}
+$pie_final .= str_pad('MONTO TOTAL: ' ,     64,' ',0).chr(15).chr(14).str_pad($s_gtotal,  13,'*',0).chr(18)."\n";
 $pie_final .= str_pad('', 80, $separador)."\n\n\n\n\n";
 
 $pie_continuo   = str_pad('', 80, $separador)."\n";
@@ -124,7 +156,7 @@ $i       = 0;
 $sumline = 0;
 $tpeso   = 0;
 
-foreach ($detalle AS $items){ $i++;
+foreach ($detalle as $items){ $i++;
 	do {
 		if($npagina){
 			echo $encabezado;
@@ -134,7 +166,8 @@ foreach ($detalle AS $items){ $i++;
 		}
 
 		if(!$clinea){
-			echo " ".sprintf('%-13s %-49s %9s',$items->tipo_doc.$items->numero,dbdate_to_human($items->fecha),nformat($items->abono,2));
+			$partici = $items->abono/$gtotal;
+			echo ' '.sprintf('%-13s %-49s %9s',$items->tipo_doc.$items->numero,dbdate_to_human($items->fecha),nformat($stotal*$partici,2));
 			echo "\n";
 			$lineas++;
 		}
