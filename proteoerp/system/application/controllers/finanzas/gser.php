@@ -4646,5 +4646,33 @@ class gser extends Controller {
 		}
 		$campos=$this->db->list_fields('usol');
 		if(!in_array('activo',$campos)){$this->db->query('ALTER TABLE usol ADD COLUMN activo CHAR(1) NULL DEFAULT "S" AFTER sucursal');}
+
+		if(!$this->db->table_exists('usol')){
+			$mSQL="CREATE TABLE `usol` (
+				`codigo` CHAR(2) NOT NULL DEFAULT '',
+				`nombre` CHAR(30) NULL DEFAULT NULL,
+				`gasto` CHAR(6) NULL DEFAULT NULL,
+				`depto` CHAR(3) NULL DEFAULT NULL,
+				`sucursal` CHAR(2) NULL DEFAULT NULL,
+				`activo` CHAR(1) NULL DEFAULT 'S',
+				`id` INT(11) NOT NULL AUTO_INCREMENT,
+				PRIMARY KEY (`id`),
+				UNIQUE INDEX `codigo` (`codigo`)
+			)
+			COLLATE='latin1_swedish_ci'
+			ENGINE=MyISAM";
+			$this->db->simple_query($mSQL);
+
+			$this->db->simple_query("INSERT INTO `usol` (`codigo`, `nombre`, `gasto`, `depto`, `sucursal`) VALUES ('01', 'PERDIDAS, ROBOS Y DESTRUCCION', '', '', '01')");
+			$this->db->simple_query("INSERT INTO `usol` (`codigo`, `nombre`, `gasto`, `depto`, `sucursal`) VALUES ('02', 'COMPRAS Y COSTEOS'            , '', '', '01')");
+			$this->db->simple_query("INSERT INTO `usol` (`codigo`, `nombre`, `gasto`, `depto`, `sucursal`) VALUES ('03', 'SOBRANTE DE INVENTARIO'       , '', '', '01')");
+		}
+
+		$campos=$this->db->list_fields('usol');
+		if(!in_array('id',$campos)){
+			$this->db->simple_query('ALTER TABLE usol DROP PRIMARY KEY');
+			$this->db->simple_query('ALTER TABLE usol ADD UNIQUE INDEX codigo (codigo)');
+			$this->db->simple_query('ALTER TABLE usol ADD COLUMN id INT(11) NULL AUTO_INCREMENT, ADD PRIMARY KEY (id)');
+		}
 	}
 }
