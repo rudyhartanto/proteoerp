@@ -121,7 +121,7 @@ class ingresos{
 			SELECT b.fecha fecha, a.numero numero, d.nombre nombre, d.rifci rifci, d.cliente cod_cli, a.numero afecta, a.fecha fafecta, IF(c.tipo_doc='NC',-1,1)*a.reiva reteiva, a.transac transac, CONCAT(b.periodo, b.nrocomp) nroriva, b.emision emiriva, b.fecha recriva, a.nfiscal nfiscal
 			FROM  itrivc a
 			JOIN rivc b ON a.idrivc = b.id
-			JOIN smov c ON b.transac = c.transac  AND a.numero=c.num_ref
+			JOIN smov c ON b.transac = c.transac
 			JOIN scli d ON b.cod_cli = d.cliente
 			WHERE c.cod_cli='REIVA' AND b.fecha BETWEEN ${fdesde} AND ${fhasta}
 			UNION ALL
