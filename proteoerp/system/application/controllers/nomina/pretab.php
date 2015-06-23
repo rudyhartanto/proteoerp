@@ -1151,7 +1151,7 @@ class Pretab extends Controller {
 
 		// MANDA LA NOMINA AL HISTORICO
 		$mSQL= "INSERT INTO nomina (numero, frecuencia,        contrato,   depto,   codigo,   nombre,   concepto,   tipo,   descrip,   grupo,   formula,   monto,   fecha,   valor, estampa, usuario,          transac,      hora, fechap, trabaja )
-				SELECT '${mNOMINA}' numa, '${dbmFREC}' frecu, a.contrato, b.depto, a.codigo, a.nombre, a.concepto, a.tipo, a.descrip, a.grupo, a.formula, a.monto, a.fecha, a.valor, now(), ${dbusuario}, '${transac}', CURTIME(), a.fechap,${dbtrabaja}
+				SELECT '${mNOMINA}' numa, ${dbmFREC} frecu, a.contrato, b.depto, a.codigo, a.nombre, a.concepto, a.tipo, a.descrip, a.grupo, a.formula, a.monto, a.fecha, a.valor, now(), ${dbusuario}, '${transac}', CURTIME(), a.fechap,${dbtrabaja}
 				FROM prenom a
 				JOIN pers b ON a.codigo=b.codigo
 				WHERE a.valor<>0 ";
