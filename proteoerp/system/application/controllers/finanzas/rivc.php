@@ -1176,12 +1176,12 @@ class Rivc extends Controller {
 		SELECT a.numero FROM itrivc a LEFT JOIN smov b ON a.transac=b.transac AND a.numero=b.num_ref
 		WHERE a.transac='.$transac.' AND b.cod_cli IS NULL';
 		$query = $this->db->query($mSQL);
-		if ( $query->num_rows() < 0){
+		if ( $query->num_rows() > 0){
 			foreach( $query->result_array() as  $row ) {
 				$numero = $row['numero'];
-				$mnumnc = 'I'.$this->datasis->fprox_numero('ncint',-1);
-				$mnumnd = 'I'.$this->datasis->fprox_numero('ndint',-1);
 
+
+				/*$mnumnc = 'I'.$this->datasis->fprox_numero('ncint',-1);
 				$mSQL = "
 				INSERT INTO smov (cod_cli,nombre,tipo_doc,numero,fecha,monto,impuesto,abonos,vence,tipo_ref,num_ref,observa1,codigo,descrip,usuario,estampa,hora,transac,nroriva,emiriva,fecdoc )
 				SELECT b.cod_cli, b.nombre, 'NC' tipo_doc, '${mnumnc}' numero, b.fecha, a.reiva monto, 0 impuesto,
@@ -1194,7 +1194,6 @@ class Rivc extends Controller {
 				//if($ban==false){ memowrite($mSQL,'RIVCFIXNC'); }
 				$idi = $this->db->insert_id();
 
-
 				// Arregla el itccli
 				$mSQL = "SELECT COUNT(*) FROM itccli WHERE transac='${transac}' AND numccli='${numero}' ";
 				$hay  = $this->datasis->dameval($mSQL);
@@ -1204,19 +1203,20 @@ class Rivc extends Controller {
 					//if($ban==false){ memowrite($mSQL,'RIVCFIXCC'); }
 					$mSQL = "UPDATE smov SET abonos=monto WHERE id=${idi} ";
 					//$ban = $this->db->simple_query($mSQL);
-				}
+				}*/
 
+				$mnumnd = 'I'.$this->datasis->fprox_numero('ndint',-1);
 				$mSQL = "
 				INSERT INTO smov (cod_cli,nombre,tipo_doc,numero,fecha,monto,impuesto,abonos,vence,tipo_ref,num_ref,observa1,codigo,descrip,usuario,estampa,hora,transac,nroriva,emiriva,fecdoc )
 				SELECT c.cliente,  c.nombre, 'ND' tipo_doc, '${mnumnd}' numero, b.fecha, a.reiva monto, 0 impuesto,
 				0 abonos, LAST_DAY(b.fecha) vence, if(a.tipo_doc='F','FC','NC') tipo_ref, a.numero num_ref,
-				CONCAT('RET/IVA DE 01136 A DOC. ',if(a.tipo_doc='F','FC','NC'),a.numero)       observa1, 'NOCON' codigo, 'NOTA DE CONTABILIDAD' descrip, a.usuario, a.estampa, a.hora, a.transac, CONCAT(b.periodo,b.nrocomp) nroriva, b.emision emiriva, NULL fecdoc
+				CONCAT('RET/IVA DE ', c.cliente,' A DOC. ',IF(a.tipo_doc='F','FC','NC'),a.numero)       observa1, 'NOCON' codigo, 'NOTA DE CONTABILIDAD' descrip, a.usuario, a.estampa, a.hora, a.transac, CONCAT(b.periodo,b.nrocomp) nroriva, b.emision emiriva, NULL fecdoc
 				FROM itrivc a
 				JOIN rivc b ON a.transac=b.transac
 				JOIN scli c ON c.cliente='REIVA'
 				WHERE a.transac='${transac}' AND a.numero='${numero}'";
-				//$ban=$this->db->simple_query($mSQL);
-				//if($ban==false){ memowrite($mSQL,'RIVCFIXND'); }
+				$ban=$this->db->simple_query($mSQL);
+				if($ban==false){ memowrite($mSQL,'RIVCFIXND'); }
 				$salida = 'Arreglado';
 			}
 		}
