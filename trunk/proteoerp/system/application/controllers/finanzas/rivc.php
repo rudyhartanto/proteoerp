@@ -1181,7 +1181,7 @@ class Rivc extends Controller {
 				$numero = $row['numero'];
 
 
-				/*$mnumnc = 'I'.$this->datasis->fprox_numero('ncint',-1);
+				$mnumnc = 'I'.$this->datasis->fprox_numero('ncint',-1);
 				$mSQL = "
 				INSERT INTO smov (cod_cli,nombre,tipo_doc,numero,fecha,monto,impuesto,abonos,vence,tipo_ref,num_ref,observa1,codigo,descrip,usuario,estampa,hora,transac,nroriva,emiriva,fecdoc )
 				SELECT b.cod_cli, b.nombre, 'NC' tipo_doc, '${mnumnc}' numero, b.fecha, a.reiva monto, 0 impuesto,
@@ -1190,8 +1190,8 @@ class Rivc extends Controller {
 				FROM itrivc a
 				JOIN rivc b ON a.transac=b.transac
 				WHERE a.transac='${transac}' AND a.numero='${numero}'";
-				//$ban = $this->db->simple_query($mSQL);
-				//if($ban==false){ memowrite($mSQL,'RIVCFIXNC'); }
+				$ban = $this->db->simple_query($mSQL);
+				if($ban==false){ memowrite($mSQL,'RIVCFIXNC'); }
 				$idi = $this->db->insert_id();
 
 				// Arregla el itccli
@@ -1199,11 +1199,11 @@ class Rivc extends Controller {
 				$hay  = $this->datasis->dameval($mSQL);
 				if ( $hay == 1 && $idi > 0 ){
 					$mSQL = "UPDATE itccli SET numero='${mnumnc}' WHERE transac='${transac}' AND numccli='${numero}' ";
-					//$ban = $this->db->simple_query($mSQL);
-					//if($ban==false){ memowrite($mSQL,'RIVCFIXCC'); }
+					$ban = $this->db->simple_query($mSQL);
+					if($ban==false){ memowrite($mSQL,'RIVCFIXCC'); }
 					$mSQL = "UPDATE smov SET abonos=monto WHERE id=${idi} ";
-					//$ban = $this->db->simple_query($mSQL);
-				}*/
+					$ban = $this->db->simple_query($mSQL);
+				}
 
 				$mnumnd = 'I'.$this->datasis->fprox_numero('ndint',-1);
 				$mSQL = "
