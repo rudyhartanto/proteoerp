@@ -1170,56 +1170,143 @@ class Rivc extends Controller {
 		$salida = '';
 		$hay = intval($this->datasis->dameval('SELECT COUNT(*) AS cana FROM rivc WHERE anulado="N" AND id='.$id));
 		if ( $hay != 1 ) return;
-		$transac = $this->datasis->dameval('SELECT transac FROM rivc WHERE anulado="N" AND id='.$id);
 
-		$mSQL = '
-		SELECT a.numero FROM itrivc a LEFT JOIN smov b ON a.transac=b.transac AND a.numero=b.num_ref
-		WHERE a.transac='.$transac.' AND b.cod_cli IS NULL';
-		$query = $this->db->query($mSQL);
-		if ( $query->num_rows() > 0){
-			foreach( $query->result_array() as  $row ) {
-				$numero = $row['numero'];
+		$rrow = $this->datasis->damerow('SELECT transac,cod_cli,reiva FROM rivc WHERE anulado="N" AND id='.$id);
+		if(!empty($rrow)){
+			$pago      = 0;
+			$reiva     = floatval($rrow['reiva']);
+			$dbtransac = $this->db->escape($rrow['transac']);
+			$dbcod_cli = $this->db->escape($rrow['cod_cli']);
+			$salida    = '';
 
-
-				$mnumnc = 'I'.$this->datasis->fprox_numero('ncint',-1);
-				$mSQL = "
-				INSERT INTO smov (cod_cli,nombre,tipo_doc,numero,fecha,monto,impuesto,abonos,vence,tipo_ref,num_ref,observa1,codigo,descrip,usuario,estampa,hora,transac,nroriva,emiriva,fecdoc )
-				SELECT b.cod_cli, b.nombre, 'NC' tipo_doc, '${mnumnc}' numero, b.fecha, a.reiva monto, 0 impuesto,
-				0 abonos, b.fecha vence, if(a.tipo_doc='F','FC','NC') tipo_ref, a.numero num_ref,
-				CONCAT('APLICACION DE RET/IVA A ',if(a.tipo_doc='F','FC','NC'),a.numero) observa1, 'NOCON' codigo, 'NOTA DE CONTABILIDAD' descrip, a.usuario, a.estampa, a.hora, a.transac, CONCAT(b.periodo,b.nrocomp) nroriva, b.emision emiriva, a.fecha fecdoc
-				FROM itrivc a
-				JOIN rivc b ON a.transac=b.transac
-				WHERE a.transac='${transac}' AND a.numero='${numero}'";
-				$ban = $this->db->simple_query($mSQL);
-				if($ban==false){ memowrite($mSQL,'RIVCFIXNC'); }
-				$idi = $this->db->insert_id();
-
-				// Arregla el itccli
-				$mSQL = "SELECT COUNT(*) FROM itccli WHERE transac='${transac}' AND numccli='${numero}' ";
-				$hay  = $this->datasis->dameval($mSQL);
-				if ( $hay == 1 && $idi > 0 ){
-					$mSQL = "UPDATE itccli SET numero='${mnumnc}' WHERE transac='${transac}' AND numccli='${numero}' ";
-					$ban = $this->db->simple_query($mSQL);
-					if($ban==false){ memowrite($mSQL,'RIVCFIXCC'); }
-					$mSQL = "UPDATE smov SET abonos=monto WHERE id=${idi} ";
-					$ban = $this->db->simple_query($mSQL);
+			//Revisa los reintegros por caja
+			$mSQL = "SELECT codbanc, numero, monto FROM bmov WHERE transac=${dbtransac} AND codcp=${dbcod_cli}";
+			$query = $this->db->query($mSQL);
+			if($query->num_rows() > 0){
+				$salida .= '<br><table width=\'100%\' border=\'1\'>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td colspan=\'3\'>Reintegro por caja</td></tr>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td>Caja</td><td align=\'center\'>N&uacute;mero</td><td align=\'center\'>Monto</td></tr>';
+				foreach ($query->result_array() as $row){
+					$salida .= '<tr>';
+					$salida .= '<td>'.$row['codbanc'].'</td>';
+					$salida .= '<td>'.$row['numero'].'</td>';
+					$salida .= '<td align=\'right\'>'.nformat($row['monto']).'</td>';
+					$salida .= '</tr>';
+					$pago += floatval($row['monto']);
 				}
-
-				$mnumnd = 'I'.$this->datasis->fprox_numero('ndint',-1);
-				$mSQL = "
-				INSERT INTO smov (cod_cli,nombre,tipo_doc,numero,fecha,monto,impuesto,abonos,vence,tipo_ref,num_ref,observa1,codigo,descrip,usuario,estampa,hora,transac,nroriva,emiriva,fecdoc )
-				SELECT c.cliente,  c.nombre, 'ND' tipo_doc, '${mnumnd}' numero, b.fecha, a.reiva monto, 0 impuesto,
-				0 abonos, LAST_DAY(b.fecha) vence, if(a.tipo_doc='F','FC','NC') tipo_ref, a.numero num_ref,
-				CONCAT('RET/IVA DE ', c.cliente,' A DOC. ',IF(a.tipo_doc='F','FC','NC'),a.numero)       observa1, 'NOCON' codigo, 'NOTA DE CONTABILIDAD' descrip, a.usuario, a.estampa, a.hora, a.transac, CONCAT(b.periodo,b.nrocomp) nroriva, b.emision emiriva, NULL fecdoc
-				FROM itrivc a
-				JOIN rivc b ON a.transac=b.transac
-				JOIN scli c ON c.cliente='REIVA'
-				WHERE a.transac='${transac}' AND a.numero='${numero}'";
-				$ban=$this->db->simple_query($mSQL);
-				if($ban==false){ memowrite($mSQL,'RIVCFIXND'); }
-				$salida = 'Arreglado';
 			}
+			$salida .= '</table>';
+
+			//Revisa si tiene anticipos
+			$mSQL = "SELECT tipo_doc, numero, monto FROM smov WHERE transac=${dbtransac} AND cod_cli=${dbcod_cli} AND tipo_doc='AN'";
+			$query = $this->db->query($mSQL);
+			if($query->num_rows() > 0){
+				$salida .= '<br><table width=\'100%\' border=\'1\'>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td colspan=\'3\'>Anticipo</td></tr>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td>Tipo</td><td align=\'center\'>N&uacute;mero</td><td align=\'center\'>Monto</td></tr>';
+				foreach ($query->result_array() as $row){
+					$salida .= '<tr>';
+					$salida .= '<td>'.$row['tipo_doc'].'</td>';
+					$salida .= '<td>'.$row['numero'].'</td>';
+					$salida .= '<td align=\'right\'>'.nformat($row['monto']).'</td>';
+					$salida .= '</tr>';
+					$pago += floatval($row['monto']);
+				}
+			}
+			$salida .= '</table>';
+
+			//Revisa si tiene CxP
+			$mSQL = "SELECT tipo_doc, numero, monto FROM sprm WHERE transac=${dbtransac} AND cod_prv='REINT' AND tipo_doc='ND'";
+			$query = $this->db->query($mSQL);
+			if($query->num_rows() > 0){
+				$salida .= '<br><table width=\'100%\' border=\'1\'>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td colspan=\'3\'>Enviado a CxP</td></tr>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td>Tipo</td><td align=\'center\'>N&uacute;mero</td><td align=\'center\'>Monto</td></tr>';
+				foreach ($query->result_array() as $row){
+					$salida .= '<tr>';
+					$salida .= '<td>'.$row['tipo_doc'].'</td>';
+					$salida .= '<td>'.$row['numero'].'</td>';
+					$salida .= '<td align=\'right\'>'.nformat($row['monto']).'</td>';
+					$salida .= '</tr>';
+					$pago += floatval($row['monto']);
+				}
+			}
+			$salida .= '</table>';
+
+			//Efectos cruzados
+			$mSQL = "SELECT CONCAT('<b>',tipoccli,'</b>',numccli) AS apl, CONCAT('<b>',tipo_doc,'</b>',numero) AS efe, abono AS monto FROM itccli WHERE transac=${dbtransac} AND cod_cli=${dbcod_cli}";
+			$query = $this->db->query($mSQL);
+			if($query->num_rows() > 0){
+				$salida .= '<br><table width=\'100%\' border=\'1\'>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td colspan=\'3\'>Efectos cruzados</td></tr>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td>N&uacute;mero</td><td align=\'center\'>N&uacute;mero</td><td align=\'center\'>Monto</td></tr>';
+				foreach ($query->result_array() as $row){
+					$salida .= '<tr>';
+					$salida .= '<td>'.$row['apl'].'</td>';
+					$salida .= '<td>'.$row['efe'].'</td>';
+					$salida .= '<td align=\'right\'>'.nformat($row['monto']).'</td>';
+					$salida .= '</tr>';
+				}
+			}
+			$salida .= '</table>';
+
+			//Arregla posibles problemas de incongruencias
+			if($this->secu->essuper()){
+				$mSQL = 'SELECT a.numero FROM itrivc a
+				JOIN rivc   AS c ON a.idrivc = c.id
+				LEFT JOIN smov b ON a.transac=b.transac AND a.numero=b.num_ref
+				WHERE a.transac='.$dbtransac.' AND b.cod_cli IS NULL AND c.anulado=\'N\'';
+				$query = $this->db->query($mSQL);
+				if($query->num_rows() > 0){
+					foreach( $query->result_array() as  $row ) {
+						$numero = $row['numero'];
+
+						if($pago==0){
+							$mnumnc = 'I'.$this->datasis->fprox_numero('ncint',-1);
+							$mSQL = "
+							INSERT INTO smov (cod_cli,nombre,tipo_doc,numero,fecha,monto,impuesto,abonos,vence,tipo_ref,num_ref,observa1,codigo,descrip,usuario,estampa,hora,transac,nroriva,emiriva,fecdoc )
+							SELECT b.cod_cli, b.nombre, 'NC' tipo_doc, '${mnumnc}' numero, b.fecha, a.reiva monto, 0 impuesto,
+							0 abonos, b.fecha vence, if(a.tipo_doc='F','FC','NC') tipo_ref, a.numero num_ref,
+							CONCAT('APLICACION DE RET/IVA A ',if(a.tipo_doc='F','FC','NC'),a.numero) observa1, 'NOCON' codigo, 'NOTA DE CONTABILIDAD' descrip, a.usuario, a.estampa, a.hora, a.transac, CONCAT(b.periodo,b.nrocomp) nroriva, b.emision emiriva, a.fecha fecdoc
+							FROM itrivc a
+							JOIN rivc b ON a.transac=b.transac
+							WHERE a.transac=${dbtransac} AND a.numero='${numero}'";
+							$ban = $this->db->simple_query($mSQL);
+							if($ban==false){ memowrite($mSQL,'RIVCFIXNC'); }
+							$idi = $this->db->insert_id();
+
+							// Arregla el itccli
+							$mSQL = "SELECT COUNT(*) AS cana FROM itccli WHERE transac=${dbtransac} AND numccli='${numero}' ";
+							$hay  = intval($this->datasis->dameval($mSQL));
+							if($hay == 1 && $idi > 0){
+								$mSQL = "UPDATE itccli SET numero='${mnumnc}' WHERE transac=${dbtransac} AND numccli='${numero}' ";
+								$ban = $this->db->simple_query($mSQL);
+								if($ban==false){ memowrite($mSQL,'RIVCFIXCC'); }
+								$mSQL = "UPDATE smov SET abonos=monto WHERE id=${idi} ";
+								$ban = $this->db->simple_query($mSQL);
+							}
+						}
+
+						$mnumnd = 'I'.$this->datasis->fprox_numero('ndint',-1);
+						$mSQL = "
+						INSERT INTO smov (cod_cli,nombre,tipo_doc,numero,fecha,monto,impuesto,abonos,vence,tipo_ref,num_ref,observa1,codigo,descrip,usuario,estampa,hora,transac,nroriva,emiriva,fecdoc )
+						SELECT c.cliente,  c.nombre, 'ND' tipo_doc, '${mnumnd}' numero, b.fecha, a.reiva monto, 0 impuesto,
+						0 abonos, LAST_DAY(b.fecha) vence, if(a.tipo_doc='F','FC','NC') tipo_ref, a.numero num_ref,
+						CONCAT('RET/IVA DE ', c.cliente,' A DOC. ',IF(a.tipo_doc='F','FC','NC'),a.numero)       observa1, 'NOCON' codigo, 'NOTA DE CONTABILIDAD' descrip, a.usuario, a.estampa, a.hora, a.transac, CONCAT(b.periodo,b.nrocomp) nroriva, b.emision emiriva, NULL fecdoc
+						FROM itrivc a
+						JOIN rivc b ON a.transac=b.transac
+						JOIN scli c ON c.cliente='REIVA'
+						WHERE a.transac=${dbtransac} AND a.numero='${numero}'";
+						$ban=$this->db->simple_query($mSQL);
+						if($ban==false){ memowrite($mSQL,'RIVCFIXND'); }
+						$salida .= 'Arreglado';
+					}
+				}
+				//fin del arreglo de incongruencias
+			}
+
 		}
+
 		echo $salida;
 	}
 
