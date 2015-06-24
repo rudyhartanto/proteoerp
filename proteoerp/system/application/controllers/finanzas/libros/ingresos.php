@@ -118,12 +118,12 @@ class ingresos{
 			JOIN scli AS f ON e.cod_cli=f.cliente
 			WHERE b.fecha BETWEEN ${fdesde} AND ${fhasta} AND b.cod_cli='REIVA'
 			UNION ALL
-			SELECT b.fecha fecha, a.numero numero, d.nombre nombre, d.rifci rifci, d.cliente cod_cli, a.numero afecta, a.fecha fafecta, IF(a.tipo_doc IN ('F','ND'),1,-1)*a.reiva reteiva, a.transac transac, CONCAT(b.periodo, b.nrocomp) nroriva, b.emision emiriva, b.fecha recriva, a.nfiscal nfiscal
+			SELECT b.fecha fecha, a.numero numero, d.nombre nombre, d.rifci rifci, d.cliente cod_cli, a.numero afecta, a.fecha fafecta, IF(c.tipo_doc='NC',-1,1)*a.reiva reteiva, a.transac transac, CONCAT(b.periodo, b.nrocomp) nroriva, b.emision emiriva, b.fecha recriva, a.nfiscal nfiscal
 			FROM  itrivc a
 			JOIN rivc b ON a.idrivc = b.id
-			#JOIN smov c ON b.transac = c.transac AND c.cod_cli='REIVA'
-			JOIN scli d ON  b.cod_cli = d.cliente
-			WHERE b.fecha BETWEEN ${fdesde} AND ${fhasta}
+			JOIN smov c ON b.transac = c.transac  AND a.numero=c.num_ref AND c.cod_cli='REIVA'
+			JOIN scli d ON b.cod_cli = d.cliente
+			WHERE b.fecha BETWEEN ${fdesde} AND ${fhasta} AND b.anulado<>'S'
 			UNION ALL
 			SELECT a.f_factura fecha, a.numero, IF(LENGTH(TRIM(c.nomfis))>0,c.nomfis,c.nombre) AS nombre, c.rifci, a.cod_cli, a.numero AS afecta, a.fecha AS fafecta, a.monto reteiva, a.transac, a.num_ref nroiva, a.fecha emiriva, a.fecha recriva, d.nfiscal
 			FROM sfpa a
