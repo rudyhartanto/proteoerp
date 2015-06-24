@@ -1263,7 +1263,9 @@ class Edrec extends Controller {
 				GROUP BY a.aplicacion, d.codigo, a.partida ) aa
 				HAVING codigo<>'COMADM'
 				UNION ALL
-				SELECT '000002' numero, c.departa tipo, c.codigo, c.descrip, c.importe total, a.lectura alicuota, a.monto cuota,  
+				SELECT '000002' numero, c.departa tipo, c.codigo, c.descrip, 
+				(SELECT sum(monto) FROM edgasmed WHERE EXTRACT(YEAR_MONTH FROM edgasmed.fecha) = ${anomes} ) total, 
+				a.lectura alicuota, a.monto cuota,  
 				curdate() fecha, '321' usuario, curdate() estampa, curtime() hora, 0 transac, 0 id, 0 id_edrc, 'XXXX' grupo
 				FROM edgasmed a 
 				JOIN edinmue  b ON a.inmueble = b.id

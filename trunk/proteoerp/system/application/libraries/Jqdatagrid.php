@@ -2062,8 +2062,8 @@ class Jqdatagrid
 						try{
 							var json = JSON.parse(data);
 							if (json.status == "A"){
-								apprise("Registro eliminado");
-								jQuery("'.$ngrid.'").trigger("reloadGrid");
+								//apprise("Registro eliminado");
+								$("'.$ngrid.'").trigger("reloadGrid");
 							}else{
 								apprise("Registro no se puede eliminado");
 							}

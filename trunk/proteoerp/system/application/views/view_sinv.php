@@ -1657,7 +1657,7 @@ if(isset($form->error_string))echo '<div class="alert">'.$form->error_string.'</
 	<table width='100%'>
 	<tr>
   		<td valign="top">
-			<fieldset  style='border: 2px outset #FEB404;background: #FFFCE8;'>
+			<fieldset  style='border: 1px outset #FEB404;background: #FFFCE8;'>
 			<legend class="titulofieldset" >Existencias</legend>
 			<table width='100%' border='0' cellpadding='0' cellspacing='0' >
 				<tr>
@@ -1688,7 +1688,7 @@ if(isset($form->error_string))echo '<div class="alert">'.$form->error_string.'</
 			</fieldset>
 		</td>
   		<td valign="top">
-			<fieldset  style='border: 2px outset #FEB404;background: #FFFCE8;'>
+			<fieldset  style='border: 1px outset #FEB404;background: #FFFCE8;'>
 			<legend class="titulofieldset">Ubicaciones</legend>
 			<div  style='height:110px;overflow:auto;'>
 			<table id='simpletabla' width='100%' border='0' cellpadding='0' cellspacing='0' >
@@ -1723,9 +1723,24 @@ if(isset($form->error_string))echo '<div class="alert">'.$form->error_string.'</
 			</fieldset>
 		</td>
 		<?php } ?>
-
 	</tr>
 	</table>
+	</fieldset>
+
+	<fieldset  style='border: 1px outset #FEB404;background: #FFFFBF;'>
+	<table width='100%'>
+		<tr>
+			<td class="littletableheaderc" >Cantidad en exhibicion</td>
+			<td class="littletableheaderc" ><?php echo $form->exhimin->label;  ?></td>
+			<td class="littletablerow"    ><?php  echo $form->exhimin->output; ?></td>
+			<td class="littletableheaderc" ><?php echo $form->exhimax->label; ?></td>
+			<td class="littletablerow"    ><?php  echo $form->exhimax->output;?></td>
+			<td class="littletableheaderc" ><?php echo $form->exhalma->label; ?></td>
+			<td class="littletablerow"    ><?php  echo $form->exhalma->output;?></td>
+		</tr>
+	</table>
+	</fieldset>
+
 </div>
 
 <?php if ( $this->datasis->traevalor('SUNDECOP') == 'S') { ?>
@@ -1734,7 +1749,7 @@ if(isset($form->error_string))echo '<div class="alert">'.$form->error_string.'</
 	<table width='100%'>
 	<tr>
 		<td valign='top'>
-			<fieldset  style='border: 2px outset #FEB404;background: #FFFCE8;'>
+			<fieldset  style='border: 1px outset #FEB404;background: #FFFCE8;'>
 			<legend class="titulofieldset" >Ventas</legend>
 			<table width='100%' >
 				<tr>
@@ -1813,7 +1828,7 @@ if(isset($form->error_string))echo '<div class="alert">'.$form->error_string.'</
 $query = $this->db->query("SELECT CONCAT(codigo,' ', descrip,' ',fracci) producto, id FROM sinv WHERE MID(tipo,1,1)='F' AND enlace=".$this->db->escape($form->_dataobject->get('codigo')));
 if ($query->num_rows()>0 ) {
 ?>
-	<fieldset style='border: 2px outset #8A0808;background: #FFFBE9;'>
+	<fieldset style='border: 1px outset #8A0808;background: #FFFBE9;'>
 	<legend class="titulofieldset" >Productos Derivados</legend>
 	<table width='100%'>
 	<tr>

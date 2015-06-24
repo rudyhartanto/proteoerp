@@ -948,16 +948,10 @@ class Edgasto extends Controller {
 		$edit->longi->insertValue = $i;
 		$edit->longi->type='inputhidden';
 
-/*
-		$edit->estampa = new autoUpdateField('estampa' ,date('Ymd'), date('Ymd'));
-		$edit->hora    = new autoUpdateField('hora',date('H:i:s'), date('H:i:s'));
-		$edit->usuario = new autoUpdateField('usuario',$this->session->userdata('usuario'),$this->session->userdata('usuario'));
-*/
-
 		$edit->build_form();
 
 		if($edit->on_success()){
-			// Guarda la vaina
+			// Guarda
 			$longi   = $this->input->post('longi');
 			$anomes  = $this->input->post('anomes');
 			$gasto   = $this->input->post('gasto');

@@ -52,8 +52,10 @@ class Stra extends Controller {
 		$grid->wbotonadd(array('id'=>'brma'  ,'img'=>'images/caja-cerrada.png','alt'=> 'Movimiento por RMA', 'label'=>'Traslado por RMA'));
 		$grid->wbotonadd(array('id'=>'bprodu','img'=>'images/caja-cerrada.png','alt'=> 'Cargar Produccion', 'label'=>'Cargar Produccion'));
 		if($this->datasis->sidapuede('STRA','INCLUIR%' )){
-			$grid->wbotonadd(array('id'=>'btmas' ,'img'=>'images/caja-cerrada.png','alt'=> 'Transf.Lote'        , 'label'=>'Transf.Lote'));
+			$grid->wbotonadd(array('id'=>'btmas' ,'img'=>'images/caja-cerrada.png','alt'=> 'Transferencias por Lotes', 'label'=>'Transf X Lote'));
+			$grid->wbotonadd(array('id'=>'bexhi' ,'img'=>'images/caja-cerrada.png','alt'=> 'Reabastecer Exhibidores',  'label'=>'Exhibidores'));
 		}
+
 
 		$WestPanel = $grid->deploywestp();
 
@@ -235,6 +237,18 @@ class Stra extends Controller {
 				$("#fmass").dialog( "open" );
 			});
 		});';
+
+		$bodyscript .= '
+		$("#bexhi").click( function(){
+			$.post("'.site_url('inventario/stra/exhibtra/create').'",
+			function(data){
+				$("#fmass").html(data);
+				$("#fmass").dialog( { title:"Reposicion de Exhibidores", width: 790, height: 500 } );
+				$("#fmass").dialog( "open" );
+			});
+		});';
+
+
 
 		$bodyscript .= '
 		$("#boton1").click( function(){
@@ -1796,20 +1810,6 @@ class Stra extends Controller {
 						$this->dataedit();
 						$sal1 = ob_get_contents();
 					@ob_end_clean();
-					/*
-					$jsal1=json_decode($sal1);
-					if($jsal1->status=='B'){
-						$rt['status']  = 'B';
-						$rt['mensaje'] = 'Problema al descontar: '.$jsal->mensaje;
-					}else{
-						$data = array('status' => 'I');
-						$this->db->where('id', $id_prdo);
-						$this->db->update('prdo', $data);
-						$rt['status']  = 'A';
-						$rt['mensaje'] = 'Ingredientes descontados: '.$jsal->mensaje;
-					}
-					echo json_encode($rt);
-					*/
 				}
 			}
 			echo json_encode($rt);;
