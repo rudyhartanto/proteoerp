@@ -1287,7 +1287,7 @@ class Pers extends Controller {
 		$divi=$edit->getval('divi');
 		if($divi !== false){
 			$dbdivi=$this->db->escape($divi);
-			$edit->depa->options("SELECT departa,depadesc FROM depa where division=${dbdivi} ORDER BY division");
+			$edit->depa->options("SELECT departa,depadesc FROM depa WHERE division=${dbdivi} ORDER BY division");
 		}else{
 			$edit->depa->option('','Seleccione un Division');
 		}
