@@ -43,8 +43,13 @@ class Spre extends Controller {
 
 		//Botones Panel Izq
 		$grid->wbotonadd(array('id'=>'boton1',  'img'=>'assets/default/images/print.png',   'alt' => 'Reimprimir',      'label'=>'Reimprimir'));
-		$grid->wbotonadd(array('id'=>'bffact',  'img'=>'images/star.png',                   'alt' => 'Facturar',        'label'=>'Facturar'));
-		$grid->wbotonadd(array('id'=>'bsnte',   'img'=>'images/star.png',                   'alt' => 'Nota de Entrega', 'label'=>'N.Entrega'));
+
+		if($this->datasis->sidapuede('SFAC','INCLUIR%' ))
+			$grid->wbotonadd(array('id'=>'bffact',  'img'=>'images/star.png',                   'alt' => 'Facturar',        'label'=>'Facturar'));
+
+		if($this->datasis->sidapuede('SNTE','INCLUIR%' ))
+			$grid->wbotonadd(array('id'=>'bsnte',   'img'=>'images/star.png',                   'alt' => 'Nota de Entrega', 'label'=>'N.Entrega'));
+
 		$grid->wbotonadd(array('id'=>'bcorreo', 'img'=>'assets/default/images/mail_btn.png','alt' => 'Notificacion',    'label'=>'Notificar por email'));
 
 		$WestPanel = $grid->deploywestp();

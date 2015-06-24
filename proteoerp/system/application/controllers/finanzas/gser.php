@@ -1180,7 +1180,7 @@ class gser extends Controller {
 						return false;
 					}
 
-					if($row['tipo_doc']!='FC'){
+					if($row['tipo_doc'] != 'FC'){
 						echo 'Solo se le pueden cambiar los valores a las facturas';
 						return false;
 					}
@@ -2949,9 +2949,6 @@ class gser extends Controller {
 			$sp_fecha=date('Ymd');
 
 			$this->datasis->actusal($cargo,$sp_fecha,$totneto);
-			//$sql='CALL sp_actusal('.$this->db->escape($cargo).",'$sp_fecha',$totneto)";
-			//$ban=$this->db->simple_query($sql);
-			//if($ban==false){ memowrite($sql,'gser');}
 		}
 	}
 

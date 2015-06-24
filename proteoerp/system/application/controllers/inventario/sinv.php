@@ -3228,6 +3228,26 @@ class Sinv extends Controller {
 		$edit->exdes->css_class='inputonlynum';
 		$edit->exdes->style='background:#F5F6CE;';
 
+		// Exhibidores
+		$edit->exhimin = new inputField('M&iacute;nimo', 'exhimin');
+		$edit->exhimin->size=10;
+		$edit->exhimin->maxlength=12;
+		$edit->exhimin->css_class='inputonlynum';
+		$edit->exhimin->rule='numeric|callback_positivo|trim';
+		$edit->exhimin->insertValue = '0';
+
+		$edit->exhimax = new inputField('M&aacute;ximo', 'exhimax');
+		$edit->exhimax->size=10;
+		$edit->exhimax->maxlength=12;
+		$edit->exhimax->css_class='inputonlynum';
+		$edit->exhimax->rule='numeric|callback_positivo|trim';
+		$edit->exhimax->insertValue = '0';
+
+		$edit->exhalma = new  dropdownField ('Exhibidor', 'exhalma');
+		$edit->exhalma->option('','Seleccione');
+		$edit->exhalma->options('SELECT ubica, CONCAT(ubica,\' \',ubides) nombre FROM caub WHERE gasto="N" AND tipo="S" ORDER BY ubica');
+		$edit->exhalma->style='width:145px;';
+
 		$edit->fechav = new dateField('&Uacute;ltima Venta','fechav','d/m/Y');
 		$edit->fechav->readonly = true;
 		$edit->fechav->size=10;
@@ -6540,45 +6560,25 @@ class Sinv extends Controller {
 			$this->db->simple_query('ALTER TABLE formatos ADD COLUMN tcpdf TEXT NULL COMMENT "Formas TCPDF"');
 		};
 
-		if(!in_array('url',$campos)) {
-			$this->db->simple_query('ALTER TABLE sinv ADD COLUMN url VARCHAR(200) NULL COMMENT "Pagina Web"');
-		};
-
-		if(!in_array('ficha',$campos)) {
-			$this->db->simple_query('ALTER TABLE sinv ADD COLUMN ficha TEXT NULL COMMENT "Ficha Tecnica"');
-		};
-
-		if(!in_array('maxven',$campos)) {
-			$this->db->simple_query("ALTER TABLE sinv ADD COLUMN `maxven` INT(10) NULL DEFAULT '0' COMMENT 'Maximo de venta', ADD COLUMN `minven` INT(10) NULL DEFAULT '0' COMMENT 'Minimo de venta' AFTER `maxven`");
-		};
-
-		if(!in_array('premin',$campos)) {
-			$mSQL="ALTER TABLE sinv ADD COLUMN premin CHAR(1) NULL DEFAULT '0' COMMENT 'Precio Minimo de Venta' ";
-			$this->db->query($mSQL);
-		}
-
-		if(!in_array('vnega',$campos)) {
-			$mSQL="ALTER TABLE sinv ADD COLUMN vnega CHAR(1) NULL DEFAULT 'S' COMMENT 'Permitir Venta Negativa' ";
-			$this->db->query($mSQL);
-		}
-
-		if(!in_array('etiqueta',$campos)) {
-			$mSQL="ALTER TABLE sinv ADD COLUMN etiqueta CHAR(1) NULL DEFAULT 'N' COMMENT 'Emitir Etiqueta' ";
-			$this->db->query($mSQL);
-		}
+		if(!in_array('url',     $campos)) $this->db->query('ALTER TABLE sinv ADD COLUMN url    VARCHAR(200) NULL COMMENT "Pagina Web"');
+		if(!in_array('ficha',   $campos)) $this->db->query('ALTER TABLE sinv ADD COLUMN ficha  TEXT    NULL COMMENT "Ficha Tecnica"');
+		if(!in_array('maxven',  $campos)) $this->db->query("ALTER TABLE sinv ADD COLUMN maxven INT(10) NULL DEFAULT '0' COMMENT 'Maximo de venta', ADD COLUMN `minven` INT(10) NULL DEFAULT '0' COMMENT 'Minimo de venta' AFTER `maxven`");
+		if(!in_array('premin',  $campos)) $this->db->query("ALTER TABLE sinv ADD COLUMN premin CHAR(1) NULL DEFAULT '0' COMMENT 'Precio Minimo de Venta' ");
+		if(!in_array('vnega',   $campos)) $this->db->query("ALTER TABLE sinv ADD COLUMN vnega CHAR(1)  NULL DEFAULT 'S' COMMENT 'Permitir Venta Negativa' ");
+		if(!in_array('etiqueta',$campos)) $this->db->query("ALTER TABLE sinv ADD COLUMN etiqueta CHAR(1) NULL DEFAULT 'N' COMMENT 'Emitir Etiqueta' ");
 
 
 		if ( $this->datasis->traevalor('SUNDECOP') == 'S') {
-			if (!in_array('mpps',       $campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `mpps`        VARCHAR(20) NULL  COMMENT 'Numero de Ministerior de Salud'");
-			if (!in_array('cpe',        $campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `cpe`         VARCHAR(20) NULL  COMMENT 'Registro de CPE'");
-			if (!in_array('dcomercial', $campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `dcomercial`  INT(6)      NULL  COMMENT 'Destino Comercial'");
-			if (!in_array('rubro',      $campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `rubro`       INT(6)      NULL  COMMENT 'Rubro'");
-			if (!in_array('subrubro',   $campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `subrubro`    INT(6)      NULL  COMMENT 'Sub Rubro'");
-			if (!in_array('cunidad',    $campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `cunidad`     INT(6)      NULL  COMMENT 'Unidad de Medida'");
-			if (!in_array('cmarca',     $campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `cmarca`      INT(6)      NULL  COMMENT 'Marca'");
-			if (!in_array('cmaterial',  $campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `cmaterial`   INT(6)      NULL  COMMENT 'Material'");
-			if (!in_array('cpresenta',  $campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `cforma`      INT(6)      NULL  COMMENT 'Forma o Presentacion'");
-			if (!in_array('cpactivo',   $campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `cpactivo`    INT(6)      NULL  COMMENT 'Principio Activo'");
+			if (!in_array('mpps',       $campos)) $this->db->query("ALTER TABLE `sinv` ADD COLUMN `mpps`        VARCHAR(20) NULL  COMMENT 'Numero de Ministerior de Salud'");
+			if (!in_array('cpe',        $campos)) $this->db->query("ALTER TABLE `sinv` ADD COLUMN `cpe`         VARCHAR(20) NULL  COMMENT 'Registro de CPE'");
+			if (!in_array('dcomercial', $campos)) $this->db->query("ALTER TABLE `sinv` ADD COLUMN `dcomercial`  INT(6)      NULL  COMMENT 'Destino Comercial'");
+			if (!in_array('rubro',      $campos)) $this->db->query("ALTER TABLE `sinv` ADD COLUMN `rubro`       INT(6)      NULL  COMMENT 'Rubro'");
+			if (!in_array('subrubro',   $campos)) $this->db->query("ALTER TABLE `sinv` ADD COLUMN `subrubro`    INT(6)      NULL  COMMENT 'Sub Rubro'");
+			if (!in_array('cunidad',    $campos)) $this->db->query("ALTER TABLE `sinv` ADD COLUMN `cunidad`     INT(6)      NULL  COMMENT 'Unidad de Medida'");
+			if (!in_array('cmarca',     $campos)) $this->db->query("ALTER TABLE `sinv` ADD COLUMN `cmarca`      INT(6)      NULL  COMMENT 'Marca'");
+			if (!in_array('cmaterial',  $campos)) $this->db->query("ALTER TABLE `sinv` ADD COLUMN `cmaterial`   INT(6)      NULL  COMMENT 'Material'");
+			if (!in_array('cpresenta',  $campos)) $this->db->query("ALTER TABLE `sinv` ADD COLUMN `cforma`      INT(6)      NULL  COMMENT 'Forma o Presentacion'");
+			if (!in_array('cpactivo',   $campos)) $this->db->query("ALTER TABLE `sinv` ADD COLUMN `cpactivo`    INT(6)      NULL  COMMENT 'Principio Activo'");
 		}
 
 		// Arregla Otros Menus
@@ -6664,6 +6664,11 @@ class Sinv extends Controller {
 		if (!in_array('sada'       ,$campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `sada`        INT(11)       NULL DEFAULT NULL");
 		if (!in_array('color'      ,$campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `color`       VARCHAR(10)   NULL DEFAULT ''");
 
+		// Exhibidor
+		if (!in_array('exhimax'    ,$campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `exhimax`      INT(5)       NULL DEFAULT '0'");
+		if (!in_array('exhimin'    ,$campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `exhimin`      INT(5)       NULL DEFAULT '0'");
+		if (!in_array('exhalma'    ,$campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `exhalma`      VARCHAR(4)   NULL DEFAULT '' ");
+
 		if (!in_array('pesoneto'    ,$campos)){
 			$this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `pesoneto`  DECIMAL(12,3) DEFAULT NULL COMMENT 'Peso neto del producto' AFTER `peso`");
 			$mSQL='UPDATE sinv SET pesoneto=peso';
@@ -6696,7 +6701,7 @@ class Sinv extends Controller {
 				`costo`    DECIMAL(17,2) NULL DEFAULT '0.00',
 				`ultimo`   DECIMAL(19,2) NULL DEFAULT '0.00',
 				`pond`     DECIMAL(19,2) NULL DEFAULT '0.00',
-				PRIMARY KEY (`id`)
+				PRIMARY KEY (id)
 			)
 			COLLATE='latin1_swedish_ci'
 			ENGINE=MyISAM";
