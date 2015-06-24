@@ -930,6 +930,9 @@ class Pretab extends Controller {
 	//
 	function nomina(){
 
+		$mSQL = "UPDATE prenom SET valor=ABS(valor) WHERE MID(concepto,1,1)='9'";
+		$this->db->query($mSQL);
+
 		$mreg     = $this->datasis->damereg("SELECT fecha, contrato, trabaja, fechap FROM prenom LIMIT 1");
 
 		$fecha      = $mreg['fecha'];
@@ -991,13 +994,13 @@ class Pretab extends Controller {
 		// GENERAR ITEMS GITSER
 		$mGSER = $this->datasis->fprox_numero('ngser');
 		$mSQL= "INSERT INTO gitser (fecha, numero, proveed, codigo, descrip, precio,   iva, importe, unidades, fraccion, almacen, departa, sucursal, usuario, estampa, transac)
-				SELECT fechap, '${mNOMINA}',ctaac, ctade,   CONCAT(RTRIM(b.descrip),' ',d.depadesc), SUM(valor), 0, SUM(valor), 0,        0,        '',     d.enlace, c.sucursal, ${dbusuario}, '${estampa}','${transac}'
+				SELECT fechap, '${mNOMINA}',ctaac, ctade,   CONCAT(RTRIM(b.descrip),' ',COALESCE(d.depadesc,'')), SUM(valor), 0, SUM(valor), 0,        0,        '',     d.enlace, c.sucursal, ${dbusuario}, '${estampa}','${transac}'
 				FROM prenom a
 				JOIN conc b ON a.concepto=b.concepto
 				JOIN pers c ON a.codigo=c.codigo
-				JOIN depa d ON c.depto=d.departa
+				LEFT JOIN depa d ON c.depto=d.departa
 				WHERE a.valor<>0 AND b.tipod='G'
-				GROUP BY ctade, d.enlace ";
+				GROUP BY ctaac,ctade, d.enlace ";
 		$this->db->query($mSQL);
 
 		// CALCULA LAS DEDUCCIONES
@@ -1018,7 +1021,7 @@ class Pretab extends Controller {
 
 		$mPRE   = floatval($this->datasis->dameval($mSQL));
 		$mDEDU  = abs($mDEDU)+$mPRE;
-		$mNOMI  = $this->datasis->dameval("SELECT ctaac FROM conc WHERE tipo='A' LIMIT 1");
+		$mNOMI  = $this->datasis->dameval("SELECT ctaac FROM conc WHERE tipo='A' AND ctaac IS NOT NULL AND ctaac<>'' LIMIT 1");
 		$dbmNOMI= $this->db->escape($mNOMI);
 
 		// GENERA EL ENCABEZADO DE GSER

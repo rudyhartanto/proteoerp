@@ -4971,9 +4971,9 @@ class Scst extends Controller {
 		$do->set('tasa'     , round($civagen,2));
 		$do->set('reducida' , round($civared,2));
 		$do->set('sobretasa', round($civaadi,2));
-		$do->set('apagar'   , round($gtotal ,2));
 
 		//Para la retencion de iva si aplica
+		$reteiva = 0;
 		$contribu= trim($this->datasis->traevalor('CONTRIBUYENTE'));
 		$rif     = trim($this->datasis->traevalor('RIF'));
 		if($contribu=='ESPECIAL' && strtoupper($rif[0])!='V'){
@@ -4985,13 +4985,16 @@ class Scst extends Controller {
 			}
 			if($tipo_doc=='FC'){
 				if($gtotal>2140){
-					$do->set('reteiva', round($iva*$por_rete,2));
+					$reteiva = round($iva*$por_rete,2);
+					$do->set('reteiva', $reteiva);
 				}
 			}
 		}else{
 			$do->set('reteiva', 0);
 		}
 		//fin de la retencion
+
+		$do->set('apagar'   , round($gtotal-$retemonto-$reteiva,2));
 
 		//Para picar la observacion en varios campos
 		$obs=$do->get('observa1');
@@ -5191,14 +5194,16 @@ class Scst extends Controller {
 	}
 
 	function _pre_cxp_update($do){
+		$retemonto = floatval($do->get('reten'));
+		$reteiva   = floatval($do->get('reteiva'));
 
-		$cexento = round($do->get('cexento'),2);
-		$cgenera = round($do->get('cgenera'),2);
-		$civagen = round($do->get('civagen'),2);
-		$creduci = round($do->get('creduci'),2);
-		$civared = round($do->get('civared'),2);
-		$cadicio = round($do->get('cadicio'),2);
-		$civaadi = round($do->get('civaadi'),2);
+		$cexento   = round($do->get('cexento'),2);
+		$cgenera   = round($do->get('cgenera'),2);
+		$civagen   = round($do->get('civagen'),2);
+		$creduci   = round($do->get('creduci'),2);
+		$civared   = round($do->get('civared'),2);
+		$cadicio   = round($do->get('cadicio'),2);
+		$civaadi   = round($do->get('civaadi'),2);
 
 		$iva  = $civagen+$civared+$civaadi;
 		$base = $cgenera+$creduci+$cadicio+$cexento;
@@ -5208,7 +5213,7 @@ class Scst extends Controller {
 		$do->set('cimpuesto',$iva );
 		$do->set('cstotal'  ,$base);
 		$do->set('ctotal'   ,$ctotal);
-		$do->set('apagar'   ,$ctotal);
+		$do->set('apagar'   ,$ctotal-$retemonto-$reteiva);
 		if($ctotal>0){
 			return true;
 		}else{

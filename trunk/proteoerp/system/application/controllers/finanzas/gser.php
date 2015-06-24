@@ -729,7 +729,7 @@ class gser extends Controller {
 			'editoptions'   => '{ size:30, maxlength: 8 }',
 		));
 
-/*
+
 		$grid->addField('anticipo');
 		$grid->label('Anticipo');
 		$grid->params(array(
@@ -744,7 +744,7 @@ class gser extends Controller {
 			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
 		));
 
-
+/*
 		$grid->addField('benefi');
 		$grid->label('Beneficiario');
 		$grid->params(array(

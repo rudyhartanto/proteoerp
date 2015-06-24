@@ -160,11 +160,11 @@ class Nomina extends Controller {
 									try{
 										var json = JSON.parse(data);
 										if (json.status == "A"){
-											$.prompt.getStateContent(\'state1\').find(\'#in_prome2\').text(json.mensaje);
+											$(\'#in_prome2\').text(json.mensaje);
 											$.prompt.goToState(\'state1\');
 											jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
 										}else{
-											$.prompt.getStateContent(\'state1\').find(\'#in_prome2\').text(json.mensaje);
+											$(\'#in_prome2\').text(json.mensaje);
 											$.prompt.goToState(\'state1\');
 										}
 									}catch(e){
@@ -343,7 +343,7 @@ class Nomina extends Controller {
 		$grid  = new $this->jqdatagrid;
 
 		$grid->addField('numero');
-		$grid->label('Numero');
+		$grid->label('N&uacute;mero');
 		$grid->params(array(
 			'search'        => 'true',
 			'editable'      => $editar,
@@ -415,7 +415,7 @@ class Nomina extends Controller {
 
 
 		$grid->addField('asigna');
-		$grid->label('Asigna');
+		$grid->label('Asignaciones');
 		$grid->params(array(
 			'search'        => 'true',
 			'editable'      => $editar,
@@ -430,7 +430,7 @@ class Nomina extends Controller {
 
 
 		$grid->addField('deduc');
-		$grid->label('Deduc');
+		$grid->label('Deduciones');
 		$grid->params(array(
 			'search'        => 'true',
 			'editable'      => $editar,
@@ -445,7 +445,7 @@ class Nomina extends Controller {
 
 
 		$grid->addField('presta');
-		$grid->label('Presta');
+		$grid->label('Prestamos');
 		$grid->params(array(
 			'search'        => 'true',
 			'editable'      => $editar,
@@ -474,7 +474,7 @@ class Nomina extends Controller {
 		));
 
 		$grid->addField('fechap');
-		$grid->label('Fechap');
+		$grid->label('Fec.Pago');
 		$grid->params(array(
 			'search'        => 'true',
 			'editable'      => $editar,
@@ -486,7 +486,7 @@ class Nomina extends Controller {
 		));
 
 		$grid->addField('trabaja');
-		$grid->label('Trabaja');
+		$grid->label('Trabajador');
 		$grid->params(array(
 			'search'        => 'true',
 			'editable'      => $editar,
@@ -522,7 +522,7 @@ class Nomina extends Controller {
 
 
 		$grid->addField('transac');
-		$grid->label('Transac');
+		$grid->label('Transaci&oacute;n');
 		$grid->params(array(
 			'search'        => 'true',
 			'editable'      => $editar,
@@ -540,6 +540,22 @@ class Nomina extends Controller {
 		$grid->setfilterToolbar(true);
 		$grid->setToolbar('false', '"top"');
 
+
+		$grid->setOnSelectRow('
+			function(id){
+				if(id){
+					var ret = jQuery(this).jqGrid(\'getRowData\',id);
+					var num = ret.numero;
+					$.ajax({
+						url: "'.site_url($this->url).'/tabla/"+encodeURIComponent(num),
+						success: function(msg){
+							$("#ladicional").html(msg);
+						}
+					});
+				}
+			}'
+		);
+
 		$grid->setFormOptionsE('closeAfterEdit:true, mtype: "POST", width: 520, height:300, closeOnEscape: true, top: 50, left:20, recreateForm:true, afterSubmit: function(a,b){if (a.responseText.length > 0) $.prompt(a.responseText); return [true, a ];},afterShowForm: function(frm){$("select").selectmenu({style:"popup"});} ');
 		$grid->setFormOptionsA('closeAfterAdd:true,  mtype: "POST", width: 520, height:300, closeOnEscape: true, top: 50, left:20, recreateForm:true, afterSubmit: function(a,b){if (a.responseText.length > 0) $.prompt(a.responseText); return [true, a ];},afterShowForm: function(frm){$("select").selectmenu({style:"popup"});} ');
 		$grid->setAfterSubmit("$('#respuesta').html('<span style=\'font-weight:bold; color:red;\'>'+a.responseText+'</span>'); return [true, a ];");
@@ -552,7 +568,7 @@ class Nomina extends Controller {
 		$grid->setRowNum(30);
 		$grid->setShrinkToFit('false');
 
-		$grid->setBarOptions("addfunc: nominaadd, editfunc: nominaedit, delfunc: nominadel, viewfunc: nominashow");
+		$grid->setBarOptions('addfunc: nominaadd, editfunc: nominaedit, delfunc: nominadel, viewfunc: nominashow');
 
 		#Set url
 		$grid->setUrlput(site_url($this->url.'setdata/'));
@@ -590,7 +606,6 @@ class Nomina extends Controller {
 		$oper   = $this->input->post('oper');
 		$id     = $this->input->post('id');
 		$data   = $_POST;
-		$mcodp  = "??????";
 		$check  = 0;
 
 		unset($data['oper']);
@@ -713,7 +728,7 @@ class Nomina extends Controller {
 		$mSQL  = "DELETE FROM nomina WHERE numero='${nomina}'";
 		$this->db->query($mSQL);
 
-		logusu('NOMI',"NOMINA ${nomina} REVERSADA");
+		logusu('nomi',"NOMINA ${nomina} REVERSADA");
 
 		$rt=array(
 			'status' =>'A',
@@ -786,15 +801,18 @@ class Nomina extends Controller {
 	//
 	function nomirege( $nomina ) {
 
-		$mNOMI = $this->datasis->dameval("SELECT ctaac FROM conc WHERE formula='XSUELDO' ");
+		$mNOMI  = $this->datasis->dameval("SELECT ctaac FROM conc WHERE tipo='A' AND ctaac IS NOT NULL AND ctaac<>'' LIMIT 1");
+		$dbmNOMI= $this->db->escape($mNOMI);
+
 		$dbnomina  = $this->db->escape($nomina);
 
 		//COLOCAR + LAS NOMINAS
 		$mSQL = "UPDATE nomina SET valor=ABS(valor) WHERE MID(concepto,1,1)='9' ";
 		$this->db->query($mSQL);
 
-		$mSQL = "SELECT COUNT(*) FROM nomina WHERE numero=${dbnomina}";
-		if($this->datasis->dameval($mSQL) == 0){
+		$mSQL = "SELECT COUNT(*) AS val FROM nomina WHERE numero=${dbnomina}";
+		$val  = intval($this->datasis->dameval($mSQL));
+		if($val == 0){
 			$rt=array(
 				'status' =>'B',
 				'mensaje'=>'NO EXISTE NINGUNA NOMINA CON EL NUMERO '.$nomina,
@@ -807,18 +825,10 @@ class Nomina extends Controller {
 		$mreg = $this->datasis->damereg("SELECT transac, fecha FROM nomina WHERE numero=${dbnomina}");
 		$mTRANSAC = $mreg['transac'];
 		$FECHA    = $mreg['fecha'];
-
-		$mSQL = "DELETE FROM gitser WHERE transac='".$mTRANSAC."' ";
-		$this->db->query($mSQL);
-
-		$mSQL= "INSERT INTO gitser (fecha, numero, proveed, codigo, descrip, precio, iva, importe, unidades, fraccion, almacen, departa, sucursal, usuario, estampa, transac)
-				SELECT a.fechap fecha, a.numero, b.ctaac proveed, b.ctade codigo,   CONCAT(RTRIM(b.descrip),' ',d.depadesc) descrip, SUM(a.valor), 0, SUM(a.valor), 0, 0, '', d.enlace, c.sucursal, a.usuario, a.estampa, a.transac
-				FROM nomina a JOIN conc b ON a.concepto=b.concepto JOIN pers c ON a.codigo=c.codigo JOIN depa d ON c.depto=d.departa
-				WHERE valor<>0 AND tipod='G' AND a.numero=${dbnomina} GROUP BY ctade, d.enlace ";
-		$this->db->query($mSQL);
+		$dbtransac= $this->db->escape($mTRANSAC);
 
 		//GENERA EL ENCABEZADO DE GSER
-		$mSQL = "DELETE FROM gser WHERE  transac='".$mTRANSAC."' ";
+		$mSQL = "DELETE FROM gser WHERE  transac=${dbtransac}";
 		$this->db->query($mSQL);
 
 		$mSQL= "INSERT INTO gser (fecha, numero, proveed, nombre, vence, totpre,  totiva, totbruto, reten, totneto, codb1, tipo1, cheque1, monto1, credito, anticipo, orden, tipo_doc, usuario, estampa, transac)
@@ -826,81 +836,98 @@ class Nomina extends Controller {
 					(
 						SELECT ABS(SUM(bbb.monto)) FROM (SELECT sum(d.valor) monto FROM nomina d JOIN conc e ON d.concepto=e.concepto JOIN pers f ON d.codigo=f.codigo WHERE d.valor<>0 AND e.tipod!='G' AND d.numero=${dbnomina}
 						UNION ALL
-						SELECT SUM(valor) monto FROM nomina g WHERE g.numero=${dbnomina} AND g.concepto='PRES' ) bbb)*(b.ctaac='".$mNOMI."'
+						SELECT SUM(valor) monto FROM nomina g WHERE g.numero=${dbnomina} AND g.concepto='PRES' ) bbb)*(b.ctaac=${dbmNOMI}
 					) monto1,
-					sum(a.valor)+(
-						SELECT SUM(valor) FROM (SELECT sum(valor) valor FROM nomina a JOIN conc b ON a.concepto=b.concepto JOIN pers c ON a.codigo=c.codigo WHERE valor<>0 AND tipod!='G' AND a.numero='".$nomina."'
+					SUM(a.valor)+(
+						SELECT SUM(valor) FROM (SELECT sum(valor) valor FROM nomina a JOIN conc b ON a.concepto=b.concepto JOIN pers c ON a.codigo=c.codigo WHERE valor<>0 AND tipod!='G' AND a.numero=${dbnomina}
 						UNION ALL
-						SELECT SUM(valor) FROM nomina a WHERE a.numero=${dbnomina} AND concepto='PRES' ) aaa)*(b.ctaac='".$mNOMI."') credito,
+						SELECT SUM(valor) FROM nomina a WHERE a.numero=${dbnomina} AND concepto='PRES' ) aaa)*(b.ctaac=${dbmNOMI}) credito,
 					0 anticipo, '', 'GA', a.usuario, a.estampa, a.transac FROM nomina a JOIN conc b ON a.concepto=b.concepto
 				JOIN pers c ON a.codigo=c.codigo JOIN sprv d ON ctaac=d.proveed
 				WHERE valor<>0 AND tipod='G' AND a.numero=${dbnomina} GROUP BY ctaac ";
 		$this->db->query($mSQL);
 
+		//GENERA EL DETALLE DE GSER
+		$mSQL = "DELETE FROM gitser WHERE transac=${dbtransac}";
+		$this->db->query($mSQL);
+
+		$mSQL= "INSERT INTO gitser (fecha, numero, proveed, codigo, descrip, precio,   iva, importe, unidades, fraccion, almacen, departa, sucursal, usuario, estampa, transac)
+				SELECT fechap, a.numero,ctaac, ctade,   CONCAT(RTRIM(b.descrip),' ',COALESCE(d.depadesc,'')), SUM(valor), 0, SUM(valor), 0,        0,        '',     d.enlace, c.sucursal, a.usuario, a.estampa, a.transac
+				FROM nomina a
+				JOIN conc b ON a.concepto=b.concepto
+				JOIN pers c ON a.codigo=c.codigo
+				LEFT JOIN depa d ON c.depto=d.departa
+				WHERE a.valor<>0 AND b.tipod='G' AND a.numero=${dbnomina}
+				GROUP BY ctaac,ctade, d.enlace ";
+
+		$this->db->query($mSQL);
+
 		//Borras los que empiezan por N
-		$mSQL = "DELETE FROM sprm WHERE transac='".$mTRANSAC."' AND numero='N".substr($nomina,1,7)."' ";
+		$mSQL = "DELETE FROM sprm WHERE transac=${dbtransac} AND numero='N".substr($nomina,1,7)."' ";
 		$this->db->query($mSQL);
 
 		// GENERA LAS ND EN PROVEEDORES SPRM
 		// debe revisar cuales esta
-		$mSQL= "SELECT b.ctaac, a.fechap fecha, sum(valor) valor, d.nombre, b.descrip
+		$mSQL= "SELECT b.ctaac, a.fechap fecha, SUM(valor) valor, d.nombre, b.descrip
 				FROM nomina a JOIN conc b ON a.concepto=b.concepto
 				JOIN pers c ON a.codigo=c.codigo
 				JOIN sprv d ON b.ctaac=d.proveed
-				WHERE a.valor<>0 AND b.tipod='P' AND b.tipoa='P' AND a.numero='".$nomina."'
+				WHERE a.valor<>0 AND b.tipod='P' AND b.tipoa='P' AND a.numero=${dbnomina}
 				GROUP BY b.ctaac ";
 
 		$query = $this->db->query($mSQL);
-
-		if ($query->num_rows() > 0){
+		if($query->num_rows() > 0){
 			foreach ($query->result() as $row){
 
 				$data = array();
-				$data["cod_prv"]  = $row->ctaac;
-				$data["nombre"]   = $row->nombre;
-				$data["tipo_doc"] = 'ND';
-				$data["fecha"]    = $row->fecha;
-				$data["monto"]    = abs($row->valor);
-				$data["vence"]    = $row->fecha;
-				$data["tipo_ref"] = 'GA';
-				$data["num_ref"]  = $nomina;
-				$data["observa1"] = $row->descrip;
-				$data["observa2"] = 'NOMINA';
-				$data["reteiva"]  = 0;
-				$data["codigo"]   = 'NOCON';
-				$data["descrip"]  = 'NOMINA';
-				$data["impuesto"] = 0;
+				$data['cod_prv']  = $row->ctaac;
+				$data['nombre']   = $row->nombre;
+				$data['tipo_doc'] = 'ND';
+				$data['fecha']    = $row->fecha;
+				$data['monto']    = abs($row->valor);
+				$data['vence']    = $row->fecha;
+				$data['tipo_ref'] = 'GA';
+				$data['num_ref']  = $nomina;
+				$data['observa1'] = $row->descrip;
+				$data['observa2'] = 'NOMINA';
+				$data['reteiva']  = 0;
+				$data['codigo']   = 'NOCON';
+				$data['descrip']  = 'NOMINA';
+				$data['impuesto'] = 0;
 
-				$mSQL = "SELECT COUNT(*) FROM sprm WHERE transac='".$mTRANSAC."' AND cod_prv='".$row->ctaac."' AND tipo_doc='ND' AND fecha='".$row->fecha."' AND numero<>'".$nomina."'";
-				if ( $this->datasis->dameval($mSQL) == 0 ){
+				$dbctaac  = $this->db->escape($row->ctaac);
+				$itdbfecha= $this->db->escape($row->fecha);
+				$mSQL = "SELECT COUNT(*) AS val FROM sprm WHERE transac=${dbtransac} AND cod_prv=${dbctaac} AND tipo_doc='ND' AND fecha=${itdbfecha} AND numero<>${dbnomina}";
+				$val  = intval($this->datasis->dameval($mSQL));
+				if($val == 0){
 					//SI NO ESTA
 					$mCONTROL = $this->datasis->fprox_numero('nsprm');
 					$mNOTADEB = $this->datasis->fprox_numero('num_nd');
 
-					$data["numero"]  = $mNOTADEB;
-					$data["abonos"]  = 0;
-					$data["control"] = $mCONTROL;
+					$data['numero']  = $mNOTADEB;
+					$data['abonos']  = 0;
+					$data['control'] = $mCONTROL;
 
 					$this->db->insert('sprm', $data);
-				} else {
-					$mSQL = "SELECT numero, abonos, control, id FROM sprm WHERE transac='".$mTRANSAC."' AND cod_prv='".$row->ctaac."' AND tipo_doc='ND' AND fecha='".$row->fecha."'";
+				}else{
+					$mSQL = "SELECT numero, abonos, control, id FROM sprm WHERE transac=${dbtransac} AND cod_prv=${dbctaac} AND tipo_doc='ND' AND fecha=${itdbfecha}";
 					$mREG = $this->datasis->damereg($mSQL);
-					$data["numero"]  = $mREG['numero'];
-					$data["abonos"]  = $mREG['abonos'];
-					$data["control"] = $mREG['control'];
+					$data['numero']  = $mREG['numero'];
+					$data['abonos']  = $mREG['abonos'];
+					$data['control'] = $mREG['control'];
 
-					$this->db->update('sprm', $data, "id = ".$mREG['id']);
+					$this->db->update('sprm', $data, 'id = '.$mREG['id']);
 				}
 				$this->db->query($mSQL);
 			}
 		}
 
-		$mSQL = "DELETE FROM sprm WHERE transac='".$mTRANSAC."' AND numero='".$nomina."'";
+		$mSQL = "DELETE FROM sprm WHERE transac=${dbtransac} AND numero=${dbnomina}";
 		$this->db->query($mSQL);
 
 		$mSQL= "INSERT IGNORE INTO sprm (tipo_doc, fecha, numero, cod_prv, nombre, vence, monto, impuesto, tipo_ref, num_ref, codigo, descrip, usuario, estampa, transac, observa1 )
-				SELECT 'ND' tipo_doc, fecha, '".$nomina."'  numero, proveed, nombre, vence, credito, 0, 'GA', '' ,'NOCON', 'NOMINA', usuario, estampa, transac, 'NOMINA '
-				FROM gser WHERE tipo_doc='GA' AND numero='".$nomina."' ";
+				SELECT 'ND' tipo_doc, fecha, ${dbnomina}  numero, proveed, nombre, vence, credito, 0, 'GA', '' ,'NOCON', 'NOMINA', usuario, estampa, transac, 'NOMINA '
+				FROM gser WHERE tipo_doc='GA' AND numero=${dbnomina}";
 		$this->db->query($mSQL);
 
 		// PRESTAMOS
@@ -912,40 +939,39 @@ class Nomina extends Controller {
 				JOIN pres   b ON a.codigo=b.codigo
 				JOIN smov   c ON b.cod_cli=c.cod_cli AND b.tipo_doc=c.tipo_doc AND b.numero=c.numero
 				AND c.monto<>c.abonos
-				WHERE a.concepto='PRES' AND a.numero='".$nomina."' AND b.cuota = abs(a.valor)";
-
+				WHERE a.concepto='PRES' AND a.numero=${dbnomina} AND b.cuota = ABS(a.valor)";
 		$query = $this->db->query($mSQL);
 
 		if ($query->num_rows() > 0){
 			foreach ($query->result() as $row){
 				//Busca si ya existe
-				$mSQL = "SELECT COUNT(*) FROM smov WHERE cod_cli='".$row->cod_cli."' AND tipo_doc='NC' AND transac='".$mTRANSAC."' AND monto=".abs($row->valor);
-
-				if ( $this->datasis->dameval($mSQL) == 0 ) {
-					$mCONTROL = $this->datasis->fprox_numero("nsmov");
-					$mNOTACRE = $this->datasis->fprox_numero("nccli");
+				$mSQL = "SELECT COUNT(*) AS val FROM smov WHERE cod_cli='".$row->cod_cli."' AND tipo_doc='NC' AND transac=${dbtransac} AND monto=".abs($row->valor);
+				$val  = intval($this->datasis->dameval($mSQL));
+				if($val == 0){
+					$mCONTROL = $this->datasis->fprox_numero('nsmov');
+					$mNOTACRE = 'I'.$this->datasis->fprox_numero('ncint',-1);
 
 					$data = array();
-					$data["cod_cli"]  = $row->cod_cli;
-					$data["nombre"]   = $row->nombre;
-					$data["tipo_doc"] = 'NC';
-					$data["numero"]   = $mNOTACRE;
-					$data["fecha"]    = $row->fechap;
-					$data["monto"]    = abs($row->valor);
-					$data["impuesto"] = 0;
-					$data["vence"]    = $row->fechap;
-					$data["abonos"]   = abs($row->valor);
-					$data["tipo_ref"] = 'GA';
-					$data["num_ref"]  = $nomina;
-					$data["observa1"] = 'PAGO A '.$row->tipo_doc.$row->numero;
-					$data["observa2"] = 'POR DESCUENTO DE NOMINA';
-					$data["control"]  = $mCONTROL;
-					$data["codigo"]   = 'NOCON';
-					$data["descrip"]  = 'NOMINA';
-					$data["transac"]  = $mTRANSAC;
-					$data["estampa"]  = $row->estampa;
-					$data["hora"]     = $row->hora;
-					$data["usuario"]  = $row->usuario;
+					$data['cod_cli']  = $row->cod_cli;
+					$data['nombre']   = $row->nombre;
+					$data['tipo_doc'] = 'NC';
+					$data['numero']   = $mNOTACRE;
+					$data['fecha']    = $row->fechap;
+					$data['monto']    = abs($row->valor);
+					$data['impuesto'] = 0;
+					$data['vence']    = $row->fechap;
+					$data['abonos']   = abs($row->valor);
+					$data['tipo_ref'] = 'GA';
+					$data['num_ref']  = $nomina;
+					$data['observa1'] = 'PAGO A '.$row->tipo_doc.$row->numero;
+					$data['observa2'] = 'POR DESCUENTO DE NOMINA';
+					$data['control']  = $mCONTROL;
+					$data['codigo']   = 'NOCON';
+					$data['descrip']  = 'NOMINA';
+					$data['transac']  = $mTRANSAC;
+					$data['estampa']  = $row->estampa;
+					$data['hora']     = $row->hora;
+					$data['usuario']  = $row->usuario;
 					$this->db->insert('smov', $data );
 
 					// ACTUALIZA EL DOCUMENTO ORIGEN
@@ -957,24 +983,24 @@ class Nomina extends Controller {
 
 					// CARGA EL MOVIMIENTO EN ITCCLI
 					$data = array();
-					$data["numccli"]  = $mNOTACRE;
-					$data["tipoccli"] = 'NC';
-					$data["cod_cli"]  = $row->cod_cli;
-					$data["tipo_doc"] = $row->tipo_doc;
-					$data["numero"]   = $row->numero;
-					$data["fecha"]    = $row->fecha;
-					$data["monto"]    = $row->monto;
-					$data["abono"]    = abs($row->valor);
-					$data["transac"]  = $mTRANSAC;
-					$data["estampa"]  = $row->estampa;
-					$data["hora"]     = $row->hora;
-					$data["usuario"]  = $row->usuario;
+					$data['numccli']  = $mNOTACRE;
+					$data['tipoccli'] = 'NC';
+					$data['cod_cli']  = $row->cod_cli;
+					$data['tipo_doc'] = $row->tipo_doc;
+					$data['numero']   = $row->numero;
+					$data['fecha']    = $row->fecha;
+					$data['monto']    = $row->monto;
+					$data['abono']    = abs($row->valor);
+					$data['transac']  = $mTRANSAC;
+					$data['estampa']  = $row->estampa;
+					$data['hora']     = $row->hora;
+					$data['usuario']  = $row->usuario;
 					$this->db->insert('itccli', $data );
 				}
 			}
 		}
 
-		logusu('NOMI',"NOMINA ${nomina} REGENERADA");
+		logusu('nomi',"NOMINA ${nomina} REGENERADA");
 
 		$rt=array(
 			'status' =>'A',
@@ -982,486 +1008,70 @@ class Nomina extends Controller {
 			'pk'     => $nomina
 		);
 		echo json_encode($rt);
-
-
 	}
 
+	function tabla($numero = 0){
+		$dbnumero = $this->db->escape($numero);
+		$salida   = '';
 
+		$rrow = $this->datasis->damerow('SELECT transac,fechap FROM nomina WHERE numero='.$dbnumero);
+		if(!empty($rrow)){
+			$dbtransac = $this->db->escape($rrow['transac']);
+			$dbfechap  = $this->db->escape($rrow['fechap']);
+
+			$mSQL = "SELECT cod_prv, nombre, tipo_doc, numero, monto FROM sprm WHERE transac=${dbtransac} AND fecha=${dbfechap} ORDER BY cod_prv";
+			$query = $this->db->query($mSQL);
+			if($query->num_rows() > 0){
+				$salida .= '<br><table width=\'100%\' border=\'1\'>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td colspan=\'3\'>Cuentas por pagar</td></tr>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td>Prov.</td><td align=\'center\'>N&uacute;mero</td><td align=\'center\'>Monto</td></tr>';
+				foreach ($query->result_array() as $row){
+					$salida .= '<tr>';
+					$salida .= '<td>'.$row['cod_prv'].'</td>';
+					$salida .= '<td>'.$row['tipo_doc'].$row['numero'].'</td>';
+					$salida .= '<td align=\'right\'>'.nformat($row['monto']).'</td>';
+					$salida .= '</tr>';
+				}
+				$salida .= '</table>';
+			}
+
+			$mSQL = "SELECT proveed AS cod_prv, nombre, tipo_doc, numero, totneto AS monto FROM gser WHERE transac=${dbtransac} AND tipo_doc='GA' ORDER BY proveed";
+			$query = $this->db->query($mSQL);
+			if($query->num_rows() > 0){
+				$salida .= '<br><table width=\'100%\' border=\'1\'>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td colspan=\'3\'>Gastos relacionados</td></tr>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td>Prov.</td><td align=\'center\'>N&uacute;mero</td><td align=\'center\'>Monto</td></tr>';
+				foreach ($query->result_array() as $row){
+					$salida .= '<tr>';
+					$salida .= '<td>'.$row['cod_prv'].'</td>';
+					$salida .= '<td>'.$row['tipo_doc'].$row['numero'].'</td>';
+					$salida .= '<td align=\'right\'>'.nformat($row['monto']).'</td>';
+					$salida .= '</tr>';
+				}
+				$salida .= '</table>';
+			}
+
+
+			$mSQL = "SELECT cod_cli, nombre, monto FROM smov WHERE transac=${dbtransac} AND tipo_ref='GA' ORDER BY cod_cli";
+			$query = $this->db->query($mSQL);
+			if($query->num_rows() > 0){
+				$salida .= '<br><table width=\'100%\' border=\'1\'>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td colspan=\'2\'>Pr&eacute;stamos descontados</td></tr>';
+				$salida .= '<tr bgcolor=\'#E7E3E7\'><td align=\'center\'>N&uacute;mero</td><td align=\'center\'>Monto</td></tr>';
+				foreach ($query->result_array() as $row){
+					$salida .= '<tr>';
+					$salida .= '<td>'.$row['nombre'].'</td>';
+					$salida .= '<td align=\'right\'>'.nformat($row['monto']).'</td>';
+					$salida .= '</tr>';
+				}
+				$salida .= '</table>';
+			}
+		}
+
+		echo $salida;
+	}
+}
 /*
-	function dataedit(){
-		$this->rapyd->load("dataedit");
-		$edit = new DataEdit("clientes", "nomina");
-		$edit->back_url = site_url("nomina/nomina/filteredgrid");
-		//$edit->script($script, "create");
-		//$edit->script($script, "modify");
-
-		$edit->post_process('insert','_post_insert');
-		$edit->post_process('update','_post_update');
-		$edit->post_process('delete','_post_delete');
-
-		$script ='
-		$(function() {
-			$(".inputnum").numeric(".");
-		});
-		';
-
-		$edit->numero =  new inputField("N&uacute;mero", "numero");
-		$edit->numero->mode="autohide";
-		$edit->numero->maxlength=8;
-		$edit->numero->size =10;
-		$edit->numero->rule ="required";
-
-		$edit->frecuencia = new dropdownField("Tipo de N&oacute;mina", "frecuencia");
-		$edit->frecuencia->option("","");
-		$edit->frecuencia->options(array("Q"=> "Quincenal","M"=>"Mensual","S"=>"Semanal"));
-		$edit->frecuencia->style = "width:100px;";
-
-		$edit->contrato = new dropdownField("Contrato", "contrato");
-		$edit->contrato->option("","");
-		$edit->contrato->options('SELECT codigo, nombre FROM noco');
-		$edit->contrato->style = "width:300px;";
-
-		$edit->depto = new dropdownField("Departamento", "depto");
-		$edit->depto->option("","");
-		$edit->depto->options('SELECT departa,descrip FROM depa');
-		$edit->depto->style = "width:200px;";
-
-		$edit->codigo = new dropdownField("C&oacute;digo", "codigo");
-		//$edit->codigo->_dataobject->db_name="trim(codigo)";
-		$edit->codigo->option("","");
-		$edit->codigo->options("SELECT codigo,concat(trim(apellido),' ',trim(nombre)) nombre FROM pers ORDER BY apellido");
-		$edit->codigo->style = "width:100px;";
-		$edit->codigo->mode="autohide";
-
-		$edit->nombre =  new inputField("Nombre", "nombre");
-		$edit->nombre->mode="autohide";
-		$edit->nombre->maxlength=30;
-		$edit->nombre->size=40;
-
-		$edit->concepto = new dropdownField("Concepto", "concepto");
-		$edit->concepto->option("","");
-		$edit->concepto->options('SELECT concepto,descrip FROM conc ORDER BY descrip');
-		$edit->concepto->style = "width:200px;";
-
-		$edit->tipo =  new inputField("Tipo","tipo");
-		$edit->tipo->option("A","A");
-		$edit->tipo->option("D","D");
-		$edit->tipo->mode="autohide";
-		$edit->tipo->style = "width:50px;";
-
-		$edit->descrip =  new inputField("T. Descripci&oacute;n", "descrip");
-		$edit->descrip->mode="autohide";
-		$edit->descrip->maxlength=35;
-		$edit->descrip->size =45;
-
-		$edit->grupo =  new inputField("Grupo", "grupo");
-		$edit->grupo->maxlength=4;
-		$edit->grupo->size =6;
-
-		$edit->formula =  new inputField("Formula", "formula");
-		$edit->formula->maxlength=120;
-		$edit->formula->size =80;
-
-		$edit->monto = new inputField("Monto","monto");
-		$edit->monto->size =17;
-		$edit->monto->maxlength=14;
-		$edit->monto->css_class='inputnum';
-		$edit->monto->rule='numeric';
-
-		$edit->fecha =  new DateonlyField("fecha", "fecha","d/m/Y");
-		$edit->fecha->size = 12;
-
-		$edit->cuota =  new inputField("Cuota", "cuota");
-		$edit->cuota->maxlength=11;
-		$edit->cuota->size =13;
-		$edit->cuota->css_class='inputnum';
-		$edit->cuota->rule='integer';
-
-		$edit->cuotat =  new inputField("Cuota Total", "cuotat");
-		$edit->cuotat->maxlength=11;
-		$edit->cuotat->size =13;
-		$edit->cuotat->css_class='inputnum';
-		$edit->cuotat->rule='integer';
-
-		$edit->valor =  new inputField("Valor", "valor");
-		$edit->valor->maxlength=17;
-		$edit->valor->size =20;
-		$edit->valor->css_class='inputnum';
-		$edit->valor->rule='numeric';
-
-		$edit->buttons("modify", "save", "undo", "delete", "back");
-		$edit->build();
-
-		$data['content'] = $edit->output;
-		$data['title']   = "<h1>Nomina</h1>";
-		$data["head"]    = script("jquery.pack.js").script("plugins/jquery.numeric.pack.js").script("plugins/jquery.floatnumber.js").$this->rapyd->get_head();
-		$this->load->view('view_ventanas', $data);
-	}
-
-	function grid() {
-		$start   = isset($_REQUEST['start'])  ? $_REQUEST['start']   :  0;
-		$limit   = isset($_REQUEST['limit'])  ? $_REQUEST['limit']   : 50;
-		$sort    = isset($_REQUEST['sort'])   ? $_REQUEST['sort']    : '[{"property":"fecha","direction":"DESC"}]';
-		$filters = isset($_REQUEST['filter']) ? $_REQUEST['filter']  : null;
-
-		$where = $this->datasis->extjsfiltro($filters);
-
-		$this->db->_protect_identifiers=false;
-		$this->db->select('a.numero, a.fecha, a.contrato, sum(a.valor*(a.valor>0)) asigna, ABS(sum(a.valor*(a.valor<0))) deduc, b.nombre noconom');
-
-		$this->db->from('nomina a');
-		$this->db->join('noco b', 'a.contrato=b.codigo');
-		$this->db->groupby('a.numero');
-		if (strlen($where)>1){$this->db->where($where);	}
-
-		$sort = json_decode($sort, true);
-		for ($i=0;$i<count($sort);$i++) {
-			$this->db->order_by($sort[$i]['property'],$sort[$i]['direction']);
-		}
-
-		$this->db->limit($limit, $start);
-		$query = $this->db->get();
-		$results =  $this->datasis->dameval("SELECT COUNT(*) FROM (SELECT numero FROM nomina GROUP BY numero) aaa");
-		$arr = $this->datasis->codificautf8($query->result_array());
-		echo '{success:true, message:"Loaded data" ,results:'. $results.', data:'.json_encode($arr).'}';
-	}
-
-	function gridtraba(){
-		$nomina   = isset($_REQUEST['nomina'])  ? $_REQUEST['nomina']   :  0;
-		if ($nomina == 0 ) $nomina = $this->datasis->dameval("SELECT MAX(numero) FROM nomina")  ;
-		$mSQL = "SELECT codigo, nombre, sum(valor*(valor>0)*(MID(concepto,1,1)<>9)) asigna,  sum(valor*(valor<0)*(MID(concepto,1,1)<>9)) deduc, sum(valor*(MID(concepto,1,1)<>9)) saldo FROM nomina WHERE numero='$nomina' GROUP BY codigo";
-		$query = $this->db->query($mSQL);
-		$results =  $this->datasis->dameval("SELECT COUNT(*) FROM (SELECT codigo FROM nomina WHERE numero='$nomina' GROUP BY codigo) aaa");
-		$arr = $this->datasis->codificautf8($query->result_array());
-		echo '{success:true, message:"Loaded data" ,results:'. $results.', data:'.json_encode($arr).'}';
-	}
-
-	function gridconc(){
-		$nomina   = isset($_REQUEST['nomina'])  ? $_REQUEST['nomina']   :  0;
-		$codigo   = isset($_REQUEST['codigo'])  ? $_REQUEST['codigo']   :  0;
-		if ($nomina == 0 ) $nomina = $this->datasis->dameval("SELECT MAX(numero) FROM nomina")  ;
-		if ($codigo == 0 ) $codigo = $this->datasis->dameval("SELECT MIN(codigo) FROM nomina WHERE numero='$nomina'")  ;
-		$mSQL = "SELECT concepto, descrip, valor*(valor>0) asigna, valor*(valor<0) deduc FROM nomina WHERE numero='$nomina' AND trim(codigo)='$codigo' ORDER BY concepto ";
-		$query = $this->db->query($mSQL);
-		$results =  $this->datasis->dameval("SELECT COUNT(*) FROM (SELECT codigo FROM nomina WHERE numero='$nomina' AND codigo='$codigo' GROUP BY concepto) aaa");
-		$arr = $this->datasis->codificautf8($query->result_array());
-		echo '{success:true, message:"Loaded data" ,results:'. $results.', data:'.json_encode($arr).'}';
-	}
-
-
-
-//****************************************************************
-//
-//
-//
-//****************************************************************
-	function nomiextjs(){
-		$encabeza='<table width="100%" bgcolor="#2067B5"><tr><td align="left" width="100px"><img src="'.base_url().'assets/default/css/templete_01.jpg" width="120"></td><td align="center"><h1 style="font-size: 20px; color: rgb(255, 255, 255);" onclick="history.back()">NOMINAS GUARDADAS</h1></td><td align="right" width="100px"><img src="'.base_url().'assets/default/images/cerrar.png" alt="Cerrar Ventana" title="Cerrar Ventana" onclick="parent.window.close()" width="25"></td></tr></table>';
-
-		$listados= $this->datasis->listados('nomi');
-		$otros=$this->datasis->otros('nomi', 'nomina/nomina');
-
-		$script = "
-<script type=\"text/javascript\">
-var BASE_URL   = '".base_url()."';
-var BASE_PATH  = '".base_url()."';
-var BASE_ICONS = '".base_url()."assets/icons/';
-var BASE_UX    = '".base_url()."assets/js/ext/ux';
-
-Ext.Loader.setConfig({ enabled: true });
-Ext.Loader.setPath('Ext.ux', BASE_UX);
-
-var urlApp = '".base_url()."';
-var numeroactual = '';
-
-Ext.require([
-	'Ext.grid.*',
-	'Ext.ux.grid.FiltersFeature',
-	'Ext.data.*',
-	'Ext.util.*',
-	'Ext.tree.*',
-	'Ext.state.*',
-	'Ext.form.*',
-	'Ext.window.MessageBox',
-	'Ext.tip.*',
-	'Ext.ux.CheckColumn',
-	'Ext.toolbar.Paging',
-	'Ext.dd.*'
-]);
-
-var mxs = ((screen.availWidth/2)-400);
-var mys = ((screen.availHeight/2)-300);
-
-var tipos = new Ext.data.SimpleStore({
-    fields: ['abre', 'todo'],
-    data : [ ['Q','Quincenal'],['S','Semanal'],['B','Bisemanal'],['M','Mensual'],['O','Otros'] ]
-});
-
-//Column Model
-var NomiCol =
-	[
-		{ header: 'Numero',       width:  60, sortable: true,  dataIndex: 'numero',   field: { type: 'textfield' }, filter: { type: 'string' }},
-		{ header: 'Fecha',        width:  70, sortable: true,  dataIndex: 'fecha',    field: { type: 'datefield' }, filter: { type: 'date' }},
-		{ header: 'Contrato',     width:  70, sortable: true,  dataIndex: 'contrato', field: { type: 'textfield' }, filter: { type: 'string' }},
-		{ header: 'Asignaciones', width:  80, sortable: true,  dataIndex: 'asigna',   field: { type: 'textfield' }, filter: { type: 'numeric' }, align: 'right',renderer : Ext.util.Format.numberRenderer('0,000.00')},
-		{ header: 'Deducciones',  width:  80, sortable: true,  dataIndex: 'deduc',    field: { type: 'textfield' }, filter: { type: 'numeric' }, align: 'right',renderer : Ext.util.Format.numberRenderer('0,000.00')},
-		{ header: 'Nombre',       width: 250, sortable: true,  dataIndex: 'noconom',  field: { type: 'textfield' }, filter: { type: 'string' }}
-	];
-
-//Column Model
-var TrabaCol =
-	[
-		{ header: 'Codigo',     width:  50, sortable: true,  dataIndex: 'codigo',   field: { type: 'textfield' }, filter: { type: 'string' }},
-		{ header: 'Nombre',     width: 170, sortable: true,  dataIndex: 'nombre',   field: { type: 'textfield' }, filter: { type: 'string' }},
-		{ header: 'Asignacion', width:  80, sortable: true,  dataIndex: 'asigna',   field: { type: 'textfield' }, filter: { type: 'string' }, align: 'right',renderer : Ext.util.Format.numberRenderer('0,000.00')},
-		{ header: 'Deduccion',  width:  60, sortable: true,  dataIndex: 'deduc',    field: { type: 'textfield' }, filter: { type: 'string' }, align: 'right',renderer : Ext.util.Format.numberRenderer('0,000.00')},
-		{ header: 'Saldo',      width:  80, sortable: true,  dataIndex: 'saldo',    field: { type: 'textfield' }, filter: { type: 'string' }, align: 'right',renderer : Ext.util.Format.numberRenderer('0,000.00')}
-	];
-
-//Column Model
-var ConcCol =
-	[
-		{ header: 'Conc.',       width:  40, sortable: true,  dataIndex: 'concepto', field: { type: 'textfield' }, filter: { type: 'string' }},
-		{ header: 'Descripcion', width: 150, sortable: true,  dataIndex: 'descrip',  field: { type: 'textfield' }, filter: { type: 'string' }},
-		{ header: 'Asignacion',  width:  80, sortable: true,  dataIndex: 'asigna',   field: { type: 'textfield' }, filter: { type: 'numeric' }, align: 'right',renderer : Ext.util.Format.numberRenderer('0,000.00')},
-		{ header: 'Deduccion',   width:  60, sortable: true,  dataIndex: 'deduc',    field: { type: 'textfield' }, filter: { type: 'numeric' }, align: 'right',renderer : Ext.util.Format.numberRenderer('0,000.00')}
-	];
-
-var nomina = '';
-Ext.onReady(function(){
-	/////////////////////////////////////////////////
-	// Define los data model
-	// Contratos
-	Ext.define('Nomi', {
-		extend: 'Ext.data.Model',
-		fields: ['numero', 'fecha','contrato','noconom','asigna','deduc'],
-		proxy: {
-			type: 'ajax',
-			noCache: false,
-			api: {
-				read   : urlApp + 'nomina/nomina/grid',
-				method: 'POST'
-			},
-			reader: {
-				type: 'json',
-				root: 'data',
-				successProperty: 'success',
-				messageProperty: 'message',
-				totalProperty: 'results'
-			}
-		}
-	});
-
-	//////////////////////////////////////////////////////////
-	// create the Data Store
-	var storeNomi = Ext.create('Ext.data.Store', {
-		model: 'Nomi',
-		autoLoad: false,
-		autoSync: true,
-		method: 'POST'
-	});
-
-	/////////////////////////////////////////////////
-	// Define los data model
-	// Contratos
-	Ext.define('Traba', {
-		extend: 'Ext.data.Model',
-		fields: ['codigo', 'nombre', 'saldo', 'asigna', 'deduc' ],
-		proxy: {
-			type: 'ajax',
-			noCache: false,
-			api: {
-				read   : urlApp + 'nomina/nomina/gridtraba',
-				method: 'POST'
-			},
-			reader: {
-				type: 'json',
-				root: 'data',
-				successProperty: 'success',
-				messageProperty: 'message',
-				totalProperty: 'results'
-			}
-		}
-	});
-
-	//////////////////////////////////////////////////////////
-	// create the Data Store
-	var storeTraba = Ext.create('Ext.data.Store', {
-		model: 'Traba',
-		autoLoad: false,
-		autoSync: true,
-		method: 'POST'
-	});
-
-	//////////////////////////////////////////////////////////////////
-	// create the grid and specify what field you want
-	// to use for the editor at each column.
-	var gridTraba = Ext.create('Ext.grid.Panel', {
-		width: '100%',
-		height: '100%',
-		store: storeTraba,
-		title: 'Trabajadores',
-		iconCls: 'icon-grid',
-		frame: true,
-		columns: TrabaCol
-	});
-
-	/////////////////////////////////////////////////
-	// Define los data model
-	// Contratos
-	Ext.define('Conc', {
-		extend: 'Ext.data.Model',
-		fields: ['concepto', 'descrip', 'asigna', 'deduc' ],
-		proxy: {
-			type: 'ajax',
-			noCache: false,
-			api: {
-				read   : urlApp + 'nomina/nomina/gridconc',
-				method: 'POST'
-			},
-			reader: {
-				type: 'json',
-				root: 'data',
-				successProperty: 'success',
-				messageProperty: 'message',
-				totalProperty: 'results'
-			}
-		}
-	});
-
-	//////////////////////////////////////////////////////////
-	// create the Data Store
-	var storeConc = Ext.create('Ext.data.Store', {
-		model: 'Conc',
-		autoLoad: false,
-		autoSync: true,
-		method: 'POST'
-	});
-
-
-	//////////////////////////////////////////////////////////////////
-	// create the grid and specify what field you want
-	// to use for the editor at each column.
-	var gridConc = Ext.create('Ext.grid.Panel', {
-		width: '100%',
-		height: '100%',
-		store: storeConc,
-		title: 'Conceptos',
-		iconCls: 'icon-grid',
-		frame: true,
-		columns: ConcCol
-	});
-
-	//////////////////////////////////////////////////////////////////
-	// create the grid and specify what field you want
-	// to use for the editor at each column.
-	var gridNomi = Ext.create('Ext.grid.Panel', {
-		width: '100%',
-		height: '100%',
-		store: storeNomi,
-		title: 'Nominas Guardadas',
-		iconCls: 'icon-grid',
-		frame: false,
-		columns: NomiCol,
-		features: [ { ftype: 'filters', encode: 'json', local: false } ],
-		dockedItems: [{
-			xtype: 'toolbar',
-			items: [{iconCls: 'icon-delete', text: 'Eliminar',  disabled: true, itemId: 'delete', scope: this, handler: this.onDeleteClick } ]
-		}],
-		// paging bar on the bottom
-		bbar: Ext.create('Ext.PagingToolbar', {
-			store: storeNomi,
-			displayInfo: false,
-			displayMsg: 'Pag No. {0} - Reg. {1} de {2}',
-			emptyMsg: 'No se encontraron Registros.'
-		}),
-		onSelectChange: function(selModel, selections){	down('#delete').setDisabled(selections.length === 0); },
-		onDeleteClick: function() {
-			var selection = this.getView().getSelectionModel().getSelection()[0];
-			Ext.MessageBox.show({
-				title: 'Confirme',
-				msg: 'Esta seguro?',
-				buttons: Ext.MessageBox.YESNO,
-				fn: function(btn){
-					if (btn == 'yes') {
-						if (selection) {
-							//storeNomi.remove(selection);
-						}
-						storeNomi.load();
-					}
-				},
-				icon: Ext.MessageBox.QUESTION
-			});
-		},
-	});
-
-	// Al cambiar seleccion de Nomina
-	gridNomi.getSelectionModel().on('selectionchange', function(sm, selectedRecord) {
-		if (selectedRecord.length) {
-			gridNomi.down('#delete').setDisabled(selectedRecord.length === 0);
-			nomina = selectedRecord[0].data.numero;
-			gridTraba.setTitle(nomina+' '+selectedRecord[0].data.noconom);
-			storeTraba.load({ params: { nomina: nomina }});
-			storeConc.load({ params: { nomina: nomina }});
-		}
-	});
-
-	// update panel body on selection change
-	gridTraba.getSelectionModel().on('selectionchange', function(sm, selectedRecord) {
-		if (selectedRecord.length) {
-			storeConc.load({ params: { nomina: nomina, codigo: selectedRecord[0].data.codigo }});
-			gridConc.setTitle(selectedRecord[0].data.nombre);
-		}
-	});
-
-
-//////************ MENU DE ADICIONALES /////////////////
-".$listados."
-
-//////************ FIN DE ADICIONALES /////////////////
-
-	var viewport = new Ext.Viewport({id:'simplevp', layout:'border', border:false, items:[{region: 'north',preventHeader: true,height: 40,minHeight: 40,html: '".$encabeza."'},{region:'west',width:190,border:false,autoScroll:true,title:'Lista de Opciones',	collapsible:true,split:true,collapseMode:'mini',layoutConfig:{animate:true},layout: 'accordion',items: [{title:'Listados',border:false,layout: 'fit',items: gridListado},{title:'Otras Funciones',border:false,layout: 'fit',html: '".$otros."'}]},{region:'east',	id: 'este',width:340,items: gridConc,border:false,preventHeader: true,collapsible:true	},{cls: 'irm-column irm-center-column irm-master-detail', region: 'center', title:  'center-title', layout: 'border', preventHeader: true, border: false, items: [{itemId: 'viewport-center-master',cls: 'irm-master',region: 'center',items: gridNomi},{itemId: 'viewport-center-detail',preventHeader: true,region: 'south',height: '40%',split: true, title: 'center-detail-title',margins: '0 0 0 0',items: gridTraba}]}]});
-	storeNomi.load();
-	storeTraba.load();
-	storeConc.load();
-});
-
-</script>
-";
-		return $script;
-
-	}
-
-	function _post_insert($do){
-		$codigo=$do->get('numero');
-		$nombre=$do->get('nombre');
-		logusu('nomina',"NOMINA $codigo NOMBRE  $nombre CREADO");
-	}
-
-	function _post_update($do){
-		$codigo=$do->get('numero');
-		$nombre=$do->get('nombre');
-		logusu('nomina',"NOMINA $codigo NOMBRE  $nombre  MODIFICADO");
-	}
-
-	function _post_delete($do){
-		$codigo=$do->get('numero');
-		$nombre=$do->get('nombre');
-		logusu('nomina',"NOMINA $codigo NOMBRE  $nombre  ELIMINADO ");
-	}
-
-	function chexiste($codigo){
-		$codigo=$this->input->post('codigo');
-		$check=$this->datasis->dameval("SELECT COUNT(*) FROM pers WHERE codigo='$codigo'");
-		if ($check > 0){
-			$nombre=$this->datasis->dameval("SELECT nombre FROM pers WHERE codigo='$codigo'");
-			$this->validation->set_message('chexiste',"Personal con el codigo $codigo nombre $nombre ya existe");
-			return FALSE;
-		}else {
-  		return TRUE;
-		}
-	}
-
 Vacaciones
 Periodo correspondiente al Ano 2011
 Dias habiles vacaciones 15 + anos de servicio hasta 30
@@ -1479,4 +1089,3 @@ dias
 
 
 */
-}

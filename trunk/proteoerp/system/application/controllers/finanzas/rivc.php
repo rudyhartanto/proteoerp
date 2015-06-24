@@ -1167,9 +1167,8 @@ class Rivc extends Controller {
 	//
 	function tabla( $id = 0){
 		$id = intval($id);
+		if($id == 0) return;
 		$salida = '';
-		$hay = intval($this->datasis->dameval('SELECT COUNT(*) AS cana FROM rivc WHERE anulado="N" AND id='.$id));
-		if ( $hay != 1 ) return;
 
 		$rrow = $this->datasis->damerow('SELECT transac,cod_cli,reiva FROM rivc WHERE anulado="N" AND id='.$id);
 		if(!empty($rrow)){
@@ -1194,8 +1193,8 @@ class Rivc extends Controller {
 					$salida .= '</tr>';
 					$pago += floatval($row['monto']);
 				}
+				$salida .= '</table>';
 			}
-			$salida .= '</table>';
 
 			//Revisa si tiene anticipos
 			$mSQL = "SELECT tipo_doc, numero, monto FROM smov WHERE transac=${dbtransac} AND cod_cli=${dbcod_cli} AND tipo_doc='AN'";
@@ -1212,8 +1211,8 @@ class Rivc extends Controller {
 					$salida .= '</tr>';
 					$pago += floatval($row['monto']);
 				}
+				$salida .= '</table>';
 			}
-			$salida .= '</table>';
 
 			//Revisa si tiene CxP
 			$mSQL = "SELECT tipo_doc, numero, monto FROM sprm WHERE transac=${dbtransac} AND cod_prv='REINT' AND tipo_doc='ND'";
@@ -1230,8 +1229,8 @@ class Rivc extends Controller {
 					$salida .= '</tr>';
 					$pago += floatval($row['monto']);
 				}
+				$salida .= '</table>';
 			}
-			$salida .= '</table>';
 
 			//Efectos cruzados
 			$mSQL = "SELECT CONCAT('<b>',tipoccli,'</b>',numccli) AS apl, CONCAT('<b>',tipo_doc,'</b>',numero) AS efe, abono AS monto FROM itccli WHERE transac=${dbtransac} AND cod_cli=${dbcod_cli}";
@@ -1247,8 +1246,8 @@ class Rivc extends Controller {
 					$salida .= '<td align=\'right\'>'.nformat($row['monto']).'</td>';
 					$salida .= '</tr>';
 				}
+				$salida .= '</table>';
 			}
-			$salida .= '</table>';
 
 			//Arregla posibles problemas de incongruencias
 			if($this->secu->essuper()){
