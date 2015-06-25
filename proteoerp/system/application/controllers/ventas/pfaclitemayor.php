@@ -575,7 +575,7 @@ class pfaclitemayor extends validaciones{
 			$do->set('vd'    ,$rrow['vendedor']);
 		}
 
-		$iva = $totals = 0;
+		$iva = $totals = $tpeso = 0;
 		for($i = 0;$i < $cana;$i++){
 			$itcana  = $do->get_rel('itpfac', 'cana', $i);
 			if($itcana>0){
