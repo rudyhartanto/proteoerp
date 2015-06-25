@@ -206,11 +206,11 @@ class Nomina extends Controller {
 									try{
 										var json = JSON.parse(data);
 										if (json.status == "A"){
-											$.prompt.getStateContent(\'state1\').find(\'#in_prome2\').text(json.mensaje);
+											$(\'#in_prome2\').text(json.mensaje);
 											$.prompt.goToState(\'state1\');
 											jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
 										}else{
-											$.prompt.getStateContent(\'state1\').find(\'#in_prome2\').text(json.mensaje);
+											$(\'#in_prome2\').text(json.mensaje);
 											$.prompt.goToState(\'state1\');
 											apprise("Registro no se puede eliminado");
 										}
@@ -839,7 +839,7 @@ class Nomina extends Controller {
 						SELECT SUM(valor) monto FROM nomina g WHERE g.numero=${dbnomina} AND g.concepto='PRES' ) bbb)*(b.ctaac=${dbmNOMI}
 					) monto1,
 					SUM(a.valor)+(
-						SELECT SUM(valor) FROM (SELECT sum(valor) valor FROM nomina a JOIN conc b ON a.concepto=b.concepto JOIN pers c ON a.codigo=c.codigo WHERE valor<>0 AND tipod!='G' AND a.numero=${dbnomina}
+						SELECT SUM(valor) FROM (SELECT SUM(valor) valor FROM nomina a JOIN conc b ON a.concepto=b.concepto JOIN pers c ON a.codigo=c.codigo WHERE valor<>0 AND tipod!='G' AND a.numero=${dbnomina}
 						UNION ALL
 						SELECT SUM(valor) FROM nomina a WHERE a.numero=${dbnomina} AND concepto='PRES' ) aaa)*(b.ctaac=${dbmNOMI}) credito,
 					0 anticipo, '', 'GA', a.usuario, a.estampa, a.transac FROM nomina a JOIN conc b ON a.concepto=b.concepto
