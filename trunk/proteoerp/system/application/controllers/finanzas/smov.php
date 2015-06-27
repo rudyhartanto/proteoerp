@@ -1139,7 +1139,7 @@ class Smov extends Controller {
 
 			$cana=intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM rcaj WHERE cajero=${dbcobrador} AND fecha=${dbfecha}"));
 			if($cana > 0){
-				$do->error_message_ar['pre_del']="Este cajero al que cobro este movimiento ya fue cerrado para la fecha del efecto.";
+				$do->error_message_ar['pre_del']="El cajero que cobro este movimiento ya fue cerrado para la fecha del efecto.";
 				return false;
 			}
 
@@ -1172,6 +1172,7 @@ class Smov extends Controller {
 		$transac    = $do->get('transac');
 		$tipo_doc   = $do->get('tipo_doc');
 		$numero     = $do->get('numero');
+		$cod_cli    = $do->get('cod_cli');
 
 		$dbtransac  = $this->db->escape($transac);
 		$dbtipo_doc = $this->db->escape($tipo_doc);
@@ -1224,7 +1225,7 @@ class Smov extends Controller {
 		if($ban==false){ memowrite($mSQL,'smov'); }
 
 		$primary =implode(',',$do->pk);
-		logusu($do->table,"EFECTO ${tipo_doc}${numero} ELIMINADO");
+		logusu($do->table,"EFECTO ${tipo_doc}${numero} CLIENTE ${cod_cli} ELIMINADO");
 	}
 
 	function _post_insert($do){

@@ -36,7 +36,7 @@ class Medhisto extends Controller {
 		$bodyscript = $this->bodyscript( $param['grids'][0]['gridname']);
 
 		//Botones Panel Izq
-		$grid->wbotonadd(array('id'=>'phistoria', 'img'=>'images/circuloazul.png'  ,'alt' => 'Formato PDF', 'label'=>'Historia'));
+		$grid->wbotonadd(array('id'=>'phistoria', 'img'=>'assets/default/images/print.png' ,'alt' => 'Formato PDF', 'label'=>'Historia'));
 		$grid->wbotonadd(array('id'=>'gvisitas' , 'img'=>'images/circuloverde.png' ,'alt' => 'Visistas'   , 'label'=>'Visitas' ));
 		$WestPanel = $grid->deploywestp();
 
@@ -612,11 +612,17 @@ class Medhisto extends Controller {
 		$edit->ingreso->maxlength =8;
 		$edit->ingreso->insertValue = date('Y-m-d');
 
+		$edit->referido = new dropdownField('Referido por', 'referido');
+		$edit->referido->style='width:110px';
+		$edit->referido->option('','Seleccionar');
+		$edit->referido->options('SELECT codigo,nombre FROM medrec WHERE tipo="ME" ORDER BY nombre');
+		$edit->referido->rule='required';
+
 		//************************************************
 		//inicio detalle
 		//************************************************
 		$i=0;
-		$sel=array('a.id','a.nombre','b.descripcion AS value','b.id AS itid');
+		$sel=array('a.id','a.nombre','b.descripcion AS value','b.id AS itid','a.tipo','a.tipoadc');
 		$this->db->from('medhtab AS a');
 		$this->db->where('a.grupo','1');
 		$historia=$edit->get_from_dataobjetct('numero');
@@ -627,8 +633,37 @@ class Medhisto extends Controller {
 		$this->db->order_by('a.indice');
 		$query = $this->db->get();
 		foreach ($query->result() as $row){
+
+			$tipo   = 'inputField';
+			$rule   = '';
+			$options= array();
+			switch($row->tipo){
+				case 'date':
+					$tipo = 'dateonlyField';
+                    $rule = 'chdate';
+					break;
+				case 'textarea':
+					$tipo = 'textareaField';
+                    $rule = '';
+					break;
+				case 'dropdown':
+					$tipo = 'dropdownField';
+					$rule = '';
+
+					$arr = json_decode($row->tipoadc,true);
+					var_dump($arr);
+					if(is_array($arr)){
+						$options=$arr;
+					}
+
+				case 'integer':
+					$rule='integer';
+				case '':
+					$rule='numeric';
+			}
+
 			$obj='descripcion_'.$i;
-			$edit->$obj = new inputField($row->nombre,'itdetalle['.$row->id.']');
+			$edit->$obj = new $tipo($row->nombre,'itdetalle['.$row->id.']');
 			$edit->$obj->db_name     = '-';
 			$edit->$obj->data        = null;
 			$edit->$obj->size        = 20;
@@ -637,6 +672,8 @@ class Medhisto extends Controller {
 			$edit->$obj->insertValue = $row->value;
 			$edit->$obj->updateValue = $row->value;
 			$edit->$obj->pointer     = true;
+			$edit->$obj->rule        = $rule;
+			$edit->$obj->options     = $options;
 
 			$obj='itid_'.$i;
 			$edit->$obj = new hiddenField('','itid['.$row->id.']');
@@ -775,45 +812,27 @@ class Medhisto extends Controller {
 
 	function _post_delete($do){
 		$primary =implode(',',$do->pk);
-		logusu($do->table,"Elimino $this->tits $primary ");
+		logusu($do->table,"Elimino $this->tits ${primary} ");
 	}
 
 	function instalar(){
 		if (!$this->db->table_exists('medhisto')) {
 			$mSQL="
 			CREATE TABLE `medhisto` (
-			  `numero` varchar(20) DEFAULT NULL,
-			  `ingreso` date DEFAULT NULL,
-			  `nombre` varchar(50) DEFAULT NULL,
-			  `papellido` varchar(50) DEFAULT NULL,
-			  `sapellido` varchar(50) DEFAULT NULL,
-			  `nacional` int(11) DEFAULT NULL,
-			  `cedula` varchar(20) DEFAULT NULL,
-			  `sexo` int(11) DEFAULT NULL,
-			  `nacio` date DEFAULT NULL,
-			  `estado` varchar(50) DEFAULT NULL,
-			  `ciudad` varchar(50) DEFAULT NULL,
-			  `ecivil` int(11) DEFAULT NULL,
-			  `ocupacion` varchar(50) DEFAULT NULL,
-			  `direccion` text,
-			  `telefono` varchar(50) DEFAULT NULL,
-			  `referido` varchar(50) DEFAULT NULL,
-			  `email` varchar(100) DEFAULT NULL,
-			  `usuario` varchar(20) DEFAULT NULL,
-			  `estampa` date DEFAULT NULL,
-			  `hora` varchar(10) DEFAULT NULL,
-			  `edad` varchar(255) DEFAULT NULL,
-			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `numero`   VARCHAR(20) DEFAULT NULL,
+			  `ingreso`  DATE DEFAULT NULL,
+			  `nombre`   VARCHAR(50) DEFAULT NULL,
+			  `referido` VARCHAR(50) DEFAULT NULL,
+			  `usuario`  VARCHAR(20) DEFAULT NULL,
+			  `estampa`  DATE DEFAULT NULL,
+			  `hora`     VARCHAR(10) DEFAULT NULL,
+			  `id`       INT(11) NOT NULL AUTO_INCREMENT,
 			  PRIMARY KEY (`id`),
 			  KEY `numero` (`numero`)
-			) ENGINE=InnoDB AUTO_INCREMENT=27260 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT COMMENT='Historias Medicas'
-
-			";
+			) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT COMMENT='Historias Medicas'";
 			$this->db->query($mSQL);
 		}
 		//$campos=$this->db->list_fields('medhisto');
 		//if(!in_array('<#campo#>',$campos)){ }
 	}
 }
-
-?>

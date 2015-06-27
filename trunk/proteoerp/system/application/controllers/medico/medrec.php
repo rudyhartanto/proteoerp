@@ -20,7 +20,6 @@ class Medrec extends Controller {
 
 	function index(){
 		$this->instalar();
-		$this->datasis->creaintramenu(array('modulo'=>'173','titulo'=>'Recursos','mensaje'=>'Recursos','panel'=>'SALUD','ejecutar'=>'ventas/medrec','target'=>'popu','visible'=>'S','pertenece'=>'1','ancho'=>900,'alto'=>600));
 		$this->datasis->modintramenu( 800, 600, substr($this->url,0,-1) );
 		redirect($this->url.'jqdatag');
 	}
@@ -37,7 +36,7 @@ class Medrec extends Controller {
 		$bodyscript = $this->bodyscript( $param['grids'][0]['gridname']);
 
 		//Botones Panel Izq
-		$grid->wbotonadd(array("id"=>"especial", "img"=>"images/engrana.png", "alt"=>"Especialidades", "label"=>"Especialidades"));
+		$grid->wbotonadd(array('id'=>'especial', 'img'=>'images/engrana.png', 'alt'=>'Especialidades', 'label'=>'Especialidades'));
 		$WestPanel = $grid->deploywestp();
 
 		$adic = array(
@@ -212,11 +211,11 @@ class Medrec extends Controller {
 
 
 	//******************************************************************
-	// Definicion del Grid o Tabla 
+	// Definicion del Grid o Tabla
 	//
 	function defgrid( $deployed = false ){
 		$i      = 1;
-		$editar = "false";
+		$editar = 'false';
 
 		$grid  = new $this->jqdatagrid;
 
@@ -425,7 +424,7 @@ class Medrec extends Controller {
 	}
 
 	//******************************************************************
-	// Edicion 
+	// Edicion
 	//
 	function dataedit(){
 		$this->rapyd->load('dataedit');
@@ -526,16 +525,18 @@ class Medrec extends Controller {
 
 	function _post_update($do){
 		$primary =implode(',',$do->pk);
-		logusu($do->table,"Modifico $this->tits $primary ");
+		logusu($do->table,"Modifico $this->tits ${primary} ");
 	}
 
 	function _post_delete($do){
 		$primary =implode(',',$do->pk);
-		logusu($do->table,"Elimino $this->tits $primary ");
+		logusu($do->table,"Elimino $this->tits ${primary} ");
 	}
 
 	function instalar(){
-		if (!$this->db->table_exists('medrec')) {
+		$this->datasis->creaintramenu(array('modulo'=>'173','titulo'=>'Recursos','mensaje'=>'Recursos','panel'=>'SALUD','ejecutar'=>'ventas/medrec','target'=>'popu','visible'=>'S','pertenece'=>'1','ancho'=>900,'alto'=>600));
+
+		if(!$this->db->table_exists('medrec')){
 			$mSQL="CREATE TABLE medrec (
 			  codigo       CHAR(10)  DEFAULT NULL COMMENT 'Codigo',
 			  tipo         CHAR(2)   DEFAULT NULL COMMENT 'Tipo de Recurso',
@@ -546,12 +547,24 @@ class Medrec extends Controller {
 			  especialidad INT(10)   DEFAULT NULL COMMENT 'Especialidad',
 			  id           INT(11)   NOT NULL AUTO_INCREMENT,
 			  PRIMARY KEY (id)
-			) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Medicos, ayudantes y especialista'";
+			) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Medicos, ayudantes y especialista'";
 			$this->db->query($mSQL);
 		}
+
+		if(!$this->db->table_exists('medesp')){
+			$mSQL="CREATE TABLE `medesp` (
+				`id` INT(11) NOT NULL AUTO_INCREMENT,
+				`especialidad` VARCHAR(80) NULL DEFAULT NULL,
+				PRIMARY KEY (`id`)
+			)
+			COLLATE='latin1_swedish_ci'
+			ENGINE=MyISAM
+			ROW_FORMAT=DYNAMIC
+			AUTO_INCREMENT=1";
+			$this->db->query($mSQL);
+		}
+
 		//$campos=$this->db->list_fields('medrec');
 		//if(!in_array('<#campo#>',$campos)){ }
 	}
 }
-
-?>
