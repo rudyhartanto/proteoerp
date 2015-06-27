@@ -37,8 +37,8 @@ class Medhtab extends Controller {
 		$bodyscript = $this->bodyscript( $param['grids'][0]['gridname']);
 
 		//Botones Panel Izq
-		$grid->wbotonadd(array("id"=>"grupos",    "img"=>"images/engrana.png", "alt" => "Grupos",    "label"=>"Grupos"));
-		$grid->wbotonadd(array("id"=>"variables", "img"=>"images/engrana.png", "alt" => "Variables", "label"=>"Variables"));
+		$grid->wbotonadd(array('id'=>'grupos',    'img'=>'images/engrana.png', 'alt' => 'Grupos',    'label'=>'Grupos'));
+		$grid->wbotonadd(array('id'=>'variables', 'img'=>'images/engrana.png', 'alt' => 'Variables', 'label'=>'Variables'));
 		$WestPanel = $grid->deploywestp();
 
 		$adic = array(
@@ -97,23 +97,22 @@ class Medhtab extends Controller {
 		//Wraper de javascript
 		$bodyscript .= $this->jqdatagrid->bswrapper($ngrid);
 
-		$bodyscript .= $this->jqdatagrid->bsfedita( $ngrid, '300', '500' );
+		$bodyscript .= $this->jqdatagrid->bsfedita( $ngrid, '500', '500' );
 		$bodyscript .= $this->jqdatagrid->bsfshow( '300', '400' );
 		$bodyscript .= $this->jqdatagrid->bsfborra( $ngrid, '300', '400' );
 
 		$bodyscript .= '});';
-
 		$bodyscript .= '</script>';
 
 		return $bodyscript;
 	}
 
 	//******************************************************************
-	// Definicion del Grid o Tabla 
+	// Definicion del Grid o Tabla
 	//
 	function defgrid( $deployed = false ){
 		$i      = 1;
-		$editar = "false";
+		$editar = 'false';
 
 		$grid  = new $this->jqdatagrid;
 
@@ -156,7 +155,7 @@ class Medhtab extends Controller {
 
 
 		$grid->addField('descripcion');
-		$grid->label('Descripcion');
+		$grid->label('Descripci&acute;n');
 		$grid->params(array(
 			'search'        => 'true',
 			'editable'      => $editar,
@@ -577,17 +576,16 @@ class Medhtab extends Controller {
 
 
 	//******************************************************************
-	// Edicion 
+	// Edicion
 	function dataedit(){
-		
+
 		$idanterior = intval($this->uri->segment(5));
 		$grupo  =  0;
 		$indice = 0;
 		if ( $idanterior ){
-			$ante  = $this->datasis->damerow("SELECT grupo, indice FROM medhtab WHERE id=$idanterior");
+			$ante  = $this->datasis->damerow("SELECT grupo, indice FROM medhtab WHERE id=${idanterior}");
 			$grupo = $ante['grupo'];
 			$indice = $ante['indice']+1;
-			
 		}
 
 		$this->rapyd->load('dataedit');
@@ -609,15 +607,15 @@ class Medhtab extends Controller {
 		$edit->post_process('insert','_post_insert');
 		$edit->post_process('update','_post_update');
 		$edit->post_process('delete','_post_delete');
-		$edit->pre_process('insert', '_pre_insert' );
-		$edit->pre_process('update', '_pre_update' );
-		$edit->pre_process('delete', '_pre_delete' );
+		$edit->pre_process( 'insert', '_pre_insert' );
+		$edit->pre_process( 'update', '_pre_update' );
+		$edit->pre_process( 'delete', '_pre_delete' );
 
 		$edit->grupo = new dropdownField('Grupo','grupo');
 		$edit->grupo->option('','Seleccionar');
 		$edit->grupo->options('SELECT id, nombre FROM medhgrup ORDER BY nombre');
 		$edit->grupo->rule ='required';
-		$edit->grupo->style='width:180px;';
+		$edit->grupo->style='width:200px;';
 		$edit->grupo->insertValue = $grupo;
 
 		$edit->indice = new inputField('Indice','indice');
@@ -632,18 +630,36 @@ class Medhtab extends Controller {
 		$edit->nombre->size =52;
 		$edit->nombre->maxlength =80;
 
-		$edit->descripcion = new textareaField('Descripcion','descripcion');
-		$edit->descripcion->rule='';
+		$edit->tipo= new dropdownField ('Tipo', 'tipo');
+		$edit->tipo->options(array(
+			'text'    =>'Texto Corto',
+			'textarea'=>'Texto Grande',
+			'dropdown'=>'Lista Opciones',
+			'numeric' =>'Numerico',
+			'integer' =>'Entero',
+			'date'    =>'Fecha',
+		));
+		$edit->tipo->style = 'width:100px;';
+		$edit->tipo->rule='required';
+
+		$edit->tipoadc = new inputField('','tipoadc');
+		$edit->tipoadc->rule = '';
+		$edit->tipoadc->in = 'tipo';
+		$edit->tipoadc->maxlength =255;
+		$edit->tipoadc->size =30;
+
+		$edit->descripcion = new textareaField('Descripci&oacute;n','descripcion');
+		$edit->descripcion->rule = '';
 		$edit->descripcion->cols = 50;
 		$edit->descripcion->rows = 4;
 
-		$edit->variables = new inputField('Nro de Variables','variables');
+		$edit->variables = new inputField('Nro. de Variables','variables');
 		$edit->variables->rule='integer';
 		$edit->variables->css_class='inputonlynum';
 		$edit->variables->size =5;
 		$edit->variables->maxlength =11;
 
-		$edit->nomvar = new inputField('Nombres','nomvar');
+		$edit->nomvar = new inputField('Nombres Variables','nomvar');
 		$edit->nomvar->rule='';
 		$edit->nomvar->size =52;
 		$edit->nomvar->maxlength =100;
@@ -693,33 +709,44 @@ class Medhtab extends Controller {
 	}
 
 	function instalar(){
-		if (!$this->db->table_exists('view_medhtab')) {
+		if(!$this->db->table_exists('view_medhtab')){
 			$mSQL="
-			CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW `view_medhtab` AS 
-			SELECT a.id, b.nombre AS grupo, a.indice, a.nombre, a.descripcion, a.variables 
-			FROM (medhtab a JOIN medhgrup b ON ((a.grupo = b.id)))
-			";
+			CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW `view_medhtab` AS
+			SELECT a.id, b.nombre AS grupo, a.indice, a.nombre, a.descripcion, a.variables
+			FROM (medhtab a JOIN medhgrup b ON ((a.grupo = b.id)))";
 			$this->db->query($mSQL);
 		}
 
-
-		if (!$this->db->table_exists('medhtab')) {
-			$mSQL="
-				CREATE TABLE `medhtab` (
-				id           INT(11) NOT NULL AUTO_INCREMENT,
-				grupo        INT(11) NOT NULL DEFAULT '0',
-				indice       INT(11) NOT NULL DEFAULT '0',
-				nombre       VARCHAR(80) NULL DEFAULT NULL,
-				descripcion  TEXT NULL,
-				variables    INT(11) NULL DEFAULT '0',
-				nomvar       VARCHAR(100) NULL DEFAULT NULL,
-				PRIMARY KEY (`id`)) 
-				ENGINE=MyISAM DEFAULT CHARSET=latin1 ROW_FORMAT=FIXED
-			";
+		if(!$this->db->table_exists('medhtab')){
+			$mSQL="CREATE TABLE `medhtab` (
+				`id` INT(11) NOT NULL AUTO_INCREMENT,
+				`grupo` INT(11) NOT NULL DEFAULT '0',
+				`indice` INT(11) NOT NULL DEFAULT '0',
+				`nombre` VARCHAR(80) NULL DEFAULT NULL,
+				`descripcion` TEXT NULL,
+				`variables` INT(11) NULL DEFAULT '0',
+				`nomvar` VARCHAR(100) NULL DEFAULT NULL,
+				`tipo` VARCHAR(100) NULL DEFAULT 'text',
+				`tipoadc` VARCHAR(255) NULL DEFAULT NULL,
+				PRIMARY KEY (`id`)
+			)
+			COMMENT='Tabulador de la estructura de la historia'
+			COLLATE='latin1_swedish_ci'
+			ENGINE=MyISAM
+			ROW_FORMAT=FIXED
+			AUTO_INCREMENT=1";
 			$this->db->query($mSQL);
+		}
+
+		$campos=$this->db->list_fields('medhtab');
+		if(!in_array('tipo',$campos)){
+			$mSQL="ALTER TABLE `medhtab` ADD COLUMN `tipo` VARCHAR(100) NULL DEFAULT 'text' AFTER `nomvar`";
+			$this->db->simple_query($mSQL);
+		}
+
+		if(!in_array('tipoadc',$campos)){
+			$mSQL="ALTER TABLE `medhtab` ADD COLUMN `tipoadc` VARCHAR(255) NULL AFTER `tipo`";
+			$this->db->simple_query($mSQL);
 		}
 	}
-
-
 }
-?>
