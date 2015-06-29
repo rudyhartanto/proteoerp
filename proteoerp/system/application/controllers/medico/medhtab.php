@@ -580,9 +580,8 @@ class Medhtab extends Controller {
 	function dataedit(){
 
 		$idanterior = intval($this->uri->segment(5));
-		$grupo  =  0;
-		$indice = 0;
-		if ( $idanterior ){
+		$grupo  =  $indice = 0;
+		if($idanterior){
 			$ante  = $this->datasis->damerow("SELECT grupo, indice FROM medhtab WHERE id=${idanterior}");
 			$grupo = $ante['grupo'];
 			$indice = $ante['indice']+1;
@@ -597,11 +596,9 @@ class Medhtab extends Controller {
 		';
 
 		$edit = new DataEdit('', 'medhtab');
-
 		$edit->script($script,'modify');
 		$edit->script($script,'create');
 		$edit->on_save_redirect=false;
-
 		$edit->back_url = site_url($this->url.'filteredgrid');
 
 		$edit->post_process('insert','_post_insert');
