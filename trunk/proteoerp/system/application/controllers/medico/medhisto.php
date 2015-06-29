@@ -5,7 +5,8 @@
 * @autor    Andres Hocevar
 * @license  GNU GPL v3
 */
-class Medhisto extends Controller {
+include('common.php');
+class Medhisto extends Common {
 	var $mModulo = 'MEDHISTO';
 	var $titp    = 'HISTORIAS MEDICAS';
 	var $tits    = 'HISTORIAS MEDICAS';
@@ -36,15 +37,18 @@ class Medhisto extends Controller {
 		$bodyscript = $this->bodyscript( $param['grids'][0]['gridname']);
 
 		//Botones Panel Izq
-		$grid->wbotonadd(array('id'=>'phistoria', 'img'=>'assets/default/images/print.png' ,'alt' => 'Formato PDF', 'label'=>'Historia'));
-		$grid->wbotonadd(array('id'=>'gvisitas' , 'img'=>'images/circuloverde.png' ,'alt' => 'Visistas'   , 'label'=>'Visitas' ));
+		$grid->wbotonadd(array('id'=>'phistoria', 'img'=>'assets/default/images/print.png' ,'alt' => 'Formato PDF'   , 'label'=>'Historia'     ));
+		$grid->wbotonadd(array('id'=>'creascli' , 'img'=>'images/agrega4.png'              ,'alt' => 'Crear Cliente' , 'label'=>'Crear Cliente'));
+		$grid->wbotonadd(array('id'=>'gvisitas' , 'img'=>'images/circuloverde.png'         ,'alt' => 'Visistas'      , 'label'=>'Visitas'      ));
+
 		$WestPanel = $grid->deploywestp();
 
 		$adic = array(
 			array('id'=>'fedita' ,  'title'=>'Agregar/Editar Registro'),
 			array('id'=>'fvisita',  'title'=>'Agregar/Editar Visita'),
 			array('id'=>'fshow'  ,  'title'=>'Mostrar Registro'),
-			array('id'=>'fborra' ,  'title'=>'Eliminar Registro')
+			array('id'=>'fborra' ,  'title'=>'Eliminar Registro'),
+			array('id'=>'fscli'  ,  'title'=>'Agregar Cliente')
 		);
 		$SouthPanel = $grid->SouthPanel($this->datasis->traevalor('TITULO1'), $adic);
 
@@ -79,9 +83,20 @@ class Medhisto extends Controller {
 		//Wraper de javascript
 		$bodyscript .= $this->jqdatagrid->bswrapper($ngrid);
 
-		$bodyscript .= $this->jqdatagrid->bsfedita( $ngrid, '500', '600', 'fedita', $imp );
+		$bodyscript .= $this->jqdatagrid->bsfedita( $ngrid, '500', '650', 'fedita', $imp );
 		$bodyscript .= $this->jqdatagrid->bsfshow( '300', '400' );
 		$bodyscript .= $this->jqdatagrid->bsfborra( $ngrid, '300', '400' );
+
+		$bodyscript .= $this->jqdatagrid->bsfedita( $ngrid, '460', '700', 'fscli');
+
+		$bodyscript .= '
+		jQuery("#creascli").click( function(){
+			$.post("'.site_url('ventas/scli/dataedit/create').'",
+			function(data){
+				$("#fscli").html(data);
+				$("#fscli").dialog("open");
+			});
+		});';
 
 		$bodyscript .= '});';
 
@@ -171,8 +186,7 @@ class Medhisto extends Controller {
 			close: function() {
 				$("#fvisita").html("");
 			}
-		});
-		';
+		});';
 
 		$bodyscript .= '</script>';
 
@@ -555,7 +569,7 @@ class Medhisto extends Controller {
 			} else {
 				$this->db->query("DELETE FROM medhisto WHERE id=$id ");
 				logusu('MEDHISTO',"Registro ????? ELIMINADO");
-				echo "Registro Eliminado";
+				echo 'Registro Eliminado';
 			}
 		};
 	}
@@ -565,23 +579,54 @@ class Medhisto extends Controller {
 
 	function dataedit(){
 		$this->rapyd->load('dataedit','datadetails');
-		$script= '
-		$(function() {
-			$("#ingreso").datepicker({dateFormat:"dd/mm/yy"});
-			$("#nacio").datepicker({dateFormat:"dd/mm/yy"});
-			$(".inputnum").numeric(".");
-		});
-		';
+		$scriptadd = ";
+			$('#cod_cli').autocomplete({
+				delay: 600,
+				autoFocus: true,
+				source: function( req, add){
+					$.ajax({
+						url:  '".site_url('ajax/buscascli')."',
+						type: 'POST',
+						dataType: 'json',
+						data: {'q':req.term},
+						success:
+							function(data){
+								var sugiere = [];
+								if(data.length==0){
+									$('#nombre').val('');
+									$('#nombre_val').text('');
+
+									$('#rif').val('');
+									$('#rif_val').text('');
+								}else{
+									$.each(data,
+										function(i, val){
+											sugiere.push( val );
+										}
+									);
+								}
+								add(sugiere);
+							},
+					})
+				},
+				minLength: 1,
+				select: function( event, ui ) {
+					$('#cod_cli').attr('readonly', 'readonly');
+					$('#sclinombre').val(ui.item.nombre);
+					$('#sclinombre_val').text(ui.item.nombre);
+					$('#sclirifci').val(ui.item.rifci);
+					$('#sclirifci_val').text(ui.item.rifci);
+					$('#cod_cli').val(ui.item.cod_cli);
+					setTimeout(function() {  $('#cod_cli').removeAttr('readonly'); }, 1500);
+				}
+			});";
+
 
 		$do = new DataObject('medhisto');
-		//$do->rel_one_to_many('medhvisita', 'medhvisita', array('numero'=>'historia'));
+		$do->pointer('scli' ,'scli.cliente=medhisto.cod_cli','scli.nombre AS sclinombre, scli.rifci AS sclirifci','left');
 
 		$edit = new DataEdit('', $do);
-
-		$edit->script($script,'modify');
-		$edit->script($script,'create');
 		$edit->on_save_redirect=false;
-
 		$edit->back_url = site_url($this->url.'filteredgrid');
 
 		$edit->post_process('insert','_post_insert');
@@ -600,20 +645,48 @@ class Medhisto extends Controller {
 		$edit->numero->when = array('modify');
 		//$edit->numero->hidden = true;
 
-		$edit->nombre = new inputField('Nombre','nombre');
+		$edit->cod_cli = new inputField('Cliente','cod_cli');
+		$edit->cod_cli->rule='required|existescli';
+		$edit->cod_cli->size = 8;
+		$edit->cod_cli->maxlength =50;
+
+		$edit->sclinombre = new inputField('Nombre del cliente', 'sclinombre');
+		$edit->sclinombre->size = 25;
+		$edit->sclinombre->maxlength=40;
+		$edit->sclinombre->readonly =true;
+		$edit->sclinombre->autocomplete=false;
+		$edit->sclinombre->pointer = true;
+		$edit->sclinombre->rule = 'required';
+		$edit->sclinombre->type = 'inputhidden';
+
+		$edit->sclirifci   = new inputField('RIF/CI','sclirifci');
+		$edit->sclirifci->autocomplete=false;
+		$edit->sclirifci->readonly =true;
+		$edit->sclirifci->size = 15;
+		$edit->sclirifci->pointer = true;
+		$edit->sclirifci->in   = 'cod_cli';
+		$edit->sclirifci->type = 'inputhidden';
+
+		$edit->identifica = new inputField('Nro. de identificaci&oacute;n del paciente','identifica');
+		$edit->identifica->rule='strtoupper|unique';
+		$edit->identifica->size =30;
+		$edit->identifica->maxlength =50;
+		$edit->identifica->append("C&eacute;dula, pasaporte o partida");
+
+		$edit->nombre = new inputField('Nombre del paciente','nombre');
 		$edit->nombre->rule='strtoupper|required';
 		$edit->nombre->size =52;
 		$edit->nombre->maxlength =50;
 
 		$edit->ingreso = new dateonlyField('Ingreso','ingreso');
-		$edit->ingreso->rule='chfecha';
+		$edit->ingreso->rule='required|chfecha';
 		$edit->ingreso->calendar=false;
 		$edit->ingreso->size =10;
 		$edit->ingreso->maxlength =8;
 		$edit->ingreso->insertValue = date('Y-m-d');
 
 		$edit->referido = new dropdownField('Referido por', 'referido');
-		$edit->referido->style='width:110px';
+		$edit->referido->style='width:250px';
 		$edit->referido->option('','Seleccionar');
 		$edit->referido->options('SELECT codigo,nombre FROM medrec WHERE tipo="ME" ORDER BY nombre');
 		$edit->referido->rule='required';
@@ -634,46 +707,26 @@ class Medhisto extends Controller {
 		$query = $this->db->get();
 		foreach ($query->result() as $row){
 
-			$tipo   = 'inputField';
-			$rule   = '';
-			$options= array();
-			switch($row->tipo){
-				case 'date':
-					$tipo = 'dateonlyField';
-                    $rule = 'chdate';
-					break;
-				case 'textarea':
-					$tipo = 'textareaField';
-                    $rule = '';
-					break;
-				case 'dropdown':
-					$tipo = 'dropdownField';
-					$rule = '';
+			$obj ='descripcion_'.$i;
+			$nobj='itdetalle['.$row->id.']';
+			$par=array(
+				'tipo'   => $row->tipo,
+				'nombre' => ucfirst(strtolower($row->nombre)),
+				'obj'    => $nobj,
+				'tipoadc'=> $row->tipoadc,
+			);
 
-					$arr = json_decode($row->tipoadc,true);
-					var_dump($arr);
-					if(is_array($arr)){
-						$options=$arr;
-					}
+			$rt = $this->_tabuladorfield($par);
+			$scriptadd .= $rt[1];
 
-				case 'integer':
-					$rule='integer';
-				case '':
-					$rule='numeric';
-			}
-
-			$obj='descripcion_'.$i;
-			$edit->$obj = new $tipo($row->nombre,'itdetalle['.$row->id.']');
+			$edit->$obj = $rt[0];
 			$edit->$obj->db_name     = '-';
 			$edit->$obj->data        = null;
-			$edit->$obj->size        = 20;
-			$edit->$obj->maxlength   = 20;
 			$edit->$obj->value       = $row->value;
 			$edit->$obj->insertValue = $row->value;
 			$edit->$obj->updateValue = $row->value;
 			$edit->$obj->pointer     = true;
-			$edit->$obj->rule        = $rule;
-			$edit->$obj->options     = $options;
+			$edit->$obj->group       = 'Datos B&aacute;sicos';
 
 			$obj='itid_'.$i;
 			$edit->$obj = new hiddenField('','itid['.$row->id.']');
@@ -695,6 +748,17 @@ class Medhisto extends Controller {
 		$edit->estampa = new autoUpdateField('estampa' ,date('Ymd'), date('Ymd'));
 		$edit->hora    = new autoUpdateField('hora',date('H:i:s'), date('H:i:s'));
 
+		$script= '
+		$(function() {
+			$("#ingreso").datepicker({dateFormat:"dd/mm/yy"});
+			$("#nacio").datepicker({dateFormat:"dd/mm/yy"});
+			$(".inputnum").numeric(".");
+			'.$scriptadd.'
+		});';
+
+
+		$edit->script($script,'modify');
+		$edit->script($script,'create');
 		$edit->build();
 
 		if($edit->on_success()){
@@ -816,23 +880,28 @@ class Medhisto extends Controller {
 	}
 
 	function instalar(){
-		if (!$this->db->table_exists('medhisto')) {
+		if(!$this->db->table_exists('medhisto')){
 			$mSQL="
 			CREATE TABLE `medhisto` (
-			  `numero`   VARCHAR(20) DEFAULT NULL,
-			  `ingreso`  DATE DEFAULT NULL,
-			  `nombre`   VARCHAR(50) DEFAULT NULL,
-			  `referido` VARCHAR(50) DEFAULT NULL,
-			  `usuario`  VARCHAR(20) DEFAULT NULL,
-			  `estampa`  DATE DEFAULT NULL,
-			  `hora`     VARCHAR(10) DEFAULT NULL,
-			  `id`       INT(11) NOT NULL AUTO_INCREMENT,
+			  `numero`     VARCHAR(20) DEFAULT NULL,
+			  `ingreso`    DATE DEFAULT NULL,
+			  `nombre`     VARCHAR(50) DEFAULT NULL,
+			  `identifica` VARCHAR(50) DEFAULT NULL,
+			  `referido`   VARCHAR(50) DEFAULT NULL,
+			  `usuario`    VARCHAR(20) DEFAULT NULL,
+			  `estampa`    DATE DEFAULT NULL,
+			  `hora`       VARCHAR(10) DEFAULT NULL,
+			  `id`         INT(11) NOT NULL AUTO_INCREMENT,
 			  PRIMARY KEY (`id`),
 			  KEY `numero` (`numero`)
 			) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT COMMENT='Historias Medicas'";
 			$this->db->query($mSQL);
 		}
-		//$campos=$this->db->list_fields('medhisto');
-		//if(!in_array('<#campo#>',$campos)){ }
+
+		$campos=$this->db->list_fields('medhisto');
+		if(!in_array('cod_cli',$campos)){
+			$mSQL="ALTER TABLE `medhisto` ADD COLUMN `cod_cli` CHAR(5) NULL DEFAULT NULL AFTER `numero`";
+			$this->db->simple_query($mSQL);
+		}
 	}
 }

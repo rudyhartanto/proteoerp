@@ -5,7 +5,8 @@
 * @autor    Andres Hocevar
 * @license  GNU GPL v3
 */
-class Medhvisita extends Controller {
+include('common.php');
+class Medhvisita extends Common {
 	var $mModulo = 'MEDHVISITA';
 	var $titp    = 'CONTROL DE VISITA';
 	var $tits    = 'CONTROL DE VISITA';
@@ -74,9 +75,9 @@ class Medhvisita extends Controller {
 		//Wraper de javascript
 		$bodyscript .= $this->jqdatagrid->bswrapper($ngrid);
 
-		$bodyscript .= $this->jqdatagrid->bsfedita( $ngrid, '300', '400' );
-		$bodyscript .= $this->jqdatagrid->bsfshow( '300', '400' );
-		$bodyscript .= $this->jqdatagrid->bsfborra( $ngrid, '300', '400' );
+		$bodyscript .= $this->jqdatagrid->bsfedita( $ngrid, '350', '400' );
+		$bodyscript .= $this->jqdatagrid->bsfshow( '350', '400' );
+		$bodyscript .= $this->jqdatagrid->bsfborra( $ngrid, '350', '400' );
 
 		$bodyscript .= '});';
 
@@ -90,7 +91,7 @@ class Medhvisita extends Controller {
 	//
 	function defgrid( $deployed = false ){
 		$i      = 1;
-		$editar = "false";
+		$editar = 'false';
 
 		$grid  = new $this->jqdatagrid;
 
@@ -173,7 +174,7 @@ class Medhvisita extends Controller {
 		$grid->setRowNum(30);
 		$grid->setShrinkToFit('false');
 
-		$grid->setBarOptions("addfunc: medhvisitaadd, editfunc: medhvisitaedit, delfunc: medhvisitadel, viewfunc: medhvisitashow");
+		$grid->setBarOptions('addfunc: medhvisitaadd, editfunc: medhvisitaedit, delfunc: medhvisitadel, viewfunc: medhvisitashow');
 
 		#Set url
 		$grid->setUrlput(site_url($this->url.'setdata/'));
@@ -328,6 +329,32 @@ class Medhvisita extends Controller {
 	//******************************************************************
 	// Edicion
 
+	function ajaxfield($tabulador=null){
+		header('Content-Type: application/json');
+		$id = intval($tabulador);
+		$rt = null;
+		if($id>0){
+			$mSQL='SELECT a.tipo, a.tipoadc FROM medhtab  AS a WHERE a.id='.$id;
+			$query = $this->db->query($mSQL);
+			if($query->num_rows() > 0){
+				$row = $query->row();
+
+				$par=array(
+					'tipo'   => $row->tipo,
+					'nombre' => 'Descripci&oacute;n',
+					'obj'    => 'descripcion',
+					'tipoadc'=> $row->tipoadc,
+				);
+				$rt = $this->_tabuladorfield($par);
+				$rt[0]->status='modify';
+				$rt[0]->build();
+
+				$rt[0] = $rt[0]->output;
+			}
+		}
+		echo json_encode($rt);
+	}
+
 	function dataefla(){
 
 		$idhistoria = intval($this->uri->segment(5));
@@ -339,23 +366,25 @@ class Medhvisita extends Controller {
 		$nombres   = '';
 		$apellidos = '';
 
-		if ( $idhistoria == 'insert'){
+		if($idhistoria == 'insert'){
 			$idhistoria = intval($this->uri->segment(4));
 			$idanterior = 0;
 		}
 
 
-		if ( $idhistoria ){
-			$ante  = $this->datasis->damerow("SELECT numero, CONCAT(nacional,cedula) cedula, nombre, papellido FROM medhisto WHERE id=$idhistoria");
-			$historia  = $ante['numero'];
-			$cedula    = $ante['cedula'];
-			$nombres   = $ante['nombre'];
-			$apellidos = $ante['papellido'];
+		if($idhistoria){
+			$ante  = $this->datasis->damerow("SELECT numero,nombre FROM medhisto WHERE id=${idhistoria}");
+			if(!empty($ante)){
+				$historia  = $ante['numero'];
+				$nombres   = $ante['nombre'];
+			}else{
+				$historia = $nombres = '';
+			}
 		}
 
 
-		if ( $idanterior ){
-			$ante  = $this->datasis->damerow("SELECT historia, fecha FROM medhvisita WHERE id=$idanterior");
+		if($idanterior){
+			$ante  = $this->datasis->damerow("SELECT historia, fecha FROM medhvisita WHERE id=${idanterior}");
 			$historia = $ante['historia'];
 			$fecha    = $ante['fecha'];
 
@@ -363,20 +392,29 @@ class Medhvisita extends Controller {
 
 		$this->rapyd->load('dataedit');
 		$script= '
-		$(function() {
-			$("#fecha").datepicker({dateFormat:"dd/mm/yy"});
-			$(".inputnum").numeric(".");
-			$.post(\''.site_url('medico/medhvisita/get_tabula').'\',{ historia:"'.$historia.'", fecha:$("#fecha").val() },function(data){$("#tabulados").html(data);})
-		});
+
+		$("#fecha").datepicker({dateFormat:"dd/mm/yy"});
+		$(".inputnum").numeric(".");
+		$.post(\''.site_url('medico/medhvisita/get_tabula').'\',{ historia:"'.$historia.'", fecha:$("#fecha").val() },function(data){$("#tabulados").html(data);});
 
 		$("#descripcion").focus(function(){
-			$.post(\''.site_url('medico/medhvisita/get_tabula').'\',{ historia:"'.$historia.'", fecha:$("#fecha").val() },function(data){$("#tabulados").html(data);})
+			$.post(\''.site_url('medico/medhvisita/get_tabula').'\',{ historia:"'.$historia.'", fecha:$("#fecha").val() },function(data){$("#tabulados").html(data);});
 		});
 
 		$("#fecha").change(function(){
-			$.post(\''.site_url('medico/medhvisita/get_tabula').'\',{ historia:"'.$historia.'", fecha:$("#fecha").val() },function(data){$("#tabulados").html(data);})
+			$.post(\''.site_url('medico/medhvisita/get_tabula').'\',{ historia:"'.$historia.'", fecha:$("#fecha").val() },function(data){$("#tabulados").html(data);});
 		});
 
+		$("#tabula").change(function(){
+			var jqxhr = $.getJSON("'.site_url($this->url.'ajaxfield').'/"+$("#tabula").val(), function(data) {
+				$("#td_descripcion").html(data[0]);
+				eval(data[1]);
+			}).fail(function() {
+				console.log( "error" );
+			});
+		});
+
+		$("#tabula").change();
 
 		function elivisita(id){
 			$.prompt("<h1>Eliminar entrada</h1>", {
@@ -392,8 +430,7 @@ class Medhvisita extends Controller {
 					}
 				}
 			});
-		}
-		';
+		}';
 
 		$edit = new DataEdit('', 'medhvisita');
 
@@ -406,34 +443,32 @@ class Medhvisita extends Controller {
 		$edit->post_process('insert','_post_insert');
 		$edit->post_process('update','_post_update');
 		$edit->post_process('delete','_post_delete');
-		$edit->pre_process('insert', '_pre_insert' );
-		$edit->pre_process('update', '_pre_update' );
-		$edit->pre_process('delete', '_pre_delete' );
+		$edit->pre_process( 'insert', '_pre_insert');
+		$edit->pre_process( 'update', '_pre_update');
+		$edit->pre_process( 'delete', '_pre_delete');
 
-		$html = '<table width="100%" style="background-color:#BCF5A9;font-size:14px;"><tr><td>Historia: </td><td style="font-weight:bold;">'.$historia.'</td><td>Nombre:</td><td style="font-weight:bold;">'.$nombres.' '.$apellidos.'</td><td>C.I.:</td><td style="font-weight:bold;">'.$cedula.'</td></td></tr></table>';
+		$html = '<table width="100%" style="background-color:#BCF5A9;font-size:14px;"><tr><td>Historia: </td><td style="font-weight:bold;">'.$historia.'</td><td>Nombre:</td><td style="font-weight:bold;">'.$nombres.'</td></td></tr></table>';
 		$edit->cabeza = new containerField('cabeza',$html);
 
-		$edit->historia = new hiddenField('','historia');
-		$edit->historia->insertValue = $historia;
-
-
-		$tabula=array();
-		$mSQL='SELECT a.id, b.nombre AS grupo ,CONCAT(a.indice," ",a.nombre ) tabu
+		$tabula=$arr_tipo=array();
+		$mSQL='SELECT a.id, b.nombre AS grupo ,CONCAT(a.indice," ",a.nombre ) tabu,a.tipo, a.tipoadc
 			FROM medhtab  AS a
 			JOIN medhgrup AS b ON a.grupo=b.id
 		WHERE a.grupo > 1 ORDER BY b.nombre,a.indice';
 		$query = $this->db->query($mSQL);
 		foreach ($query->result() as $row){
 			$tabula[$row->grupo][$row->id]=$row->tabu;
+			$arr_tipo[$row->id] = array($row->tipo,$row->tipoadc);
 		}
 
 
 		$edit->tabula = new dropdownField('Tabula','tabula',$tabula);
-		//$edit->tabula->option('','Seleccionar');
-		//$edit->tabula->options('SELECT id, CONCAT(indice," ",nombre ) tabu FROM medhtab WHERE grupo > 1 ORDER BY indice');
-		//$edit->tabula->options($tabula);
 		$edit->tabula->rule ='required';
 		$edit->tabula->style='width:350px;';
+
+		$edit->historia = new hiddenField('','historia');
+		$edit->historia->insertValue = $historia;
+		$edit->historia->in = 'tabula';
 
 		$edit->fecha = new dateonlyField('Fecha','fecha');
 		$edit->fecha->rule='chfecha';
@@ -442,10 +477,32 @@ class Medhvisita extends Controller {
 		$edit->fecha->maxlength =8;
 		$edit->fecha->insertValue = $fecha;
 
-		$edit->descripcion = new textareaField('Descripcion','descripcion');
-		$edit->descripcion->rule='';
-		$edit->descripcion->cols = 60;
-		$edit->descripcion->rows = 4;
+		$par=array(
+			'nombre' => 'Descripci&oacute;n',
+			'obj'    => 'descripcion',
+			'tipoadc'=> $row->tipoadc,
+		);
+
+		$tabula = $edit->getval('tabula');
+		if(isset($arr_tipo[$tabula][0])){
+			$ttipo  = $arr_tipo[$tabula][0];
+			$par['tipo']    = $arr_tipo[$tabula][0];
+			$par['tipoadc'] = $arr_tipo[$tabula][1];
+		}else{
+			$par['tipo']    = 'text';
+			$par['tipoadc'] = '';
+		}
+
+		$rt = $this->_tabuladorfield($par);
+		$scriptadd = $rt[1];
+
+
+		$edit->descripcion = $rt[0];
+		if(empty($edit->descripcion->rule)){
+			$edit->descripcion->rule = 'required';
+		}else{
+			$edit->descripcion->rule=$edit->descripcion->rule.'|'.$rule;
+		}
 
 		$div = "<br><div style='overflow:auto;border: 1px solid #9AC8DA;background: #EAEAEA;height:210px' id='tabulados'></div>";
 		$edit->contenedor = new containerField('contenedor',$div);
@@ -476,24 +533,24 @@ class Medhvisita extends Controller {
 		$msalida = '';
 		if( $historia>0 && $fecha > 0 ){
 			$fecha = substr($fecha,6,4).substr($fecha,3,2).substr($fecha,0,2);
-			$mSQL=$this->db->query("SELECT b.indice, a.descripcion, a.id FROM medhvisita a JOIN medhtab b ON a.tabula=b.id WHERE a.historia=$historia AND a.fecha='$fecha' ORDER BY b.indice DESC");
+			$mSQL=$this->db->query("SELECT b.indice, a.descripcion, b.nombre, a.id FROM medhvisita a JOIN medhtab b ON a.tabula=b.id WHERE a.historia=${historia} AND a.fecha='${fecha}' ORDER BY b.indice DESC");
 			if($mSQL){
 				$msalida .= "<table width='100%' style='font-size:12px;'>";
 				$mod = 0;
-				foreach($mSQL->result() AS $fila ){
+				foreach($mSQL->result() as $fila ){
 					$msalida .= "<tr bgcolor='";
 					if(!$mod)
 						$msalida .= '#CFFFFF';
 					else
 						$msalida .= '#00FFFF';
 
-					$msalida .= "'><td>".$fila->indice."</td><td>".$fila->descripcion."</td><td align='right'><a onclick='elivisita(".$fila->id.")'>".img(array('src'=>"images/delete.png", 'height'=>15, 'alt'=>'Eliminar', 'title'=>'Eliminar', 'border'=>'0'))."</a></td></tr>";
+					$msalida .= "'><td>".$fila->indice.'</td><td>'.$fila->nombre.'</td><td>'.$fila->descripcion."</td><td align='right'><a onclick='elivisita(".$fila->id.")'>".img(array('src'=>'images/delete.png', 'height'=>15, 'alt'=>'Eliminar', 'title'=>'Eliminar', 'border'=>'0'))."</a></td></tr>";
 					$mod = !$mod;
 				}
 			}
-			$msalida .= "</table>";
+			$msalida .= '</table>';
 		}else{
-			$msalida .= "No se encontraron datos ";
+			$msalida .= 'No se encontraron datos ';
 		}
 		if ( $s )
 			return $msalida;
@@ -505,9 +562,9 @@ class Medhvisita extends Controller {
 		$historia = $do->get('historia');
 		$fecha    = $do->get('fecha');
 		$tabula   = $do->get('tabula');
-		$mSQL = "SELECT COUNT(*) FROM medhvisita WHERE historia=$historia AND fecha='$fecha' AND tabula=$tabula";
+		$mSQL = "SELECT COUNT(*) AS cana FROM medhvisita WHERE historia=${historia} AND fecha='${fecha}' AND tabula=${tabula}";
 		//memowrite($mSQL);
-		$cuantos = $this->datasis->dameval($mSQL);
+		$cuantos = intval($this->datasis->dameval($mSQL));
 		if ( $cuantos > 0  ) {
 			$mSQL = "SELECT id FROM medhvisita WHERE historia=$historia AND fecha='$fecha' AND tabula=$tabula LIMIT 1";
 			$id = $this->datasis->dameval($mSQL);
@@ -564,5 +621,3 @@ class Medhvisita extends Controller {
 		}
 	}
 }
-
-?>

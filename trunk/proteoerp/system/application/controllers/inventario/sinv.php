@@ -3623,9 +3623,10 @@ class Sinv extends Controller {
 */
 		$edit->build();
 
-		$mcodigo = $edit->codigo->value;
-		$mfdesde = $this->datasis->dameval("SELECT ADDDATE(MAX(fecha),-30) FROM costos WHERE codigo='".addslashes($mcodigo)."'");
-		$mfhasta = $this->datasis->dameval("SELECT MAX(fecha) FROM costos WHERE codigo='".addslashes($mcodigo)."'");
+		$mcodigo  = $edit->codigo->value;
+		$dbmcodigo= $this->db->escape($mcodigo);
+		$mfdesde  = $this->datasis->dameval("SELECT ADDDATE(MAX(fecha),-30) AS val FROM costos WHERE codigo=${dbmcodigo}");
+		$mfhasta  = $this->datasis->dameval("SELECT MAX(fecha) AS val FROM costos WHERE codigo=${dbmcodigo}");
 
 		if($edit->on_success()){
 			$rt=array(
@@ -3638,7 +3639,6 @@ class Sinv extends Controller {
 			$conten['form']  =& $edit;
 			$this->load->view('view_sinv', $conten );
 		}
-
 	}
 
 	function chminven($val){
@@ -6397,7 +6397,7 @@ class Sinv extends Controller {
 		}
 	}
 
-			
+
 	//******************************************************************
 	// Forma de Grupos
 	//
@@ -6410,7 +6410,7 @@ class Sinv extends Controller {
 		//$cargo = $this->datasis->llenajqselect($mSQL, true );
 
 		//$activo = ''{"S": "Activo", "N": "Inactivo"}'';
-		
+
 		$grid->addField('id');
 		$grid->label('Id');
 		$grid->params(array(
@@ -6475,7 +6475,7 @@ class Sinv extends Controller {
 		echo $msalida;
 
 	}
-			
+
 	//******************************************************************
 	// Busca la data en el Servidor por json
 	//
@@ -6488,7 +6488,7 @@ class Sinv extends Controller {
 		echo $rs;
 	}
 
-			
+
 	//******************************************************************
 	// Guarda los cambios
 	//
@@ -6539,7 +6539,7 @@ class Sinv extends Controller {
 			echo 'Registro Eliminado';
 		}
 	}
-			
+
 
 
 	//******************************************************************
@@ -6926,12 +6926,12 @@ class Sinv extends Controller {
 
 			$mSQL = "
 			INSERT INTO sinvubica (ubica, descrip)
-			SELECT ubica, ubica descrip FROM sinv 
-			WHERE ubica IS NOT NULL AND ubica <> '' 
+			SELECT ubica, ubica descrip FROM sinv
+			WHERE ubica IS NOT NULL AND ubica <> ''
 			GROUP BY ubica";
 			$this->db->query($mSQL);
-			
-			
+
+
 		}
 
 		if(!$this->db->table_exists('sadacod')){
