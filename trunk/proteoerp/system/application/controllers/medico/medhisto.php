@@ -903,5 +903,10 @@ class Medhisto extends Common {
 			$mSQL="ALTER TABLE `medhisto` ADD COLUMN `cod_cli` CHAR(5) NULL DEFAULT NULL AFTER `numero`";
 			$this->db->simple_query($mSQL);
 		}
+
+		if(!in_array('identificacion',$campos)){
+			$mSQL="ALTER TABLE `medhisto` ADD COLUMN `identificacion` VARCHAR(50) NULL DEFAULT NULL AFTER `nombre`;";
+			$this->db->simple_query($mSQL);
+		}
 	}
 }
