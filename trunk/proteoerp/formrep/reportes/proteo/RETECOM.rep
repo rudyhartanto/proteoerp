@@ -1,0 +1,94 @@
+/**
+ * ProteoERP
+ *
+ * @autor    Andres Hocevar
+ * @license  GNU GPL v3
+*/
+$filter = new DataFilter("Filtro del Reporte");
+$filter->attributes=array('onsubmit'=>'is_loaded()');
+$vrif=$this->datasis->traevalor('RIF');
+$vrif=str_replace('-','',$vrif);
+
+$select=array("'${vrif}' AS rifci" ,"REPLACE(periodo,'-','') as periodo","nrocomp","emision", "tipo_doc as ticom","IF(tipo_doc='FC','01',IF(tipo_doc='ND','02','03')) AS tipo","nombre","rif","numero","nfiscal","general+geneimpu+exento total","general as base", "IF(tipo_doc IN ('FC','ND'),(reiva/impuesto)*geneimpu,0) AS rete","IF(tipo_doc='NC',(reiva/impuesto)*geneimpu,0) AS rete2","if(tipo_doc='FC','0',afecta) as afecta","CONCAT(REPLACE(periodo,'-',''), nrocomp) comprobante, exento","tasa","'0'  impor", "fecha");
+$filter->db->select($select);
+$filter->db->from('riva');
+$filter->db->where("MID(transac,1,1)<>'_'  AND tipo_doc<>'AN' AND general <> 0");
+
+$filter->fechad = new dateonlyField('Desde', 'fechad');
+$filter->fechad->clause  = 'where';
+$filter->fechad->db_name = 'emision';
+$filter->fechad->operator= '>=';
+$filter->fechad->group   = 'Fecha';
+$filter->fechad->rule    = 'required';
+
+$filter->fechah = new dateonlyField('Hasta', 'fechah');
+$filter->fechah->clause  = 'where';
+$filter->fechah->db_name = 'emision';
+$filter->fechah->operator= '<=';
+$filter->fechah->group   = 'Fecha';
+$filter->fechah->rule    = 'required';
+
+$mes=date('m');
+$ano=date('Y');
+if(date('d')> 15){
+	$filter->fechad->insertValue = date('Y-m-01');
+	$filter->fechah->insertValue = date('Y-m-15');
+}else{
+	$filter->fechad->insertValue = date('Y-m-d', mktime(0, 0, 0, $mes-1, 16, $ano));
+	$filter->fechah->insertValue = date('Y-m-d', mktime(0, 0, 0, $mes, 0, $ano));
+}
+
+$filter->salformat = new radiogroupField('Formato de salida','salformat');
+$filter->salformat->options($this->opciones);
+$filter->salformat->insertValue ='PDF';
+$filter->salformat->clause = '';
+
+$filter->buttons('search');
+$filter->build();
+if($this->rapyd->uri->is_set('search') && $filter->is_valid()){
+
+	$mSQL=$filter->db->_compile_select();
+	$mSQL.= " UNION ALL
+	SELECT '${vrif}' AS rifci,REPLACE(periodo,'-','') AS periodo,nrocomp,emision,tipo_doc as ticom, IF(tipo_doc='FC','01',IF(tipo_doc='ND','02','03'))  AS tipo,nombre,rif,numero,nfiscal, reducida+reduimpu  as total, reducida as base, (reiva/impuesto)*reduimpu*IF(tipo_doc IN ('FC','ND'),1,-1) AS rete,IF(tipo_doc='NC',(reiva/impuesto)*geneimpu,0) AS rete2, if(tipo_doc='FC','0',afecta) as afecta , CONCAT(REPLACE(periodo,'-',''),nrocomp) as comprobante, exento,  tasaredu,'0' as impor, fecha FROM riva WHERE emision BETWEEN ".$filter->fechad->newValue." AND ".$filter->fechah->newValue."  AND MID(transac,1,1)<>'_'  AND tipo_doc<>'AN'  and reducida <>0 ";
+	$mSQL.= " UNION ALL
+	SELECT '${vrif}' AS rifci,REPLACE(periodo,'-','') AS periodo,nrocomp,emision,tipo_doc as ticom, IF(tipo_doc='FC','01',IF(tipo_doc='ND','02','03'))  AS tipo,nombre,rif,numero,nfiscal, adicional+adicimpu as total, adicional as base, (reiva/impuesto)*adicimpu*IF(tipo_doc IN ('FC','ND'),1,-1) AS rete,IF(tipo_doc='NC',(reiva/impuesto)*geneimpu,0) AS rete2, if(tipo_doc='FC','0',afecta) as afecta , CONCAT(REPLACE(periodo,'-',''),nrocomp) as comprobante, exento, tasaadic,'0' as impor, fecha FROM riva WHERE emision BETWEEN ".$filter->fechad->newValue." AND ".$filter->fechah->newValue."  AND MID(transac,1,1)<>'_'  AND tipo_doc<>'AN'  and adicional <>0   ORDER BY nrocomp ";
+	//echo $mSQL;
+
+	$sobretabla='';
+ 	$pdf = new PDFReporte($mSQL);
+	$pdf->setHeadValores('TITULO1');
+	$pdf->setSubHeadValores('TITULO2','TITULO3');
+	$pdf->setTitulo('Listado de Retenciones');
+	$pdf->setSobreTabla($sobretabla);
+	$pdf->setSubTitulo('Desde la fecha: '.$this->input->post('fechad')." Hasta ".$this->input->post('fechah'));
+
+	$pdf->AddPage();
+	$pdf->setTableTitu(5,'Times');
+	$pdf->AddCol('rifci'       ,13,'Rif'        ,'C',5);
+	$pdf->AddCol('periodo'     , 8,'Periodo'    ,'C',5);
+	$pdf->AddCol('emision'     ,12,'Emision'    ,'C',5);
+	$pdf->AddCol('ticom'       , 3,'T'          ,'C',5);
+	$pdf->AddCol('tipo'        , 3,'T'          ,'C',5);
+	$pdf->AddCol('nombre'      ,35,'Nombre'     ,'L',4);
+	$pdf->AddCol('rif'         ,13,'Rif-Prov'   ,'C',5);
+	$pdf->AddCol('numero'      ,13,'Factura'    ,'C',5);
+	$pdf->AddCol('nfiscal'     ,13,'Control F'  ,'C',5);
+	$pdf->AddCol('total'       ,13,'Total'      ,'R',5);
+	$pdf->AddCol('base'        ,13,'Base'       ,'R',5);
+	$pdf->AddCol('rete'        ,15,'Retenido'   ,'R',5);
+	$pdf->AddCol('rete2'       ,15,'Monto NC'   ,'R',5);
+	$pdf->AddCol('afecta'      , 9,'Afecta'     ,'C',5);
+	$pdf->AddCol('comprobante' ,15,'Comprobante','C',5);
+	$pdf->AddCol('exento'      ,10,'Exento'     ,'R',5);
+	$pdf->AddCol('tasa'        , 4,'%'          ,'C',5);
+
+	$pdf->setTotalizar('total','base','rete','rete2');
+	$pdf->Table();
+	$pdf->Output();
+}else{
+	if(strlen($filter->error_string)) $data['error']=$filter->error_string;
+	$data['filtro'] = $filter->output;
+	$data['titulo'] = '<h2 class="mainheader">Listado de Retenciones</h2>';
+	$data['head']   = $this->rapyd->get_head();
+	$this->load->view('view_freportes', $data);
+}
