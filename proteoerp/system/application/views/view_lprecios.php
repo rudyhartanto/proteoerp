@@ -45,6 +45,9 @@ console.log(val);
 					iva    = precio-base;
 
 					html += "<li><a href='#'>";
+					if(val.foto=='S'){
+						html += '<img src="<?php echo site_url('inventario/fotos/obtener'); ?>/'+val.id+'">';
+					}
 					html += "<h2>"+$('<span/>').text(val.descrip).html()+"";
 					html += "</h2>";
 					html += "<p>C&oacute;digo: <b>"+$('<span/>').text(val.codigo).html()+"</b> Precio: <b>"+nformat(base,2)+"</b> IVA: <b>"+nformat(iva,2)+"</b></p>";

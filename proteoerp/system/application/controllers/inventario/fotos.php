@@ -1,8 +1,8 @@
 <?php
-/** 
- * ProteoERP 
- * 
- * @autor    Andres Hocevar 
+/**
+ * ProteoERP
+ *
+ * @autor    Andres Hocevar
  * @license  GNU GPL v3
 */
 
@@ -326,17 +326,19 @@ class Fotos extends Controller {
 		$body = curl_exec($ch);
 		curl_close($ch);
 
-		$json = json_decode($body);
-		$results=$json->responseData->results;
-
 		$rt=array();
-		if(count($results)>0){
-			foreach($results as $id=>$result){
-				$rt[$id]['url']    = $result->url;
-				$rt[$id]['tbUrl']  = $result->tbUrl;
-				$rt[$id]['titulo'] = $result->titleNoFormatting;
-				$rt[$id]['ancho']  = $result->width;
-		        $rt[$id]['alto']   = $result->height;
+		$json = json_decode($body);
+		if(is_object($json)){
+			$results=$json->responseData->results;
+
+			if(count($results)>0){
+				foreach($results as $id=>$result){
+					$rt[$id]['url']    = $result->url;
+					$rt[$id]['tbUrl']  = $result->tbUrl;
+					$rt[$id]['titulo'] = $result->titleNoFormatting;
+					$rt[$id]['ancho']  = $result->width;
+					$rt[$id]['alto']   = $result->height;
+				}
 			}
 		}
 		return $rt;
@@ -565,7 +567,7 @@ class Fotos extends Controller {
 		$path->append($this->upload_path);
 		$path->append($nombre);
 
-		if (!empty($nombre) AND file_exists($path->getPath())){
+		if(!empty($nombre) && file_exists($path->getPath())){
 			header('Content-type: image/jpg');
 			$data = file_get_contents($path->getPath());
 		}else{
