@@ -220,8 +220,7 @@ class Stra extends Controller {
 				submit:function(e,v,m,f){
 					e.preventDefault();
 					$.prompt.close();
-				}
-			}
+				}}
 			};
 			$.prompt(mgene);
 			$("#mdesde").datepicker({dateFormat:"dd/mm/yy"});
@@ -240,15 +239,8 @@ class Stra extends Controller {
 
 		$bodyscript .= '
 		$("#bexhi").click( function(){
-			$.post("'.site_url('inventario/stra/exhibtra/create').'",
-			function(data){
-				$("#fmass").html(data);
-				$("#fmass").dialog( { title:"Reposicion de Exhibidores", width: 790, height: 500 } );
-				$("#fmass").dialog( "open" );
-			});
+			window.open(\''.site_url('inventario/stra/exhsurtir').'/\', \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
 		});';
-
-
 
 		$bodyscript .= '
 		$("#boton1").click( function(){
@@ -2113,6 +2105,154 @@ class Stra extends Controller {
 		return true;
 	}
 
+
+	//******************************************************************
+	// Surtir Exhibicion
+	function exhsurtir(){
+
+
+		$mSQL = '
+		SELECT b.id, a.codigo, b.descrip, a.alma, a.existen, b.exhimin, b.exhimax, b.exhimax - a.existen sugerido, c.existen disponible
+		FROM itsinv a 
+		JOIN sinv   b ON a.codigo=b.codigo AND a.alma=b.exhalma 
+		JOIN itsinv c ON a.codigo=c.codigo AND c.alma="0002"
+		WHERE b.existen > 0 AND b.exhimin > a.existen
+		HAVING disponible > 0
+		ORDER BY b.descrip 
+		';
+
+		$query  = $this->db->query($mSQL);
+		$i = 0;
+		$c = 0;
+		$tabla = "
+<div id='encabe'>
+<table width='98%'>
+	<tr>
+		<td>".heading('Resurtir Exhibicion')."</td>
+	</tr>
+</table>
+</div>
+";
+
+		if ($query->num_rows() > 0){
+			$tabla .= '<table class="tc" width="100%">';
+			$tabla .= "<thead>\n";
+			$tabla .= "<tr style='background:#FAEAFA;'>\n";
+			$tabla .= "	<th>Codigo</th>\n";
+			$tabla .= "	<th>Descripcion</th>\n";
+			$tabla .= "	<th>Alamcen</th>\n";
+			$tabla .= "	<th align='right'>Existencia</th>\n";
+			$tabla .= "	<th align='right'>Minimo</th>\n";
+			$tabla .= "	<th align='right'>Maximo</th>\n";
+			$tabla .= "	<th align='right'>Sugerido</th>\n";
+			$tabla .= "	<th align='right'>Disponible</th>\n";
+			$tabla .= "	<th align='right'>Transferir</th>\n";
+
+			$tabla .= "</tr>\n";
+			$tabla .= "</thead>\n";
+			$tabla .= "<tbody>\n";
+			foreach ($query->result() as $row){
+				$tabla .= "<tr>\n";
+				$tabla .= "	<td>".$row->codigo."</td>\n";
+				$tabla .= "	<td>".$row->descrip."</td>\n";
+				$tabla .= "	<td>".$row->alma."</td>\n";
+				$tabla .= "	<td align='right'>".$row->existen."</td>\n";
+
+				$tabla .= "	<td align='right'>"; //.$row->exhimin."</td>\n";
+				$tabla .= "		<input class='inputnum' name='exhimin_$i' id='exhimin_$i' size='4' onkeyUp='' value='".$row->exhimin."'>\n";
+				$tabla .= "	</td>\n";
+
+				$tabla .= "	<td align='right'>";   //.$row->exhimax."</td>\n";
+				$tabla .= "		<input class='inputnum' name='exhimax_$i' id='exhimax_$i' size='4' onkeyUp='' value='".$row->exhimax."'>\n";
+				$tabla .= "	</td>\n";
+
+				$tabla .= "	<td align='right'>".$row->sugerido."</td>\n";
+				$tabla .= "	<td align='right'>".$row->disponible."</td>\n";
+
+				$tabla .= "	<td align='right'>";
+				$tabla .= "		<input class='inputnum' name='cana_$i' id='cana_$i' size='4' onkeyUp='' value='".$row->disponible."'>\n";
+				$tabla .= "		<input name='codigo_$c' id='codigo_$c' type='hidden' value='".$row->id."'>\n";
+				$tabla .= "	</td>\n";
+
+				
+				//.$row->disponible."</td>\n";
+
+				//$tabla .= "	<td>\n";
+				//$tabla .= "		<input class='inputnum' name='cana_$i' id='cana_$i' size='4' onkeyUp='' value='0.00' >\n";
+				//$tabla .= "		<input name='codigo_$c' id='codigo_$c' type='hidden' value='$i' >\n";
+				//$tabla .= "		<input name='idpfac_$i' id='idpfac_$i' type='hidden' value='".$row->id.   "' >\n";
+				//$tabla .= "		<input name='falta_$i'  id='falta_$i'  type='hidden' value='".$row->falta."' >\n";
+	
+				$tabla .= "</tr>\n";
+				$i++;
+			}
+			$tabla .= "<tbody>\n";
+			$tabla .= "</table>\n";
+		}
+
+
+		$title = "
+<div id='encabe'>
+<table width='98%'>
+	<tr>
+		<td>".heading('Resurtir Exhibicion')."</td>
+	</tr>
+</table>
+</div>
+";
+
+
+		// Esto debe hacerse por dataform
+		$styles  = "\n<!-- Estilos -->\n";
+		$styles .= style('rapyd.css');
+		$styles .= style('ventanas.css');
+		$styles .= style('themes/proteo/proteo.css');
+		$styles .= style("themes/ui.jqgrid.css");
+		$styles .= style("themes/ui.multiselect.css");
+		$styles .= style('layout1.css');
+		$styles .= '<link rel="stylesheet" href="'.base_url().'system/application/rapyd/elements/proteo/css/rapyd_components.css" type="text/css" />'."\n";
+
+		$styles .= '
+<style type="text/css">
+	p {font-size:1em; margin: 1ex 0;}
+	p.buttons {text-align:center;line-height:2.5em;}
+	button {line-height: normal;}
+	.hidden {display: none;}
+	ul {z-index:100000;margin:1ex 0;padding:0;list-style:none;cursor:pointer;border:1px solid Black;width:15ex;position:	relative;}
+	ul li {background-color: #EEE;padding: 0.15em 1em 0.3em 5px;}
+	ul ul {display:none;position:absolute;width:100%;left:-1px;bottom:0;margin:0;margin-bottom: 1.55em;}
+	.ui-layout-north ul ul {bottom:auto;margin:0;margin-top:1.45em;}
+	ul ul li { padding: 3px 1em 3px 5px; }
+	ul ul li:hover { background-color: #FF9; }
+	ul li:hover ul { display:block; background-color: #EEE; }
+
+	#feedback { font-size: 0.8em; }
+	#tablas .ui-selecting { background: #FECA40; }
+	#tablas .ui-selected { background: #F39814; color: white; }
+	#tablas { list-style-type: none; margin: 0; padding: 0; width: 90%; }
+	#tablas li { margin: 1px; padding: 0em; font-size: 0.8em; height: 14px; }
+
+	table.tc td.header {padding-right: 1px;padding-left: 1px;font-weight: bold;font-size: 8pt;color: navy;background-color: #f4edd5;text-align:center;}
+	table.tc td.title{padding-right: 1px;padding-left: 1px;font-weight: bold;font-size: 8pt;color:navy;text-align:center;background-color: #fdffdf;}
+	table.tc td.resalte{border-left:solid 1px #daac00;border-top:solid 1px #daac00;text-align:center;font-weight: bold;}
+	table.tc td{ border-left:solid 1px #DAAC00;border-TOP:solid  1px #DAAC00;}
+	table.tc {border-right: #daac00 1px solid;padding-right: 0px;border-top: medium none;padding-left: 0px;padding-bottom: 0px;border-left: medium none;border-bottom:  #daac00 1px solid;font-family: verdana;font-size:8pt;cellspacing: 0px}
+	table.tc td.sin_borde{border-left:solid 1px #DAAC00;border-TOP:solid 1px #DAAC00;text-align:center;border-right:solid 5px #f6f6f6;border-bottom:solid 5px #f6f6f6;}
+
+	.custom-combobox {position: relative;display: inline-block;}
+	.custom-combobox-toggle {position: absolute;top: 0;bottom: 0;margin-left: -1px;padding: 0;}
+	.custom-combobox-input {margin: 0;padding: 5px 10px;}
+
+</style>
+';
+		$data['content'] = $tabla;
+		$data['title']   = $title;
+		$data['head']    = $styles;
+		//$data['head']   .= $script;
+		$this->load->view('view_ventanas_lite',$data);
+
+	}
+
 	//******************************************************************
 	// Instalador
 	function instalar(){
@@ -2158,7 +2298,5 @@ class Stra extends Controller {
 			$mSQL="ALTER TABLE `itstra` ADD UNIQUE INDEX `numero_codigo` (`numero`, `codigo`)";
 			$this->db->simple_query($mSQL);
 		}
-
-
 	}
 }
