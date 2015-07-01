@@ -20,6 +20,7 @@ class Medhvisita extends Common {
 	}
 
 	function index(){
+		$this->instalar();
 		$this->datasis->creaintramenu(array('modulo'=>'172','titulo'=>'Visitas','mensaje'=>'Control de Visitas','panel'=>'SALUD','ejecutar'=>'medico/medhvisita','target'=>'popu','visible'=>'S','pertenece'=>'1','ancho'=>900,'alto'=>600));
 		$this->datasis->modintramenu( 800, 600, substr($this->url,0,-1) );
 		redirect($this->url.'jqdatag');
@@ -617,7 +618,7 @@ class Medhvisita extends Common {
 			) ENGINE=MyISAM CHARSET=latin1 ROW_FORMAT=DYNAMIC
 			";
 
-		$this->db->query($mSQL);
+			$this->db->query($mSQL);
 		}
 	}
 }

@@ -12,7 +12,7 @@ class Catalogo extends Controller {
 	var $bSINV;
 
 	function Catalogo(){
-		parent::Controller(); 
+		parent::Controller();
 		$this->load->library("rapyd");
 		$this->load->library("path");
 		$path=new Path();
@@ -20,7 +20,7 @@ class Catalogo extends Controller {
 		$path->append('/inventario');
 		$this->upload_path =$path->getPath();
 	}
- 
+
 	function index(){
 		$this->datasis->modulo_id(311,1);
 		redirect("inventario/catalogo/filteredgrid");
@@ -30,24 +30,24 @@ class Catalogo extends Controller {
 		$this->bSINV=$this->datasis->modbus($this->sinv);
 		$this->rapyd->load("datafilter2","datagrid");
 		//$this->rapyd->uri->keep_persistence();
-		
+
 		rapydlib("prototype");
 
 		$filter = new DataFilter2("Filtro por Producto", 'catalogo');
-		
+
 		$filter ->codigo = new inputField("C&oacute;digo", "codigo");
 		$filter ->codigo->size=15;
 		$filter ->codigo->append($this->bSINV);
-		
+
 		$filter->buttons("reset","search");
 		$filter->build();
-		
+
 		$grid = new DataGrid("Lista de Art&iacute;culos");
 		$grid->add("inventario/catalogo/dataedit/create");
 		$grid->order_by("codigo","asc");
 		$grid->per_page = 15;
 		$link=anchor('/inventario/catalogo/dataedit/show/<#id#>','<#codigo#>');
-		
+
 		$grid->use_function('str_replace');
 		$grid->column("C&oacute;digo",$link);
 		$grid->column("Fecha","<dbdate_to_human><#estampa#></dbdate_to_human>");
@@ -80,7 +80,7 @@ class Catalogo extends Controller {
 
 		$edit->codigo = new inputField("C&oacute;digo", "codigo");
 		$edit->codigo->rule = "trim|required";
-		$edit->codigo->size = 16;		
+		$edit->codigo->size = 16;
 		$edit->codigo->maxlength = 15;
 		$edit->codigo->append($this->bSINV);
 		//$edit->codigo->size=100;
@@ -91,10 +91,10 @@ class Catalogo extends Controller {
 		$edit->contenido->upload_path  = $this->upload_path;
 		$edit->contenido->cols=90;
 		//$edit->contenido->when = array("create","modify");
-		
+
 		$edit->buttons("modify", "save", "undo", "delete", "back");
 		$edit->build();
-		
+
 		$data['content'] = form_input($data).$edit->output;
 		$data['script'] ='<script language="javascript" type="text/javascript">
 			function retocod() {
@@ -102,7 +102,7 @@ class Catalogo extends Controller {
 				var  codigo=document.getElementById("codigo");
 				if (codigo.value.length>0)
 					codigo.value=codigo.value+";"+mcodigo.value;
-				else 
+				else
 					codigo.value=mcodigo.value;
 			}
 		</script>';//$table->db->where("codigo='$codigo'");
@@ -118,7 +118,7 @@ class Catalogo extends Controller {
 
 		$table = new DataTable(null);
 		$table->cell_attributes = 'style="vertical-align:middle; text-align: center;"';
-		
+
 		$table->db->select(array('nombre','id','comentario'));
 		$table->db->from("sinvfot");
 		//$table->db->where("codigo='$codigo'");

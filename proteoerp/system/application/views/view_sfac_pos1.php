@@ -309,7 +309,7 @@ $(function(){
 							}
 						);
 						falta=faltante();
-						if(falta>0){
+						if(falta>0.0099){
 							can=add_sfpa();
 							$('#tipo_'+can).val('');
 						}
@@ -447,7 +447,7 @@ function itdevolver(numero){
 					}
 				);
 				falta=faltante();
-				if(falta>0){
+				if(falta>0.0099){
 					can=add_sfpa();
 					$('#tipo_'+can).val('');
 				}
