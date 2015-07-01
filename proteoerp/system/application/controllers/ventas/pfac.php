@@ -1540,6 +1540,7 @@ class Pfac extends Controller {
 			return false;
 		}
 
+		$modoiva = $this->datasis->traevalor('MODOIVA');
 		$codigo = $do->get('numero');
 		$fecha  = $do->get('fecha');
 		$vd     = $do->get('vd');
@@ -1581,7 +1582,15 @@ class Pfac extends Controller {
 
 			$iva    += $ittota*$itiva/100;
 			$totals += $ittota;
-			$do->set_rel('itpfac', 'mostrado', $iva + $ittota, $i);
+
+			if($modoiva=='N'){
+				$mostrado= $itpreca;
+			}else{
+				$mostrado= round($itpreca*(100+$itiva)/100,2);
+			}
+			$do->set_rel('itpfac', 'mostrado', $mostrado, $i);
+
+			//$do->set_rel('itpfac', 'mostrado', $iva + $ittota, $i);
 		}
 		$totalg = $totals + $iva;
 
