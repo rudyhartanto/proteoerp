@@ -20,6 +20,7 @@ class Medhisto extends Common {
 	}
 
 	function index(){
+		$this->instalar();
 		$this->datasis->creaintramenu(array('modulo'=>'170','titulo'=>'Historias Medicas','mensaje'=>'Historias Medicas','panel'=>'SALUD','ejecutar'=>'medico/medhisto','target'=>'popu','visible'=>'S','pertenece'=>'1','ancho'=>900,'alto'=>600));
 		$this->datasis->modintramenu( 800, 600, substr($this->url,0,-1) );
 		redirect($this->url.'jqdatag');

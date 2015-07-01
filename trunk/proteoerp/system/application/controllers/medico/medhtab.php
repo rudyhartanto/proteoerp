@@ -706,14 +706,6 @@ class Medhtab extends Controller {
 	}
 
 	function instalar(){
-		if(!$this->db->table_exists('view_medhtab')){
-			$mSQL="
-			CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW `view_medhtab` AS
-			SELECT a.id, b.nombre AS grupo, a.indice, a.nombre, a.descripcion, a.variables
-			FROM (medhtab a JOIN medhgrup b ON ((a.grupo = b.id)))";
-			$this->db->query($mSQL);
-		}
-
 		if(!$this->db->table_exists('medhtab')){
 			$mSQL="CREATE TABLE `medhtab` (
 				`id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -732,6 +724,30 @@ class Medhtab extends Controller {
 			ENGINE=MyISAM
 			ROW_FORMAT=FIXED
 			AUTO_INCREMENT=1";
+			$this->db->query($mSQL);
+		}
+
+		if(!$this->db->table_exists('medhgrup')){
+			$mSQL="CREATE TABLE `medhgrup` (
+				`id` INT(11) NOT NULL AUTO_INCREMENT,
+				`nombre` VARCHAR(80) NULL DEFAULT NULL,
+				PRIMARY KEY (`id`)
+			)
+			COLLATE='latin1_swedish_ci'
+			ENGINE=MyISAM
+			ROW_FORMAT=FIXED
+			AUTO_INCREMENT=1";
+			$this->db->query($mSQL);
+
+			$mSQL="INSERT INTO `medhgrup` (`id`, `nombre`) VALUES (1, 'DATOS BASICOS')";
+			$this->db->query($mSQL);
+		}
+
+		if(!$this->db->table_exists('view_medhtab')){
+			$mSQL="
+			CREATE ALGORITHM=UNDEFINED SQL SECURITY INVOKER VIEW `view_medhtab` AS
+			SELECT a.id, b.nombre AS grupo, a.indice, a.nombre, a.descripcion, a.variables
+			FROM (medhtab a JOIN medhgrup b ON ((a.grupo = b.id)))";
 			$this->db->query($mSQL);
 		}
 
