@@ -115,7 +115,7 @@ if($this->rapyd->uri->is_set('search') && $filter->is_valid()){
 	$query[0]=$db[0]->compile_select();
 	$query[1]=$db[1]->compile_select();
 
-	$mSQL=implode(' UNION ',$query);
+	$mSQL=implode(' UNION ALL ',$query);
 
 	//echo $mSQL;
 	$pdf = new PDFReporte($mSQL);

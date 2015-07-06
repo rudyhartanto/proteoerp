@@ -481,7 +481,7 @@ class Medhvisita extends Common {
 		$par=array(
 			'nombre' => 'Descripci&oacute;n',
 			'obj'    => 'descripcion',
-			'tipoadc'=> $row->tipoadc,
+			'tipoadc'=> '',
 		);
 
 		$tabula = $edit->getval('tabula');

@@ -450,8 +450,8 @@ class Medrec extends Controller {
 		$edit->pre_process('update', '_pre_update' );
 		$edit->pre_process('delete', '_pre_delete' );
 
-		$edit->codigo = new inputField('Codigo','codigo');
-		$edit->codigo->rule='';
+		$edit->codigo = new inputField('C&oacute;digo','codigo');
+		$edit->codigo->rule='required';
 		$edit->codigo->size =12;
 		$edit->codigo->maxlength =10;
 
