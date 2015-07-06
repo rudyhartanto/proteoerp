@@ -2260,12 +2260,13 @@ class Smov extends Controller {
 
 				// Para Inmobiliaras
 				if( $tipo_doc=='ND' && substr($numero,0,1) == 'R' ){
-					$numref = $this->datasis->dameval('SELECT num_ref FROM smov WHERE tipo_doc="ND" AND numero='.$dbnumero);
-					$an = $this->datasis->dameval('SELECT COUNT(*) FROM edrec WHERE numero='.$this->db->escape($numref));
+					$dbnumref = $this->db->escape($numref);
+					$numref   = $this->datasis->dameval('SELECT num_ref FROM smov WHERE tipo_doc="ND" AND numero='.$dbnumero);
+					$an = intval($this->datasis->dameval('SELECT COUNT(*) FROM edrec WHERE numero='.$dbnumref));
 					if ( $an > 0 ){
-						$anomes = $this->datasis->dameval('SELECT anomes FROM edrec WHERE numero='.$this->db->escape($numref));
+						$anomes = $this->datasis->dameval('SELECT anomes FROM edrec WHERE numero='.$dbnumref);
 
-						$mSQL = "SELECT * FROM editrec WHERE tipo='FO' AND numero=".$this->db->escape($numref);
+						$mSQL = "SELECT * FROM editrec WHERE tipo='FO' AND numero=".$dbnumref;
 						$editr = $this->db->query($mSQL);
 						if ($editr->num_rows() > 0){
 							foreach( $editr->result() as  $row ) {
