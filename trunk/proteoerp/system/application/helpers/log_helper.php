@@ -14,8 +14,18 @@ function logusu($modulo,$comentario){
 	$dbusr       = $CI->db->escape($usr);
 	$dbcomentario= $CI->db->escape($comentario);
 	$dbmodulo    = $CI->db->escape($modulo);
+	if(!$CI->db->field_exists('conexion', 'logusu')){
+		$mSQL = "ALTER TABLE `logusu` ADD COLUMN `conexion` VARCHAR(50) NULL AFTER `comenta`";
+		$CI->db->simple_query($mSQL);
+	}
 
-	$mSQL="INSERT INTO logusu (usuario,fecha,hora,modulo,comenta) VALUES (${dbusr},CURDATE(),CURTIME(),${dbmodulo},${dbcomentario})";
+	if(isset($_SERVER['REMOTE_ADDR'])){
+		$dbip = $CI->db->escape($_SERVER['REMOTE_ADDR']);
+	}else{
+		$dbip='\'\'';
+	}
+
+	$mSQL="INSERT INTO logusu (usuario,fecha,hora,modulo,comenta,conexion) VALUES (${dbusr},CURDATE(),CURTIME(),${dbmodulo},${dbcomentario},${dbip})";
 	return $CI->db->simple_query($mSQL);
 }
 

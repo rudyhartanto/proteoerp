@@ -2872,7 +2872,7 @@ class Sinv extends Controller {
 
 		$edit->ubica = new dropdownField('Ubicaci&oacute;n', 'ubica');
 		$edit->ubica->size=9;
-		$edit->ubica->option('','Seleccione un Departamento');
+		$edit->ubica->option('','Seleccionar');
 		$edit->ubica->options('SELECT ubica, CONCAT(ubica,\'-\',descrip) descrip FROM sinvubica ORDER BY ubica');
 		$edit->ubica->style='width:100px;white-space:nowrap;';
 

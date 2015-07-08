@@ -242,8 +242,8 @@ piecontinuo;
 $mod     = $clinea = false;
 $npagina = true;
 $i       = 0;
-
-foreach ($detalle AS $items){ $i++;
+$restan  = count($detalle);
+foreach ($detalle as $items){ $i++; $restan--;
 	do {
 		if($npagina){
 			$this->incluir('X_CINTILLO');
@@ -262,7 +262,7 @@ foreach ($detalle AS $items){ $i++;
 				<td style="text-align: right"><?php $ittot['abono']   += $items->abono  ; echo nformat($items->abono  ,2); ?></td>
 				<?php
 				$lineas++;
-				if($lineas >= $maxlin){
+				if($lineas >= $maxlin && $restan>0){
 					$lineas =0;
 					$npagina=true;
 					echo $pie_continuo;

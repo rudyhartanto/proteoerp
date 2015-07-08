@@ -80,7 +80,7 @@ class gser extends Controller {
 
 
 		//Panel Central
-		$centerpanel = $grid->centerpanel( $id = "radicional", $param['grids'][0]['gridname'], $param['grids'][1]['gridname'] );
+		$centerpanel = $grid->centerpanel( $id = 'radicional', $param['grids'][0]['gridname'], $param['grids'][1]['gridname'] );
 
 		$adic = array(
 			array('id'=>'fgasto', 'title'=>'Agregar/Editar Gasto/Egreso'),
