@@ -228,7 +228,7 @@ class Medhisto extends Common {
 		));*/
 
 
-		/*$grid->addField('cedula');
+		$grid->addField('cedula');
 		$grid->label('Cedula');
 		$grid->params(array(
 			'search'        => 'true',
@@ -237,7 +237,7 @@ class Medhisto extends Common {
 			'edittype'      => "'text'",
 			'editrules'     => '{ required:true}',
 			'editoptions'   => '{ size:20, maxlength: 20 }',
-		));*/
+		));
 
 
 		$grid->addField('nombre');
@@ -252,7 +252,7 @@ class Medhisto extends Common {
 		));
 
 
-		/*$grid->addField('papellido');
+		$grid->addField('apellido');
 		$grid->label('Apellidos');
 		$grid->params(array(
 			'search'        => 'true',
@@ -261,7 +261,7 @@ class Medhisto extends Common {
 			'edittype'      => "'text'",
 			'editrules'     => '{ required:true}',
 			'editoptions'   => '{ size:50, maxlength: 50 }',
-		));*/
+		));
 
 /*
 		$grid->addField('sapellido');
@@ -406,7 +406,7 @@ class Medhisto extends Common {
 			'edittype'      => "'text'",
 			'editrules'     => '{ required:true}',
 			'editoptions'   => '{ size:100, maxlength: 100 }',
-		));*/
+		));
 
 
 		$grid->addField('usuario');
@@ -446,7 +446,7 @@ class Medhisto extends Common {
 		));
 
 
-		/*$grid->addField('edad');
+		$grid->addField('edad');
 		$grid->label('Edad');
 		$grid->params(array(
 			'search'        => 'true',
@@ -510,9 +510,9 @@ class Medhisto extends Common {
 		$grid       = $this->jqdatagrid;
 
 		// CREA EL WHERE PARA LA BUSQUEDA EN EL ENCABEZADO
-		$mWHERE = $grid->geneTopWhere('medhisto');
+		$mWHERE = $grid->geneTopWhere('view_medhisto');
 
-		$response   = $grid->getData('medhisto', array(array()), array(), false, $mWHERE, 'numero', 'desc' );
+		$response   = $grid->getData('view_medhisto', array(array()), array(), false, $mWHERE, 'numero', 'desc' );
 		$rs = $grid->jsonresult( $response);
 		echo $rs;
 	}
