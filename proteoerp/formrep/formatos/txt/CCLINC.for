@@ -133,8 +133,8 @@ $encabezado_tabla .= str_pad('', 80, $separador)."\n";
 //************************
 $pie_final  = CHR(18).str_pad('', 80, $separador)."\n";
 $pie_final .= str_pad('MONTO EXENTO: ',                   64,' ',0).chr(15).chr(14).str_pad($s_exento , 13,' ',0).chr(18)."\n";
-$pie_final .= str_pad("BASE IMPONIBLE SEGUN ALICUOTA DEL ${alicuota1}%: ",      64,' ',0).chr(15).chr(14).str_pad($s_tasa,    13,' ',0).chr(18)."\n";
-$pie_final .= str_pad("MONTO TOTAL DEL IMPUESTO SEGUN ALICUOTA ${alicuota1}%: ",64,' ',0).chr(15).chr(14).str_pad($s_montasa,13,' ',0).chr(18)."\n";
+$pie_final .= str_pad("BASE IMPONIBLE SEGUN ALICUOTA DEL ${alicuota1}%: ",      64,' ',0).chr(15).chr(14).str_pad($s_montasa,13,' ',0).chr(18)."\n";
+$pie_final .= str_pad("MONTO TOTAL DEL IMPUESTO SEGUN ALICUOTA ${alicuota1}%: ",64,' ',0).chr(15).chr(14).str_pad($s_tasa   ,13,' ',0).chr(18)."\n";
 if($alicuota2>0){
 	$pie_final .= str_pad("BASE IMPONIBLE SEGUN ALICUOTA DEL ${alicuota2}%: ",      64,' ',0).chr(15).chr(14).str_pad($s_monredu,    13,' ',0).chr(18)."\n";
 	$pie_final .= str_pad("MONTO TOTAL DEL IMPUESTO SEGUN ALICUOTA ${alicuota2}%: ",64,' ',0).chr(15).chr(14).str_pad($s_reducida,   13,' ',0).chr(18)."\n";

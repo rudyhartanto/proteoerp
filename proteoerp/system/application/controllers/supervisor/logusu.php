@@ -291,6 +291,16 @@ class Logusu extends Controller {
 			'editoptions'   => "'{rows:\"2\", cols:\"60\"}'",
 		));
 
+		$grid->addField('conexion');
+		$grid->label('Conexi&oacute;n');
+		$grid->params(array(
+			'search'        => 'true',
+			'editable'      => $editar,
+			'width'         => 100,
+			'edittype'      => "'textarea'",
+			'editoptions'   => "'{rows:\"2\", cols:\"60\"}'",
+		));
+
 		$grid->addField('id');
 		$grid->label('Id');
 		$grid->params(array(
@@ -337,8 +347,7 @@ class Logusu extends Controller {
 	/**
 	* Busca la data en el Servidor por json
 	*/
-	function getdata()
-	{
+	function getdata(){
 		$grid       = $this->jqdatagrid;
 
 		// CREA EL WHERE PARA LA BUSQUEDA EN EL ENCABEZADO
@@ -352,8 +361,7 @@ class Logusu extends Controller {
 	/**
 	* Guarda la Informacion
 	*/
-	function setData()
-	{
+	function setData(){
 
 	}
 
@@ -428,17 +436,17 @@ class Logusu extends Controller {
 	}
 
 	function _pre_insert($do){
-		$do->error_message_ar['pre_ins']='';
-		return true;
+		$do->error_message_ar['pre_ins']='Deshabilitado';
+		return false;
 	}
 
 	function _pre_update($do){
-		$do->error_message_ar['pre_upd']='';
-		return true;
+		$do->error_message_ar['pre_upd']='Deshabilitado';
+		return false;
 	}
 
 	function _pre_delete($do){
-		$do->error_message_ar['pre_del']='';
+		$do->error_message_ar['pre_del']='Deshabilitado';
 		return false;
 	}
 
@@ -481,6 +489,10 @@ class Logusu extends Controller {
 			) ENGINE=MyISAM DEFAULT CHARSET=latin1";
 			$this->db->query($mSQL);
 		}
+
+		if(!$this->db->field_exists('conexion', 'logusu')){
+			$mSQL = "ALTER TABLE `logusu` ADD COLUMN `conexion` VARCHAR(50) NULL AFTER `comenta`";
+			$this->db->simple_query($mSQL);
+		}
 	}
 }
-?>

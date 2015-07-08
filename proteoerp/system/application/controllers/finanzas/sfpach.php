@@ -40,17 +40,17 @@ class sfpach extends Controller {
 		$grid->setUrlput(site_url($this->url.'setdata/'));
 
 		//Botones Panel Izq
-		$grid->wbotonadd(array('id'=>'depositar', 'img'=>'assets/default/images/cheque.png',  'alt' => 'Enviar Cheques',  "label"=>"Enviar a Depositar", 'tema'=>'anexos'));
-		$grid->wbotonadd(array('id'=>'efectivo',  'img'=>'assets/default/images/monedas.png', 'alt' => 'Enviar Efectivo', "label"=>"Enviar Efectivo",    'tema'=>'anexos'));
-		$grid->wbotonadd(array('id'=>'ocultar',   'img'=>'images/delete.png',                 'alt' => 'No Depositar',    "label"=>"No Depositar"));
+		$grid->wbotonadd(array('id'=>'depositar', 'img'=>'assets/default/images/cheque.png',  'alt' => 'Enviar Cheques',  'label'=>'Enviar a Depositar', 'tema'=>'anexos'));
+		$grid->wbotonadd(array('id'=>'efectivo',  'img'=>'assets/default/images/monedas.png', 'alt' => 'Enviar Efectivo', 'label'=>'Enviar Efectivo'   , 'tema'=>'anexos'));
+		$grid->wbotonadd(array('id'=>'ocultar',   'img'=>'images/delete.png',                 'alt' => 'No Depositar',    'label'=>'No Depositar'));
 		$WestPanel = $grid->deploywestp();
 
-		$mSQL  = "SELECT codbanc, CONCAT(codbanc, ' ', TRIM(banco), IF(tbanco='CAJ',' ',numcuent) ) banco FROM banc WHERE tbanco='CAJ' AND activo='S' AND codbanc<>'00' ORDER BY codbanc ";
-		$cajas = $this->datasis->llenaopciones($mSQL, true, 'envia');
+		$mSQL   = "SELECT codbanc, CONCAT(codbanc, ' ', TRIM(banco), IF(tbanco='CAJ',' ',numcuent) ) banco FROM banc WHERE tbanco='CAJ' AND activo='S' AND codbanc<>'00' ORDER BY codbanc ";
+		$cajas  = $this->datasis->llenaopciones($mSQL, true, 'envia');
 		$efcaja = $this->datasis->llenaopciones($mSQL, true, 'efcaja');
 
-		$mSQL   = "SELECT codbanc, CONCAT(codbanc, ' ', TRIM(banco),' ', IF(tbanco='CAJ',' ',numcuent) ) banco FROM banc WHERE tbanco<>'CAJ' AND activo='S' ORDER BY codbanc ";
-		$bancos = $this->datasis->llenaopciones($mSQL, true, 'recibe');
+		$mSQL    = "SELECT codbanc, CONCAT(codbanc, ' ', TRIM(banco),' ', IF(tbanco='CAJ',' ',numcuent) ) banco FROM banc WHERE tbanco<>'CAJ' AND activo='S' ORDER BY codbanc ";
+		$bancos  = $this->datasis->llenaopciones($mSQL, true, 'recibe');
 		$efbanco = $this->datasis->llenaopciones($mSQL, true, 'efbanco');
 
 		$SouthPanel = $grid->SouthPanel($this->datasis->traevalor('TITULO1'));
@@ -133,49 +133,52 @@ class sfpach extends Controller {
 
 		$bodyscript .= '
 		$(function() {
-			var 	envia = $( "#envia" ),
-			recibe = $( "#recibe" ),
-			efcaja  = $( "#efcaja" ),
-			efbanco = $( "#efbanco" ),
-			efmonto = $( "#efmonto" ),
-			allFields = $( [] ).add( envia ).add( recibe ).add(efcaja).add(efbanco).add(efmonto);
-			var grid = jQuery("#newapi'.$grid.'");
-			//var s = grid.getGridParam(\'selarrrow\'); ';
+			var envia = $( "#envia" ),
+			recibe    = $("#recibe"),
+			efcaja    = $("#efcaja"),
+			efbanco   = $("#efbanco"),
+			efmonto   = $("#efmonto"),
+			allFields = $([]).add( envia ).add( recibe ).add(efcaja).add(efbanco).add(efmonto);
+			var grid  = jQuery("#newapi'.$grid.'");
+		';
 
 		$bodyscript .= '
-			$( "#depositar" ).click(function() {
+			$("#depositar").click(function() {
 				var s = grid.getGridParam(\'selarrrow\');
 				if(s.length){
 					sumamonto();
-					$( "#deposito-form" ).dialog( "open" );
+					$("#deposito-form").dialog("open");
 				} else {
 					$.prompt("<h1>Seleccione uno o mas Cheques</h1>");
 				}
 			});
 
-			$( "#deposito-form" ).dialog({
+			$("#deposito-form").dialog({
 				autoOpen: false,
 				height: 300,
 				width: 420,
 				modal: true,
 				buttons: {
-					"Guardar": function() {
+					"Guardar": function(){
 						var bValid = true;
 						s = grid.getGridParam(\'selarrrow\');
 						allFields.removeClass( "ui-state-error" );
 						bValid = bValid && probar( envia,  "Caja" );
 						bValid = bValid && probar( recibe, "Banco" );
-						if ( bValid ) {
-		                                        $.ajax({
-		                                                type: "POST",
-		                                                url:"'.site_url("finanzas/sfpach/depositos").'",
-		                                                processData: true,
-		                                                data: "envia="+escape(envia.val())+"&recibe="+escape(recibe.val())+"&monto="+escape(montotal)+"&ids="+escape(s),
-		                                                success: function(a){
+						if(bValid){
+							$.ajax({
+								type: "POST",
+								url:"'.site_url('finanzas/sfpach/depositos').'",
+								processData: true,
+								data: "envia="+escape(envia.val())+"&recibe="+escape(recibe.val())+"&monto="+escape(montotal)+"&ids="+escape(s),
+								success: function(a){
 									var res = $.parseJSON(a);
 									$.prompt(res.mensaje,
-										{ submit: function(e,v,m,f){
-											window.open(\''.base_url().'formatos/ver/BANCAJA/\'+res.numero, \'_blank\', \'width=800,height=600,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-400), screeny=((screen.availWidth/2)-300)\');
+										{
+											submit: function(e,v,m,f){
+												if(res.status=="A"){
+													window.open(\''.base_url().'formatos/ver/BANCAJA/\'+res.pk, \'_blank\', \'width=800,height=600,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-400), screeny=((screen.availWidth/2)-300)\');
+												}
 											}
 										}
 									);
@@ -183,24 +186,27 @@ class sfpach extends Controller {
 									sumamonto();
 									return [true, a ];
 								}
-							})
-							$( this ).dialog( "close" );
+							});
+							$(this).dialog( "close" );
 						}
 					},
-					Cancelar: function() {$( this ).dialog( "close" );}
+					Cancelar: function(){
+						$( this ).dialog( "close" );
+					}
 				},
-				close: function() {allFields.val( "" ).removeClass( "ui-state-error" );}
-			});
-			';
+				close: function(){
+					allFields.val( "" ).removeClass( "ui-state-error" );
+				}
+			});';
 
 
 		$bodyscript .= '
 			// Enviar deposito en efectivo
-			$( "#efectivo" ).click(function() {
-				$( "#efectivo-form" ).dialog( "open" );
+			$("#efectivo").click(function() {
+				$("#efectivo-form").dialog( "open" );
 			});
 
-			$( "#efectivo-form" ).dialog({
+			$("#efectivo-form").dialog({
 				autoOpen: false,
 				height: 300,
 				width: 420,
@@ -212,58 +218,65 @@ class sfpach extends Controller {
 						bValid = bValid && probar( efcaja,  "Caja" );
 						bValid = bValid && probar( efbanco, "Banco" );
 						bValid = bValid && probar( efmonto, "Monto" );
-						if ( bValid ) {
+						if(bValid){
 							$.ajax({
 								type: "POST",
-								url:"'.site_url("finanzas/sfpach/efectivo").'",
+								url:"'.site_url('finanzas/sfpach/efectivo').'",
 								processData: true,
 								data: "caja="+escape(efcaja.val())+"&banco="+escape(efbanco.val())+"&monto="+escape(efmonto.val()),
 								success: function(a){
 									var res = $.parseJSON(a);
 									$.prompt(res.mensaje,
-									{ submit: function(e,v,m,f){
-											window.open(\''.base_url().'formatos/ver/BANCAJA/\'+res.numero, \'_blank\', \'width=800,height=600,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-400), screeny=((screen.availWidth/2)-300)\');
-									}});
+									{
+										submit: function(e,v,m,f){
+											if(res.status=="A"){
+												window.open(\''.base_url().'formatos/ver/BANCAJA/\'+res.pk, \'_blank\', \'width=800,height=600,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-400), screeny=((screen.availWidth/2)-300)\');
+											}
+										}
+									});
 									return [true, a ];
 								}
 							})
 							$( this ).dialog( "close" );
 						}
 					},
-					Cancelar: function() {$( this ).dialog( "close" );}
+					Cancelar: function() {
+						$( this ).dialog( "close" );
+					}
 				},
-				close: function() {allFields.val( "" ).removeClass( "ui-state-error" );}
+				close: function() {
+					allFields.val( "" ).removeClass( "ui-state-error" );
+				}
 			});';
-
 
 		$bodyscript .= '
 			// No Depositar
-			$( "#ocultar" ).click(function() {
+			$("#ocultar").click(function() {
 				var s = grid.getGridParam(\'selarrrow\');
 				if(s.length){
 					sumamonto();
 					$( "#nodeposito-form" ).dialog( "open" );
-				} else {
+				}else{
 					$.prompt("<h1>Seleccione uno o mas Cheques</h1>");
 				}
 			});
 
-			$( "#nodeposito-form" ).dialog({
+			$("#nodeposito-form").dialog({
 				autoOpen: false,
 				height: 200,
 				width: 400,
 				modal: true,
 				buttons: {
-					"Guardar": function() {
+					"Guardar": function(){
 						var bValid = true;
 						s = grid.getGridParam(\'selarrrow\');
 						allFields.removeClass( "ui-state-error" );
 						bValid = bValid && probar( envia,  "Caja" );
 						bValid = bValid && probar( recibe, "Banco" );
-						if ( bValid ) {
+						if(bValid){
 							$.ajax({
 								type: "POST",
-								url:"'.site_url("finanzas/sfpach/nodeposito").'",
+								url:"'.site_url('finanzas/sfpach/nodeposito').'",
 								processData: true,
 								data: "envia="+escape(envia.val())+"&recibe="+escape(recibe.val())+"&monto="+escape(montotal)+"&ids="+escape(s),
 								success: function(a){
@@ -281,15 +294,16 @@ class sfpach extends Controller {
 							$( this ).dialog( "close" );
 						}
 					},
-					Cancelar: function() {$( this ).dialog( "close" );}
+					Cancelar: function(){
+						$( this ).dialog( "close" );
+					}
 				},
-				close: function() {allFields.val( "" ).removeClass( "ui-state-error" );}
-			});
-			';
+				close: function(){
+					allFields.val( "" ).removeClass( "ui-state-error" );
+				}
+			});';
 
-		$bodyscript .= '
-		});';
-
+		$bodyscript .= '});';
 		$bodyscript .= '
 		function sumamonto(){
 			var grid     = jQuery("#newapi'.$grid.'");
@@ -297,10 +311,8 @@ class sfpach extends Controller {
 			var rowcells = new Array();
 			var s = grid.getGridParam(\'selarrrow\');
 			$("#ladicional").html("");
-			if(s.length)
-			{
-				for(var i=0;i<s.length;i++)
-				{
+			if(s.length){
+				for(var i=0;i<s.length;i++){
 					var entirerow = grid.jqGrid(\'getRowData\',s[i]);
 					total += Number(entirerow["monto"]);
 				}
@@ -323,7 +335,7 @@ class sfpach extends Controller {
 		$grid->addField('status');
 		$grid->label('Estatus');
 		$grid->params(array(
-				'width'    => 30,
+				'width'    => 40,
 				'align'    => "'center'",
 				'editable' => 'false',
 				'edittype' => "'text'"
@@ -347,7 +359,7 @@ class sfpach extends Controller {
 		$grid->label('Tipo');
 		$grid->params(array(
 				'align'         => "'center'",
-				'width'         => 30,
+				'width'         => 40,
 				'editable'      => 'true',
 				'edittype'      => "'select'",
 				'editrules'     => '{ required:true }',
@@ -432,7 +444,7 @@ class sfpach extends Controller {
 		$grid->addField('tipo_doc');
 		$grid->label('Doc.');
 		$grid->params(array(
-				'width'    => 30,
+				'width'    => 40,
 				'align'    => "'center'",
 				'editable' => 'false',
 				'edittype' => "'text'"
@@ -534,7 +546,7 @@ class sfpach extends Controller {
 	function setData(){
 		//$this->load->library('jqdatagrid');
 		$oper   = $this->input->post('oper');
-		$id     = $this->input->post('id');
+		$id     = intval($this->input->post('id'));
 
 		$data = $_POST;
 		unset($data['oper']);
@@ -542,39 +554,73 @@ class sfpach extends Controller {
 		unset($data['cajero']);
 
 		if($oper == 'add'){
-			echo 'De este modulo no se puede Agregado';
-			return;
+			echo 'De este modulo no se puede Agregar';
+			return false;
+		}elseif($oper == 'edit'){
 
-		} elseif($oper == 'edit') {
-			//REVISA SI DEBE GENERAR MOVIMIENTO EF
-			$tipo_doc = $this->datasis->dameval("SELECT tipo_doc FROM sfpa WHERE id=$id");
-			$montoo   = $this->datasis->dameval("SELECT monto FROM sfpa WHERE id=$id");
-			if ($tipo_doc == 'CC') {
-				$dife = 0;
-			} else
-				$dife =    $montoo - $data['monto'];
+			if($id>0){
+				$posibles=array('tipo','num_ref','cuentach','monto','banco');
+				foreach($data as $ind=>$val){
+					if(!in_array($ind,$posibles)){
+						echo 'Campo no permitido ('.$ind.')';
+						return false;
+					}
+				}
 
-			if ( round($dife,2) <> 0 ) {
-				$query = $this->db->get_where('sfpa', array('id'=>$id) );
-				$row = $query->row_array();
-				$row['tipo'] = 'EF';
-				$row['monto'] = $dife;
-				unset($row['id']);
-				$this->db->insert('sfpa', $row);
-				logusu('SFPA',"Cambia forma de pago: id=$id  monto=$montoo ");
-			} else {
-				unset($data['monto']);
+				if(isset($data['monto'])){
+					$data['monto'] = floatval($data['monto']);
+				}else{
+					echo 'Faltan parametros';
+					return false;
+				}
+
+				if(isset($data['banco'])){
+					$dbbanco= $this->db->escape($data['banco']);
+					$cana   = intval($this->datasis->damerow("SELECT COUNT(*) AS cana FROM banc WHERE codbanc=${dbbanco}"));
+					if($cana == 0){
+						echo 'Banco no existe';
+						return false;
+					}
+				}else{
+					echo 'Faltan parametros';
+					return false;
+				}
+
+				//REVISA SI DEBE GENERAR MOVIMIENTO EF
+				$row = $this->datasis->damerow("SELECT tipo_doc, monto FROM sfpa WHERE id=${id}");
+				if(!empty($row)){
+					$tipo_doc = $row['tipo_doc'];
+					$montoo   = floatval($row['monto']);
+				}else{
+					return false;
+				}
+
+				if($tipo_doc=='CC'){
+					$dife = 0;
+				}else{
+					$dife = $montoo-$data['monto'];
+				}
+
+				if(round($dife,2)!= 0){
+					$query = $this->db->get_where('sfpa',array('id'=>$id));
+					$row = $query->row_array();
+					$row['tipo']  = 'EF';
+					$row['monto'] = $dife;
+
+					unset($row['id']);
+					$this->db->insert('sfpa', $row);
+					logusu('sfpa',"Cambia forma de pago: id=${id} monto=${montoo}");
+				}else{
+					unset($data['monto']);
+				}
+				$this->db->where('id', $id);
+				$this->db->update('sfpa', $data);
+				echo 'Registro Guardado';
 			}
-			$this->db->where('id', $id);
-			$this->db->update('sfpa', $data);
-			echo 'Registro Guardado ';
-			return;
-
-		} elseif($oper == 'del') {
-			//$this->db->simple_query("DELETE FROM sfpa WHERE id=$id ");
-			logusu('sfpa',"Cambio de Cheque $id ELIMINADO");
-			echo "Registro Eliminado";
-			return;
+			return true;
+		}elseif($oper == 'del'){
+			echo 'Operacion deshabilitada';
+			return false;
 		}
 	}
 
@@ -583,37 +629,77 @@ class sfpach extends Controller {
 	//  Guarda los deposios pendientes
 	//
 	function depositos(){
-		$envia   = $this->input->get_post('envia');
-		$recibe  = $this->input->get_post('recibe');
-		$monto   = floatval($this->input->get_post('monto'));
-		$cheques = $this->input->get_post('ids');
-		$fecha   = date('Ymd');
+		$envia    = $this->input->get_post('envia');
+		$recibe   = $this->input->get_post('recibe');
+		$monto    = floatval($this->input->get_post('monto'));
+		$cheques  = $this->input->get_post('ids');
+		$fecha    = date('Ymd');
+		$dbenvia  = $this->db->escape($envia);
+		$dbrecibe = $this->db->escape($recibe);
+
+		$rt = array(
+			'status'  => 'B',
+			'numero'  => null,
+			'mensaje' => 'Registro Agregado'
+		);
+
+		if(!(is_string($envia) && is_string($cheques) && is_string($recibe))){
+			$rt['mensaje']='Error en los parametros';
+			echo json_encode($rt);
+			return false;
+		}
+
+		//Limpia la entrada
+		$cheques = preg_replace('/,+/' ,',',$cheques);
+		$cheques = preg_replace('/^,+/','' ,$cheques);
+		$cheques = preg_replace('/,+$/','' ,$cheques);
+
+		if(preg_match('/^[0-9\,]+$/',$cheques)==0){
+			$rt['mensaje']='Error en los parametros, no se realizo la transaccion';
+			echo json_encode($rt);
+			return false;
+		}
+
+		$row = $this->datasis->damerow("SELECT numcuent,banco,saldo FROM banc WHERE codbanc=${dbenvia}");
+		if(!empty($row)){
+			$numcuent = $row['numcuent'];
+			$banco    = $row['banco'];
+			$saldo    = floatval($row['saldo']);
+		}else{
+			$rt['mensaje']='Emisor invalido, no se realizo la transaccion';
+			echo json_encode($rt);
+			return false;
+		}
+
+		$cana = intval($this->datasis->damerow("SELECT COUNT(*) AS cana FROM banc WHERE codbanc=${dbrecibe}"));
+		if($cana == 0){
+			$rt['mensaje']='Receptor invalido, no se realizo la transaccion';
+			echo json_encode($rt);
+			return false;
+		}
 
 		// Revisamos si el monto coincide con la suma
-		$mMonto = intval($this->datasis->dameval("SELECT SUM(monto) AS val FROM sfpa WHERE id IN ( ${cheques} )"));
-
-		if ($monto <> $mMonto) memowrite("Diferencia de monto ${monto} <> ${mMonto}");
-
-		$monto = $mMonto;
-
-		$transac = $this->datasis->fprox_numero('ntransa');
+		$mMonto = floatval($this->datasis->dameval("SELECT SUM(monto) AS val FROM sfpa WHERE id IN (${cheques})"));
+		if($monto!=$mMonto) memowrite("Diferencia de monto ${monto} <> ${mMonto}");
+		$monto   = $mMonto;
 
 		$i = 0;
-		while ( $i == 0){
-			$numero  =$this->datasis->fprox_numero('nbcaj');
-			$cana = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM bcaj WHERE numero='${numero}'"));
-			if ($cana == 0 ){
+		while($i == 0){
+			$numero = $this->datasis->fprox_numero('nbcaj');
+			$cana   = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM bcaj WHERE numero='${numero}'"));
+			if($cana == 0){
 				$i = 1;
 			}
 		}
 
+		$transac = $this->datasis->fprox_numero('ntransa');
 		$numeroe = $this->datasis->banprox($envia);
 		$numeror = $this->datasis->banprox('00');
-		$data = array();
+		$hora    = date('H:i:s');
 
+		$data = array();
 		$data['fecha']      = $fecha;
 		$data['numero']     = $numero;
-
 		$data['tipo']       = 'DE';
 		$data['tarjeta']    = 0;
 		$data['tdebito']    = 0;
@@ -623,40 +709,36 @@ class sfpach extends Controller {
 		$data['islr']       = 0;
 		$data['monto']      = $monto;
 		$data['envia']      = $envia;
-
-		$data['bancoe']     = $this->datasis->dameval("SELECT banco FROM banc WHERE codbanc='$envia'");
-
+		$data['bancoe']     = $banco;
 		$data['tipoe']      = 'ND';
 		$data['numeroe']    = $numeroe;
-
 		$data['codbanc']    = $recibe;
 		$data['recibe']     = '00';
 		$data['bancor']     = 'DEPOSITO EN TRANSITO';
 		$data['tipor']      = 'DE';
-
 		$data['numeror']    = $numeror;
-		$data['concepto']   = "TRANSITO DESDE CAJA $envia A BANCO $recibe ";
-		$data['concep2']    = "CHEQUES";
+		$data['concepto']   = "TRANSITO DESDE CAJA ${envia} A BANCO ${recibe} ";
+		$data['concep2']    = 'CHEQUES';
 		$data['status']     = 'P';  // Pendiente/Cerrado/Anulado
 		$data['usuario']    = $this->secu->usuario();
 		$data['estampa']    = $fecha;
-		$data['hora']       = date('H:i:s');
+		$data['hora']       = $hora;
 		$data['transac']    = $transac;
 
 		//Guarda en BCAJ
 		$this->db->insert('bcaj', $data);
-		$this->datasis->actusal( $envia, $fecha, -$monto );
+		$pk = $this->db->insert_id();
+		$this->datasis->actusal( $envia, $fecha, (-1)*$monto );
 
-		$mSQL = "UPDATE sfpa SET deposito='$numero', status='P' WHERE id IN ($cheques)";
-		$this->db->simple_query($mSQL);
+		$mSQL = "UPDATE sfpa SET deposito='${numero}', status='P' WHERE id IN (${cheques})";
+		$this->db->query($mSQL);
 
 		//GUARDA EN BMOV LA SALIDA DE CAJA
 		$data = array();
-
 		$data['codbanc']  = $envia;
-		$data['numcuent'] = $this->datasis->dameval("SELECT numcuent FROM banc WHERE codbanc='$envia'");
-		$data['banco']    = $this->datasis->dameval("SELECT banco    FROM banc WHERE codbanc='$envia'");
-		$data['saldo']    = $this->datasis->dameval("SELECT saldo    FROM banc WHERE codbanc='$envia'");
+		$data['numcuent'] = $numcuent;
+		$data['banco']    = $banco;
+		$data['saldo']    = $saldo;
 		$data['tipo_op']  = 'ND';
 		$data['numero']   = $numeroe;
 		$data['fecha']    = $fecha;
@@ -664,12 +746,12 @@ class sfpach extends Controller {
 		$data['codcp']    = 'CAJAS';
 		$data['nombre']   = 'DEPOSITO DESDE CAJA';
 		$data['monto']    = $monto;
-		$data['concepto'] = "DEPOSITO DESDE CAJA $envia A BANCO $recibe ";
-		$data['concep2']  = "";
-		$data['benefi']   = "";
+		$data['concepto'] = "DEPOSITO DESDE CAJA ${envia} A BANCO ${recibe} ";
+		$data['concep2']  = '';
+		$data['benefi']   = '';
 		$data['usuario']  = $this->secu->usuario();
 		$data['estampa']  = $fecha;
-		$data['hora']     = date('H:i:s');
+		$data['hora']     = $hora;
 		$data['transac']  = $transac;
 		$this->db->insert('bmov', $data);
 
@@ -677,9 +759,9 @@ class sfpach extends Controller {
 		$this->datasis->actusal('00', $fecha, $monto);
 
 		$data['codbanc']  = '00';
-		$data['numcuent'] = $this->datasis->dameval("SELECT numcuent FROM banc WHERE codbanc='$envia'");
-		$data['banco']    = $this->datasis->dameval("SELECT banco    FROM banc WHERE codbanc='$envia'");
-		$data['saldo']    = $this->datasis->dameval("SELECT saldo    FROM banc WHERE codbanc='$envia'");
+		$data['numcuent'] = $numcuent;
+		$data['banco']    = $banco;
+		$data['saldo']    = $saldo;
 		$data['tipo_op']  = 'NC';
 		$data['numero']   = $numeror;
 		$data['fecha']    = $fecha;
@@ -687,17 +769,23 @@ class sfpach extends Controller {
 		$data['codcp']    = 'CAJAS';
 		$data['nombre']   = 'DEPOSITO DESDE CAJA';
 		$data['monto']    = $monto;
-		$data['concepto'] = "DEPOSITO DESDE CAJA $envia A BANCO $recibe ";
-		$data['concep2']  = "";
-		$data['benefi']   = "";
+		$data['concepto'] = "DEPOSITO DESDE CAJA ${envia} A BANCO ${recibe} ";
+		$data['concep2']  = '';
+		$data['benefi']   = '';
 		$data['usuario']  = $this->secu->usuario();
 		$data['estampa']  = $fecha;
-		$data['hora']     = date('H:i:s');
+		$data['hora']     = $hora;
 		$data['transac']  = $transac;
 		$this->db->insert('bmov', $data);
 
+		$rt['status'] = 'A';
+		$rt['numero'] = $numero;
+		$rt['mensaje']= 'Registro Agregado';
+		$rt['pk']     = $pk;
+
 		logusu('BCAJ',"Deposito de cheques de caja Nro. ${numero} creada");
-		echo "{\"numero\":\"$numero\",\"mensaje\":\"Registro Agregado\"}";
+		echo json_encode($rt);
+		return true;
 	}
 
 
@@ -707,15 +795,30 @@ class sfpach extends Controller {
 	//
 	function nodeposito(){
 		$cheques = $this->input->get_post('ids');
-		$fecha   = date('Ymd');
 
-		// Revisamos si el monto coincide con la suma
+		$rt = array(
+			'status'  => 'A',
+			'numero'  => null,
+			'mensaje' => 'Cheques Marcados'
+		);
 
-		$mSQL = "UPDATE sfpa SET deposito='', status='C' WHERE id IN ($cheques)";
-		$this->db->simple_query($mSQL);
+		if(!is_string($cheques)){
+			return false;
+		}
 
-		logusu('BCAJ',"Cheques marcados para no Depositar");
-		echo "{\"numero\":\"\",\"mensaje\":\"Cheques Marcados\"}";
+		$cheques = preg_replace('/,+/' ,',',$cheques);
+		$cheques = preg_replace('/^,+/','' ,$cheques);
+		$cheques = preg_replace('/,+$/','' ,$cheques);
+
+		if(preg_match('/^[0-9\,]+$/',$cheques)==0){
+			$rt['mensaje']='Error en los parametros, no se realizo la transaccion';
+		}else{
+			$mSQL = "UPDATE sfpa SET deposito='', status='C' WHERE id IN (${cheques})";
+			$this->db->simple_query($mSQL);
+		}
+
+		logusu('BCAJ','Cheques marcados para no Depositar');
+		echo json_encode($rt);
 	}
 
 
@@ -723,75 +826,95 @@ class sfpach extends Controller {
 	//  Depositar Efectivo
 	function efectivo(){
 		// Genera el deposito pendiente
-		$envia   = $this->input->get_post('caja');
-		$recibe  = $this->input->get_post('banco');
-		$monto   = $this->input->get_post('monto');
-		$fecha   = date('Ymd');
+		$envia    = $this->input->get_post('caja');
+		$recibe   = $this->input->get_post('banco');
+		$monto    = floatval($this->input->get_post('monto'));
+		$fecha    = date('Ymd');
+		$hora     = date('H:i:s');
+		$dbenvia  = $this->db->escape($envia);
+		$dbrecibe = $this->db->escape($recibe);
+		$check    = 0;
 
-		$mMonto = $monto;
+		$rt=array(
+			'status'  => 'B',
+			'mensaje' => '',
+			'pk'      => ''
+		);
 
-		// Validar
-		$check = 0;
+		$row = $this->datasis->damerow("SELECT numcuent,banco,saldo FROM banc WHERE codbanc=${dbenvia}");
+		if(!empty($row)){
+			$numcuent = $row['numcuent'];
+			$banco    = $row['banco'];
+			$saldo    = floatval($row['saldo']);
+		}else{
+			$rt['mensaje'].=' Emisor invalido';
+			$check++;
+		}
 
-		if ( $monto <= 0 ) $check = $check + 1 ;
+		$cana = intval($this->datasis->damerow("SELECT COUNT(*) AS cana FROM banc WHERE codbanc=${dbrecibe}"));
+		if($cana == 0){
+			$rt['mensaje'].=' Receptor invalido';
+			$check++;
+		}
 
-		if ( $check == 0 ){
-			$transac = $this->datasis->prox_sql("ntransa",8);
+		if($monto <= 0){
+			$rt['mensaje'].=' Monto invalido';
+			$check++;
+		}
+
+		if($check == 0){
+			$transac = $this->datasis->fprox_numero('ntransa');
 			$i = 0;
 			while ( $i == 0){
-				$numero  =$this->datasis->prox_sql("nbcaj",8);
-				if ($this->datasis->dameval("SELECT count(*) FROM bcaj WHERE numero='".$numero."'") == 0 ){
+				$numero = $this->datasis->fprox_numero('nbcaj');
+				$cana   = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM bcaj WHERE numero='${numero}"));
+				if($cana == 0 ){
 					$i = 1;
-				};
+				}
 			}
 
 			$numeroe = $this->datasis->banprox($envia);
 			$numeror = $this->datasis->banprox('00');
+
 			$data = array();
-
-			$data['fecha']      = $fecha;
-			$data['numero']     = $numero;
-
-			$data['tipo']       = 'DE';
-			$data['tarjeta']    = 0;
-			$data['tdebito']    = 0;
-			$data['cheques']    = 0;
-			$data['efectivo']   = $monto;
-			$data['comision']   = 0;
-			$data['islr']       = 0;
-			$data['monto']      = $monto;
-			$data['envia']      = $envia;
-
-			$data['bancoe']     = $this->datasis->dameval("SELECT banco FROM banc WHERE codbanc='$envia'");
-
-			$data['tipoe']      = 'ND';
-			$data['numeroe']    = $numeroe;
-
-			$data['codbanc']    = $recibe;
-			$data['recibe']     = '00';
-			$data['bancor']     = 'DEPOSITO EN TRANSITO';
-			$data['tipor']      = 'DE';
-
-			$data['numeror']    = $numeror;
-			$data['concepto']   = "TRANSITO DESDE CAJA $envia A BANCO $recibe ";
-			$data['concep2']    = "CHEQUES";
-			$data['status']     = 'P';  // Pendiente/Cerrado/Anulado
-			$data['usuario']    = $this->secu->usuario();
-			$data['estampa']    = $fecha;
-			$data['hora']       = date('H:i:s');
-			$data['transac']    = $transac;
+			$data['fecha']    = $fecha;
+			$data['numero']   = $numero;
+			$data['tipo']     = 'DE';
+			$data['tarjeta']  = 0;
+			$data['tdebito']  = 0;
+			$data['cheques']  = 0;
+			$data['efectivo'] = $monto;
+			$data['comision'] = 0;
+			$data['islr']     = 0;
+			$data['monto']    = $monto;
+			$data['envia']    = $envia;
+			$data['bancoe']   = $banco;
+			$data['tipoe']    = 'ND';
+			$data['numeroe']  = $numeroe;
+			$data['codbanc']  = $recibe;
+			$data['recibe']   = '00';
+			$data['bancor']   = 'DEPOSITO EN TRANSITO';
+			$data['tipor']    = 'DE';
+			$data['numeror']  = $numeror;
+			$data['concepto'] = "TRANSITO DESDE CAJA ${envia} A BANCO ${recibe} ";
+			$data['concep2']  = "CHEQUES";
+			$data['status']   = 'P';  // Pendiente/Cerrado/Anulado
+			$data['usuario']  = $this->secu->usuario();
+			$data['estampa']  = $fecha;
+			$data['hora']     = $hora;
+			$data['transac']  = $transac;
 
 			//Guarda en BCAJ
 			$this->db->insert('bcaj', $data);
-			$this->datasis->actusal( $envia, $fecha, -$monto );
+			$pk = $this->db->insert_id();
+			$this->datasis->actusal( $envia, $fecha, (-1)*$monto );
 
 			//GUARDA EN BMOV LA SALIDA DE CAJA
 			$data = array();
-
 			$data['codbanc']  = $envia;
-			$data['numcuent'] = $this->datasis->dameval("SELECT numcuent FROM banc WHERE codbanc='$envia'");
-			$data['banco']    = $this->datasis->dameval("SELECT banco    FROM banc WHERE codbanc='$envia'");
-			$data['saldo']    = $this->datasis->dameval("SELECT saldo    FROM banc WHERE codbanc='$envia'");
+			$data['numcuent'] = $numcuent;
+			$data['banco']    = $banco;
+			$data['saldo']    = $saldo;
 			$data['tipo_op']  = 'ND';
 			$data['numero']   = $numeroe;
 			$data['fecha']    = $fecha;
@@ -799,22 +922,23 @@ class sfpach extends Controller {
 			$data['codcp']    = 'CAJAS';
 			$data['nombre']   = 'DEPOSITO DESDE CAJA';
 			$data['monto']    = $monto;
-			$data['concepto'] = "DEPOSITO DESDE CAJA $envia A BANCO $recibe ";
+			$data['concepto'] = "DEPOSITO DESDE CAJA ${envia} A BANCO ${recibe} ";
 			$data['concep2']  = "";
 			$data['benefi']   = "";
 			$data['usuario']  = $this->secu->usuario();
 			$data['estampa']  = $fecha;
-			$data['hora']     = date('H:i:s');
+			$data['hora']     = $hora;
 			$data['transac']  = $transac;
 			$this->db->insert('bmov', $data);
 
 			//Actualiza saldo en caja de transito
 			$this->datasis->actusal('00', $fecha, $monto);
 
+			$data = array();
 			$data['codbanc']  = '00';
-			$data['numcuent'] = $this->datasis->dameval("SELECT numcuent FROM banc WHERE codbanc='$envia'");
-			$data['banco']    = $this->datasis->dameval("SELECT banco    FROM banc WHERE codbanc='$envia'");
-			$data['saldo']    = $this->datasis->dameval("SELECT saldo    FROM banc WHERE codbanc='$envia'");
+			$data['numcuent'] = $numcuent;
+			$data['banco']    = $banco;
+			$data['saldo']    = $saldo;
 			$data['tipo_op']  = 'NC';
 			$data['numero']   = $numeror;
 			$data['fecha']    = $fecha;
@@ -822,35 +946,25 @@ class sfpach extends Controller {
 			$data['codcp']    = 'CAJAS';
 			$data['nombre']   = 'DEPOSITO DESDE CAJA';
 			$data['monto']    = $monto;
-			$data['concepto'] = "DEPOSITO DESDE CAJA $envia A BANCO $recibe ";
-			$data['concep2']  = "";
-			$data['benefi']   = "";
+			$data['concepto'] = "DEPOSITO DESDE CAJA ${envia} A BANCO ${recibe} ";
+			$data['concep2']  = '';
+			$data['benefi']   = '';
 			$data['usuario']  = $this->secu->usuario();
 			$data['estampa']  = $fecha;
-			$data['hora']     = date('H:i:s');
+			$data['hora']     = $hora;
 			$data['transac']  = $transac;
 			$this->db->insert('bmov', $data);
 
-			logusu('BCAJ',"Deposito en efectivo de caja Nro. $numero creada");
+			logusu('BCAJ',"Deposito en efectivo de caja Nro. ${numero} creada");
 
 			$rt=array(
 				'status'  => 'A',
 				'mensaje' => 'Deposito Agregado',
-				'pk'      => $transac
+				'pk'      => $pk
 			);
-			echo json_encode($rt);
-
-			//echo "{\"numero\":\"$numero\",\"mensaje\":\"Registro Agregado\"}";
-		} else {
-			$rt=array(
-				'status'  => 'B',
-				'mensaje' => 'Error guardando el Deposito',
-				'pk'      => $transac
-			);
-			echo json_encode($rt);
-
-			//echo "{\"numero\":\"$numero\",\"mensaje\":\"Error \"}";
 		}
+
+		echo json_encode($rt);
 	}
 
 
