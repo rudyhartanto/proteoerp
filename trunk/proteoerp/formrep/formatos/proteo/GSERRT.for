@@ -16,18 +16,18 @@ $fecha    = dbdate_to_human($row->fecha);
 $ffecha   = dbdate_to_human($row->ffactura);
 
 $numero   = trim($row->serie);
-$proveed  = htmlspecialchars(trim($row->proveed));
+$proveed  = $this->us_ascii2html(trim($row->proveed));
 $tipo_doc = trim($row->tipo_doc);
 $breten   = $row->breten;
 $reten    = $row->reten;
 $creten   = trim($row->creten);
-$nombre   = (empty($row->nomfis))? htmlspecialchars(trim($row->nombre)) : htmlspecialchars($row->nomfis);
-$direc1   = htmlspecialchars(trim($row->direc1));
-$direc2   = htmlspecialchars(trim($row->direc2));
-$direc3   = htmlspecialchars(trim($row->direc3));
-$telefono = htmlspecialchars(trim($row->telefono));
-$rif      = htmlspecialchars(trim($row->rif));
-$activida = htmlspecialchars(trim($row->activida));
+$nombre   = (empty($row->nomfis))? $this->us_ascii2html(trim($row->nombre)) : $this->us_ascii2html($row->nomfis);
+$direc1   = $this->us_ascii2html(trim($row->direc1));
+$direc2   = $this->us_ascii2html(trim($row->direc2));
+$direc3   = $this->us_ascii2html(trim($row->direc3));
+$telefono = $this->us_ascii2html(trim($row->telefono));
+$rif      = $this->us_ascii2html(trim($row->rif));
+$activida = $this->us_ascii2html(trim($row->activida));
 $base1    = $row->base1;
 $tari1    = $row->tari1;
 
@@ -110,7 +110,7 @@ if ( isset($pdf) ) {
 	</table>
 	<!--/div -->
 
-	<table style="width: 80%;" class="header" align='center' -->
+	<table style="width: 80%;" class="header" align='center' >
 		<tr>
 			<td><div align="left"  style="font-size: 8pt"><b>DOCUMENTO:</b></div></td>
 			<td><div align="rigth" style="font-size: 8pt"><?php echo $tipo_doc.$numero  ?></div></td>
@@ -126,10 +126,10 @@ if ( isset($pdf) ) {
 		<?php if($mSQL_2->num_rows()==0){ ?>
 			<tr style='color: #111111;background: #EEEEEE;'>
 				<td><div align="left"  style="font-size: 8pt"><b>CONCEPTO:</b></div></td>
-				<td><div align="rigth" style="font-size: 8pt"><?php echo $activida ?></div></td>
+				<td><div align="rigth" style="font-size: 8pt"><?php echo $this->us_ascii2html($activida) ?></div></td>
 			</tr><tr>
 				<td><div align="left"  style="font-size: 8pt"><b>MONTO DEL PAGO OBJETO DE RETENCI&Oacute;N  Bs. :</b></div></td>
-				<td><div align="rigth" style="font-size: 8pt"><?php echo nformat($breten)?></div></td>
+				<td><div align="rigth" style="font-size: 8pt"><?php echo nformat($breten) ?></div></td>
 			</tr><tr>
 				<td><div align="left"  style="font-size: 8pt"><b>MONTO DE LA BASE IMPONIBLE Bs. :</b></div></td>
 				<td><div align="rigth" style="font-size: 8pt"><?php echo nformat($breten*$base1/100) ?></div></td>
@@ -145,7 +145,7 @@ if ( isset($pdf) ) {
 		?>
 			<tr style='color: #111111;background: #EEEEEE;'>
 				<td><div align="left"  style="font-size: 8pt"><b>CONCEPTO:</b></div></td>
-				<td><div align="rigth" style="font-size: 8pt"><?php echo htmlspecialchars($items->activida) ?></div></td>
+				<td><div align="rigth" style="font-size: 8pt"><?php echo $this->us_ascii2html($items->activida) ?></div></td>
 			</tr><tr>
 				<td><div align="left"  style="font-size: 8pt"><b>MONTO DEL PAGO OBJETO DE RETENCI&Oacute;N  Bs. :</b></div></td>
 				<td><div align="rigth" style="font-size: 8pt"><?php echo nformat($items->monto)?></div></td>
