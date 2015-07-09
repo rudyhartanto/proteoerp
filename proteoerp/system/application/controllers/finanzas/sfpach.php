@@ -332,7 +332,7 @@ class sfpach extends Controller {
 
 		$grid  = new $this->jqdatagrid;
 
-		$grid->addField('status');
+		/*$grid->addField('status');
 		$grid->label('Estatus');
 		$grid->params(array(
 				'width'    => 40,
@@ -340,7 +340,7 @@ class sfpach extends Controller {
 				'editable' => 'false',
 				'edittype' => "'text'"
 			)
-		);
+		);*/
 
 		$grid->addField('fecha');
 		$grid->label('Fecha');
@@ -867,7 +867,7 @@ class sfpach extends Controller {
 			$i = 0;
 			while ( $i == 0){
 				$numero = $this->datasis->fprox_numero('nbcaj');
-				$cana   = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM bcaj WHERE numero='${numero}"));
+				$cana   = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM bcaj WHERE numero='${numero}'"));
 				if($cana == 0 ){
 					$i = 1;
 				}
