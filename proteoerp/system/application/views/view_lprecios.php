@@ -16,8 +16,9 @@
 		<tr>
 			<th data-priority="2">C&oacute;digo</th>
 			<th>Descripci&oacute;n</th>
+			<th>Unidad</th>
 			<th data-priority="3" style='text-align:right'>Precio</th>
-			<th data-priority="1" style='text-align:right'><abbr title="Rotten Tomato Rating">IVA</abbr></th>
+			<th data-priority="1" style='text-align:right'><abbr title="Impuesto al valor agregado">IVA</abbr></th>
 			<th data-priority="5" style='text-align:right'>Precio de Venta</th>
 		</tr>
 		</thead>
@@ -86,6 +87,7 @@ $(document).on("pagecreate", "#mainpage", function(){
 						html += "<tr>";
 						html += "<td>"+$('<span/>').text(val.codigo).html()+"</td>";
 						html += "<td>"+$('<span/>').text(val.descrip).html()+"</td>";
+						html += "<td>"+$('<span/>').text(val.unidad).html()+"</td>";
 						html += "<td style='text-align:right'>"+nformat(base,2)+"</td>";
 						html += "<td style='text-align:right'>"+nformat(iva,2)+"</td>";
 						html += "<td style='text-align:right'><b style='font-size:1.2em'>"+nformat(precio,2)+"</b></td>";
