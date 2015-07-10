@@ -349,7 +349,6 @@ class Medhisto extends Common {
 			'editoptions'   => '{ size:1, maxlength: 1 }',
 		));
 
-
 		$grid->addField('ocupacion');
 		$grid->label('Ocupacion');
 		$grid->params(array(
@@ -361,7 +360,6 @@ class Medhisto extends Common {
 			'editoptions'   => '{ size:50, maxlength: 50 }',
 		));
 
-
 		$grid->addField('direccion');
 		$grid->label('Direccion');
 		$grid->params(array(
@@ -371,7 +369,6 @@ class Medhisto extends Common {
 			'edittype'      => "'textarea'",
 			'editoptions'   => "'{rows:2, cols:60}'",
 		));
-
 
 		$grid->addField('telefono');
 		$grid->label('Telefono');
@@ -384,7 +381,6 @@ class Medhisto extends Common {
 			'editoptions'   => '{ size:50, maxlength: 50 }',
 		));
 
-
 		$grid->addField('referido');
 		$grid->label('Referido');
 		$grid->params(array(
@@ -396,7 +392,6 @@ class Medhisto extends Common {
 			'editoptions'   => '{ size:50, maxlength: 50 }',
 		));
 
-
 		$grid->addField('email');
 		$grid->label('Email');
 		$grid->params(array(
@@ -407,7 +402,6 @@ class Medhisto extends Common {
 			'editrules'     => '{ required:true}',
 			'editoptions'   => '{ size:100, maxlength: 100 }',
 		));
-
 
 		$grid->addField('usuario');
 		$grid->label('Usuario');
