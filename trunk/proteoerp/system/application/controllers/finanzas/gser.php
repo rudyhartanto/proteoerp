@@ -2454,15 +2454,32 @@ class gser extends Controller {
 	}
 
 	function chdupli($numero){
-		$sprv = $this->input->post('proveed');
-		$dbsprv   = $this->db->escape($sprv);
-		$dbnumero = $this->db->escape(substr($numero,(-1)*$this->datasis->long));
+		$sprv      = $this->input->post('proveed');
+		$tipo_doc  = $this->input->post('tipo_doc');
+		$dbsprv    = $this->db->escape($sprv);
+		$dbnumero  = $this->db->escape(substr($numero,(-1)*$this->datasis->long));
+		$dbtipo_doc= $this->db->escape($tipo_doc);
 
-		$cana=intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM scst WHERE proveed=${dbsprv} AND numero=${dbnumero}"));
+		if($tipo_doc=='FC'){
+			$cana=intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM scst WHERE proveed=${dbsprv} AND numero=${dbnumero} AND tipo_doc='FC'"));
+			if($cana>0){
+				$this->validation->set_message('chdupli','Ya existe una compra registrada con el mismo numero y proveedor');
+				return false;
+			}
+		}
+
+		$cana=intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM gser WHERE proveed=${dbsprv} AND numero=${dbnumero} AND tipo_doc=${dbtipo_doc}"));
 		if($cana>0){
-			$this->validation->set_message('chdupli','Ya existe una compra registrada con el mismo numero y proveedor');
+			$this->validation->set_message('chdupli','Ya existe un gasto registrado con el mismo numero y proveedor');
 			return false;
 		}
+
+		$cana=intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM sprm WHERE cod_prv=${dbsprv} AND numero=${dbnumero} AND tipo_doc=${dbtipo_doc}"));
+		if($cana>0){
+			$this->validation->set_message('chdupli','Ya existe una CxP registrado con el mismo numero y proveedor');
+			return false;
+		}
+
 		return true;
 	}
 

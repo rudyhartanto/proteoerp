@@ -39,6 +39,7 @@ WHERE e.idd='.$dbid);
 ?>
 <html>
 <head>
+<meta http-equiv="Content-type" content="text/html; charset=<?php echo $this->config->item('charset'); ?>" >
 <title>DATOS DEL CONTRIBUYENTE SUJETO A RETENCION DE I.S.L.R. <?php echo $numero ?></title>
 <link rel="STYLESHEET" href="<?php echo $this->_direccion ?>/assets/default/css/formatos.css" type="text/css" />
 </head>

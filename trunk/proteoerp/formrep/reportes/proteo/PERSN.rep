@@ -1,0 +1,54 @@
+/**
+ * ProteoERP
+ *
+ * @autor    Andres Hocevar
+ * @license  GNU GPL v3
+*/
+$base_process_uri= $this->rapyd->uri->implode_uri('base_uri','gfid','orderby');
+
+$filter = new DataForm($this->rapyd->uri->add_clause($base_process_uri, 'search'));
+$filter->title('Elija un formato de salida');
+$filter->attributes=array('onsubmit'=>'is_loaded()');
+
+$filter->salformat = new radiogroupField('Formato de salida','salformat');
+$filter->salformat->options($this->opciones);
+$filter->salformat->insertValue ='PDF';
+$filter->salformat->clause = '';
+
+$filter->submit('btnsubmit','Descargar');
+$filter->build_form();
+
+if($this->rapyd->uri->is_set('search')){
+
+	$mSQL ="SELECT
+		a.codigo, a.cedula, a.apellido, a.nombre, a.carnet,b.descrip, a.nacimi,
+		a.ingreso, a.status, c.descrip AS departa
+		FROM pers AS a
+		LEFT JOIN carg AS b ON a.cargo=b.cargo
+		LEFT JOIN depa AS c ON a.depto=c.departa
+		ORDER BY a.codigo";
+
+	$pdf = new PDFReporte($mSQL,'L');
+	$pdf->setHeadValores('TITULO1');
+	$pdf->setSubHeadValores('TITULO2','TITULO3');
+	$pdf->setTitulo('Listado de Personal');
+	$pdf->AddPage();
+	$pdf->setTableTitu(9,'Times');
+	$pdf->AddCol('carnet'  ,20,'Barra'       ,'L',7);
+	$pdf->AddCol('status'  , 8,'Estatus'     ,'C',7);
+	$pdf->AddCol('cedula'  ,20,'Cédula'      ,'L',7);
+	$pdf->AddCol('apellido',40,'Apellidos'   ,'L',7);
+	$pdf->AddCol('nombre'  ,40,'Nombres'     ,'L',7);
+	$pdf->AddCol('descrip' ,45,'Cargo'       ,'L',7);
+	$pdf->AddCol('nacimi'  ,20,'F.Nacimiento','C',7);
+	$pdf->AddCol('ingreso' ,20,'F.Ingreso'   ,'C',7);
+	$pdf->AddCol('departa' ,40,'Departa.'    ,'L',7);
+	$pdf->Table();
+	$pdf->Output();
+
+}else{
+	$data['filtro'] = $filter->output;
+	$data['titulo'] = '<h2 class="mainheader">Listado de Personal</h2>';
+	$data['head']   = $this->rapyd->get_head();
+	$this->load->view('view_freportes', $data);
+}
