@@ -281,7 +281,7 @@ class Rivc extends Controller {
 		$grid->label('Comprobante');
 		$grid->params(array(
 			'search'        => 'true',
-			'editable'      => $editar,
+			'editable'      => 'true',
 			'width'         => 80,
 			'edittype'      => "'text'",
 			'editrules'     => '{ required:true}',
@@ -810,7 +810,26 @@ class Rivc extends Controller {
 		if($oper == 'add'){
 			echo 'Deshabilitado';
 		} elseif($oper == 'edit') {
-			echo 'Deshabilitado';
+			//Modifica Nro de Comprobante
+			$posibles=array('nrocomp');
+			foreach($data as $ind=>$val){
+				if(!in_array($ind,$posibles)){
+					echo 'Campo no permitido ('.$ind.')';
+					return false;
+				}
+			}
+			$transac = $this->datasis->dameval('SELECT transac FROM rivc WHERE id='.$this->db->escape($id));
+			$periodo = $this->datasis->dameval('SELECT periodo FROM rivc WHERE id='.$this->db->escape($id));
+
+			$this->db->where('id'   ,$id);
+			$this->db->update('rivc',array('nrocomp'=>$data['nrocomp']));
+
+			$this->db->where('transac', $transac);
+			$this->db->update('smov',   array('nroriva'=>$periodo.$data['nrocomp']));
+
+			logusu('RIVC',"Modifico el nro de comprobante ".$data['nrocomp'],' del id='.$id);
+
+			//echo 'Deshabilitado';
 		} elseif($oper == 'del') {
 			echo 'Deshabilitado';
 		};
