@@ -1,4 +1,12 @@
-<div data-theme="a" data-role="header" data-id="mainHeader" style='height:150px;background:url("<?php echo site_url('images/barcode-label.png'); ?>") no-repeat right;'><spam style='font-size:38pt;color:#004B2C;'>CONSULTE SUS<br>PRECIOS AQUI!</spam></div>
+<table width='100%1'>
+	<tr>
+		<td width='50%'>
+			<div style='text-align:center;font-weight:bold;font-size:38pt;color:#004B2C;'>CONSULTE SUS PRECIOS AQUI!</div>			
+		</td><td style='height:150px;background:url("<?php echo site_url('images/barcode-label.png'); ?>") no-repeat right;'>
+			&nbsp;
+		</td>
+	</tr>
+</table>
 
 <div data-role="content">
 	<form class="ui-filterable">
@@ -46,21 +54,27 @@
 		</table>
 	</form>
 
-	<table id='tabladata' data-role="table" class="ui-responsive table-stroke">
-		<thead>
+	<table width='100%'>
 		<tr>
-			<th data-priority="2">C&oacute;digo</th>
-			<th>Descripci&oacute;n</th>
-			<th>Medida</th>
-			<th data-priority="3" style='text-align:right'>Precio</th>
-			<th data-priority="1" style='text-align:right'><abbr title="Impuesto al valor agregado">IVA</abbr></th>
-			<th data-priority="5" style='text-align:right'>Precio de Venta</th>
-		</tr>
-		</thead>
-		<tbody></tbody>
+			<td width='80%'>
+			<table id='tabladata' data-role="table" class="ui-responsive table-stroke">
+				<thead>
+				<tr>
+					<th data-priority="2">C&oacute;digo</th>
+					<th>Descripci&oacute;n</th>
+					<th>Medida</th>
+					<th data-priority="3" style='text-align:right'>Precio</th>
+					<th data-priority="1" style='text-align:right'><abbr title="Impuesto al valor agregado">IVA</abbr></th>
+					<th data-priority="5" style='text-align:right'>Precio de Venta</th>
+				</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+			</td><td>
+				<img src='<?php echo site_url('images/ndisp.jpg')?>' width='200' >
+			</td>
+	</tr>
 	</table>
-
-
 </div>
 
 <div data-theme="a" data-role="footer" data-position="fixed">
