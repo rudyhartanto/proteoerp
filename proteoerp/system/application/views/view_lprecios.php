@@ -1,7 +1,7 @@
 <table width='100%1'>
 	<tr>
 		<td width='50%'>
-			<div style='text-align:center;font-weight:bold;font-size:38pt;color:#004B2C;'>CONSULTE SUS PRECIOS AQUI!</div>			
+			<div style='text-align:center;font-weight:bold;font-size:38pt;color:#004B2C;'>CONSULTE PRECIOS AQUI!</div>			
 		</td><td style='height:150px;background:url("<?php echo site_url('images/barcode-label.png'); ?>") no-repeat right;'>
 			&nbsp;
 		</td>
@@ -16,10 +16,10 @@
 				<label>Criterio de Busqueda, ingrese una palabra descrptiva de lo que desea buscar</label>
 			</td>
 			<td align='center'>
-				<label>Marca</label>
+				<label>Filtro de Marcas</label>
 			</td>
 			<td align='center'>
-				<label>Por Letra</label>
+				<label>Filtro por letra inicial</label>
 			</td>
 		</tr><tr>
 			<td>
