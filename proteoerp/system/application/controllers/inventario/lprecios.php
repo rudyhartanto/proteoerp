@@ -46,6 +46,12 @@ class Lprecios extends Controller {
 		$data = '[]';
 		if($mid !== false){
 
+			if(strlen($mid)>=4){
+				$fulltext= " OR MATCH(a.descrip) AGAINST (${qba})";
+			}else{
+				$fulltext= " OR a.descrip LIKE ${qdb}";
+			}
+
 			$mSQL="
 			SELECT DISTINCT TRIM(a.descrip) descrip, TRIM(a.codigo) codigo, a.marca, a.ubica, a.unidad,
 			a.precio1,precio2,precio3,precio4, a.iva,a.existen,a.tipo,a.peso, a.ultimo, a.pond, a.barras, 0 AS descufijo, c.margen AS dgrupo,0 AS promo, COALESCE(e.existen,0) existen,a.id
@@ -56,7 +62,7 @@ class Lprecios extends Controller {
 			LEFT JOIN barraspos AS b ON a.codigo=b.codigo
 			LEFT JOIN grup      AS c ON a.grupo=c.grupo
 			LEFT JOIN sinvfot   AS g ON a.id=g.sinv_id
-			WHERE (a.codigo LIKE ${qdb} OR a.barras LIKE ${qdb} OR a.alterno LIKE ${qdb} OR b.suplemen=${qba} OR MATCH(a.descrip) AGAINST (${qba}))
+			WHERE (a.codigo LIKE ${qdb} OR a.barras LIKE ${qdb} OR a.alterno LIKE ${qdb} OR b.suplemen=${qba} ${fulltext})
 			AND a.activo='S'
 			AND e.existen>0
 			AND MID(a.tipo,1,1)='A'

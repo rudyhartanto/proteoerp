@@ -103,7 +103,7 @@ $(document).on("pagecreate", "#mainpage", function(){
 		var xhr;
 		var base, precio;
 
-		if(value && value.length >= 4){
+		if(value && value.length >= 1){
 			if(typeof xhr == 'object'){
 				xhr.abort();
 			}

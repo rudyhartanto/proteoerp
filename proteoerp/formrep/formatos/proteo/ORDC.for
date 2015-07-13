@@ -1,5 +1,5 @@
 <?php
-$maxlin=39; //Maximo de lineas de items.
+$maxlin=38; //Maximo de lineas de items.
 
 if(count($parametros)==0) show_error('Faltan parametros');
 $id = $parametros[0];
@@ -22,7 +22,8 @@ $mSQL_1 = $this->db->query('SELECT a.fecha,a.numero,a.peso,a.arribo,a.proveed,
 	a.montoiva AS iva,
 	a.montonet AS totalg,
 	b.direc1 AS direccion,
-	b.rif
+	b.rif,
+	CONCAT_WS(\' \',TRIM(a.condi1),TRIM(a.condi2),TRIM(a.condi3)) AS obs
 	FROM ordc AS a
 	JOIN sprv AS b ON a.proveed=b.proveed
 	WHERE  a.id='.$dbid);
@@ -30,15 +31,16 @@ if($mSQL_1->num_rows()==0) show_error('Registro no encontrado');
 $row = $mSQL_1->row();
 
 $fecha    = dbdate_to_human($row->fecha);
-$numero   = htmlspecialchars(trim($row->numero));
-$proveed  = htmlspecialchars(trim($row->proveed));
-$rifci    = htmlspecialchars(trim($row->rif));
-$nombre   = htmlspecialchars(trim($row->nombre));
+$numero   = $this->us_ascii2html(trim($row->numero));
+$proveed  = $this->us_ascii2html(trim($row->proveed));
+$rifci    = $this->us_ascii2html(trim($row->rif));
+$nombre   = $this->us_ascii2html(trim($row->nombre));
 $stotal   = nformat($row->totals);
 $gtotal   = nformat($row->totalg);
 $peso     = nformat($row->peso);
 $impuesto = nformat($row->iva);
-$direccion= htmlspecialchars(trim($row->direccion));
+$direccion= $this->us_ascii2html(trim($row->direccion));
+$obs      = $this->us_ascii2html($row->obs);
 
 $dbnumero = $this->db->escape($numero);
 $lineas   = 0;
@@ -102,6 +104,8 @@ $encabezado = <<<encabezado
 		</tr><tr>
 			<td>Direcci&oacute;n: <b>${direccion}</b></td>
 			<td>Peso:      <b>${peso}</b></td>
+		</tr><tr>
+			<td colspan='2' style='text-align:center;font-size:0.8em'>${obs}</td>
 		</tr>
 	</table>
 encabezado;
