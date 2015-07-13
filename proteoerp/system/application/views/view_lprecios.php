@@ -1,22 +1,57 @@
-<div data-theme="a" data-role="header" data-id="mainHeader"><h3>Consulta de precios</h3></div>
+<div data-theme="a" data-role="header" data-id="mainHeader" style='height:150px;background:url("<?php echo site_url('images/barcode-label.png'); ?>") no-repeat right;'><spam style='font-size:38pt;color:#004B2C;'>CONSULTE SUS<br>PRECIOS AQUI!</spam></div>
 
 <div data-role="content">
-
-	<h3>Art&iacute;culos</h3>
-
-	<!--<a href="#presumen" class="ui-btn ui-icon-bars ui-btn-icon-left ui-shadow-icon" >Ver Res&uacute;men</a>-->
 	<form class="ui-filterable">
-		<input id="autocomplete-input" data-type="search" placeholder="Buscar art&iacute;culo...">
-		<ul id="autocomplete" data-role="listview" data-inset="true" data-filter="false" data-input="#autocomplete-input"></ul>
+		<table width='100%'>
+			<tr>
+			<td>
+		<label>Criterio de Busqueda, ingrese una palabra descrptiva de lo que desea buscar</label>
+				<input id="autocomplete-input" data-type="search" placeholder="Buscar art&iacute;culo..." style='width:200px;'>
+				<ul id="autocomplete" data-role="listview" data-inset="true" data-filter="false" data-input="#autocomplete-input"></ul>
+			</td>
+			<td>
+				<label>Marca</label>
+				<?php echo $this->datasis->llenaopciones('SELECT marca, marca FROM marc ORDER BY marca;', true, $id='marca' );?>
+			</td>
+			<td>
+				<label>Por Letra</label>
+				<a>A</a>
+				<a>B</a>
+				<a>C</a>
+				<a>D</a>
+				<a>E</a>
+				<a>F</a>
+				<a>G</a>
+				<a>H</a>
+				<a>I</a>
+				<a>J</a>
+				<a>K</a>
+				<a>L</a>
+				<a>M</a>
+				<a>N</a>
+				<a>O</a>
+				<a>P</a>
+				<a>Q</a>
+				<a>R</a>
+				<a>S</a>
+				<a>T</a>
+				<a>Y</a>
+				<a>U</a>
+				<a>V</a>
+				<a>W</a>
+				<a>X</a>
+				<a>Y</a>
+				<a>Z</a>
+			</td>
+		</table>
 	</form>
-
 
 	<table id='tabladata' data-role="table" class="ui-responsive table-stroke">
 		<thead>
 		<tr>
 			<th data-priority="2">C&oacute;digo</th>
 			<th>Descripci&oacute;n</th>
-			<th>Unidad</th>
+			<th>Medida</th>
 			<th data-priority="3" style='text-align:right'>Precio</th>
 			<th data-priority="1" style='text-align:right'><abbr title="Impuesto al valor agregado">IVA</abbr></th>
 			<th data-priority="5" style='text-align:right'>Precio de Venta</th>
