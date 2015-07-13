@@ -93,10 +93,7 @@
 var actObj='';
 
 $(document).on("pagecreate", "#mainpage", function(){
-
-
 	$("#autocomplete-input").keyup(function() {
-
 		var $ul    = $("#tabladata tbody"),
 			$input = $(this),
 			value  = $input.val();
@@ -107,7 +104,6 @@ $(document).on("pagecreate", "#mainpage", function(){
 			if(typeof xhr == 'object'){
 				xhr.abort();
 			}
-
 			xhr = $.ajax({
 				url: "<?php echo site_url('inventario/lprecios/buscasinv'); ?>",
 				dataType: "json",
@@ -116,7 +112,6 @@ $(document).on("pagecreate", "#mainpage", function(){
 				data: { q : value }
 			}).then(function(response){
 				var a = JSON.stringify(response);
-
 				console.log(response);
 				if(a !== actObj){
 					$ul.html("");
@@ -129,7 +124,6 @@ $(document).on("pagecreate", "#mainpage", function(){
 						base   = val.base1;
 						precio = base*(1+(val.iva/100));
 						iva    = precio-base;
-
 						//html += "<li><a href='#'>";
 						//if(val.foto=='S'){
 						//	html += '<img src="<?php echo site_url('inventario/fotos/obtener'); ?>/'+val.id+'">';
@@ -139,7 +133,6 @@ $(document).on("pagecreate", "#mainpage", function(){
 						//html += "</h2>";
 						//html += "<p>C&oacute;digo: <b>"+$('<span/>').text(val.codigo).html()+"</b> Precio: <b>"+nformat(base,2)+"</b> IVA: <b>"+nformat(iva,2)+"</b></p>";
 						//html += "Precio de venta: <b style='font-size:1.2em'>"+nformat(precio,2)+"</b>";
-
 						html += "<tr>";
 						html += "<td>"+$('<span/>').text(val.codigo).html()+"</td>";
 						html += "<td>"+$('<span/>').text(val.descrip).html()+"</td>";
@@ -148,10 +141,8 @@ $(document).on("pagecreate", "#mainpage", function(){
 						html += "<td style='text-align:right'>"+nformat(iva,2)+"</td>";
 						html += "<td style='text-align:right'><b style='font-size:1.2em'>"+nformat(precio,2)+"</b></td>";
 						html += "</tr>";
-
 						//html += "</a></li>";
 					});
-
 					$ul.html(html);
 					//$ul.listview( "refresh" );
 					//$ul.trigger( "updatelayout");
