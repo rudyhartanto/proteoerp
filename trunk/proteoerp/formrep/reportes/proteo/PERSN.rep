@@ -22,7 +22,7 @@ if($this->rapyd->uri->is_set('search')){
 
 	$mSQL ="SELECT
 		a.codigo, a.cedula, a.apellido, a.nombre, a.carnet,b.descrip, a.nacimi,
-		a.ingreso, a.status, c.descrip AS departa
+		a.ingreso, a.status, c.descrip AS departa, a.contrato
 		FROM pers AS a
 		LEFT JOIN carg AS b ON a.cargo=b.cargo
 		LEFT JOIN depa AS c ON a.depto=c.departa
@@ -42,7 +42,7 @@ if($this->rapyd->uri->is_set('search')){
 	$pdf->AddCol('descrip' ,45,'Cargo'       ,'L',7);
 	$pdf->AddCol('nacimi'  ,20,'F.Nacimiento','C',7);
 	$pdf->AddCol('ingreso' ,20,'F.Ingreso'   ,'C',7);
-	$pdf->AddCol('departa' ,40,'Departa.'    ,'L',7);
+	$pdf->AddCol('contrato',30,'Contrato'    ,'L',7);
 	$pdf->Table();
 	$pdf->Output();
 
