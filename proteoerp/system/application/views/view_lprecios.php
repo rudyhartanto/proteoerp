@@ -11,18 +11,25 @@
 <div data-role="content">
 	<form class="ui-filterable">
 		<table width='100%'>
-			<tr>
+		<tr>
 			<td>
-		<label>Criterio de Busqueda, ingrese una palabra descrptiva de lo que desea buscar</label>
+				<label>Criterio de Busqueda, ingrese una palabra descrptiva de lo que desea buscar</label>
+			</td>
+			<td align='center'>
+				<label>Marca</label>
+			</td>
+			<td align='center'>
+				<label>Por Letra</label>
+			</td>
+		</tr><tr>
+			<td>
 				<input id="autocomplete-input" data-type="search" placeholder="Buscar art&iacute;culo..." style='width:200px;'>
 				<ul id="autocomplete" data-role="listview" data-inset="true" data-filter="false" data-input="#autocomplete-input"></ul>
 			</td>
 			<td>
-				<label>Marca</label>
 				<?php echo $this->datasis->llenaopciones('SELECT marca, marca FROM marc ORDER BY marca;', true, $id='marca' );?>
 			</td>
-			<td>
-				<label>Por Letra</label>
+			<td align='center'>
 				<a>A</a>
 				<a>B</a>
 				<a>C</a>
