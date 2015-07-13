@@ -1974,11 +1974,14 @@ class Stra extends Controller {
 	}
 
 	//******************************************************************
-	// Crea una produccion de la venta
+	// Crea una produccion a partir de la venta
+	//
 	function creaprod(){
 		$mdesde = $this->input->post('desde');
 		$mhasta = $this->input->post('hasta');
 
+		$fecha  = $mhasta;
+		
 		$mdesde = substr(human_to_dbdate($mdesde),0,10);
 		$mhasta = substr(human_to_dbdate($mhasta),0,10);
 
@@ -1987,14 +1990,14 @@ class Stra extends Controller {
 
 		$this->_url= $this->url.'dataedit/insert';
 
-		//echo "$mdesde  $mhasta";
 		$_POST=array(
 			'btn_submit' => 'Guardar',
-			'fecha'      => inputDateFromTimestamp(mktime(0,0,0)),
+			'fecha'      =>  $fecha,  //inputDateFromTimestamp(mktime(0,0,0)),
 			'envia'      => 'PROD',
 			'recibe'     => '0001',
 			'observ1'    => "PRODUCCION  ".$mdesde.' AL '.$mhasta
 		);
+
 		$mSQL = 'SELECT a.codigoa, b.descrip, sum(a.cana*IF(a.tipoa="F",1,-1)) cana, b.existen
 		FROM sitems AS a
 		JOIN sinv AS b ON b.codigo=a.codigoa
@@ -2002,9 +2005,11 @@ class Stra extends Controller {
 		AND a.fecha <= '.$dbmhasta.' AND tipoa <> "X" AND mid(b.tipo,1,1) <> "S"
 		GROUP BY a.codigoa
 		HAVING cana > 0 AND b.existen < 0';
-
+		
+		//echo inputDateFromTimestamp(mktime(0,0,0));
+		
 		$qquery = $this->db->query($mSQL);
-		$i=0;
+		$i = 0;
 		foreach ($qquery->result() as $itrow){
 			$_POST["codigo_${i}"]   = rtrim($itrow->codigoa);
 			$_POST["descrip_${i}"]  = rtrim($itrow->descrip);
