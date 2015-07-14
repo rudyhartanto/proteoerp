@@ -5,7 +5,7 @@
  * @autor    Andres Hocevar
  * @license  GNU GPL v3
 */
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+if(!defined('BASEPATH')) exit('No direct script access allowed');
 include('common.php');
 
 class Rivc extends Controller {
@@ -22,12 +22,8 @@ class Rivc extends Controller {
 	}
 
 	function index(){
-		/*if ( !$this->datasis->iscampo('rivc','id') ) {
-			$this->db->simple_query('ALTER TABLE rivc DROP PRIMARY KEY');
-			$this->db->simple_query('ALTER TABLE rivc ADD UNIQUE INDEX numero (numero)');
-			$this->db->simple_query('ALTER TABLE rivc ADD COLUMN id INT(11) NULL AUTO_INCREMENT, ADD PRIMARY KEY (id)');
-		};*/
-		$this->datasis->modintramenu( 800, 600, substr($this->url,0,-1) );
+		$this->instalar();
+		$this->datasis->modintramenu(900, 600, substr($this->url,0,-1) );
 		redirect($this->url.'jqdatag');
 	}
 
@@ -2770,6 +2766,8 @@ class Rivc extends Controller {
 	}
 
 	function instalar(){
+		$this->datasis->creaintramenu(array('modulo'=>'511','titulo'=>'Retenciones IVA de Clientes','mensaje'=>'Retenciones IVA de Clientes','panel'=>'CLIENTES','ejecutar'=>'finanzas/rivc','target'=>'popu','visible'=>'S','pertenece'=>'5','ancho'=>900,'alto'=>600));
+
 		if (!$this->db->table_exists('rivc')) {
 			$mSQL="CREATE TABLE rivc (
 			id         INT(6)        NOT NULL AUTO_INCREMENT,

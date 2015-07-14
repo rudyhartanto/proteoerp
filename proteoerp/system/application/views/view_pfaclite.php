@@ -183,8 +183,9 @@ to {background:#32FFD3}
 
 				$f_cana='<input type="text" autocomplete="off" onkeyup="total(\''.$i.'\')" maxlength="10" style="height:30px;font-size:18px;background-color:rgba(255,255,255,0.5);text-align:right;width:100%" size="4" class="inputnum" id="cana_'.$i.'" value="'.$vval.'" name="cana_'.$i.'">';
 			}else{
-				$f_cana =nformat($cana);
-				$f_cana .=$f_cana='<input type="hidden" id="cana_'.$i.'" value="'.$cana.'" name="cana_'.$i.'">';
+
+				$f_cana  = nformat($cana);
+				$f_cana .= '<input type="hidden" id="cana_'.$i.'" value="'.$cana.'" name="cana_'.$i.'">';
 			}
 
 			$js_ctotal .= "total('${i}');\n";
