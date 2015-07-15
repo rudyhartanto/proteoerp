@@ -66,8 +66,6 @@ class Lprecios extends Controller {
 			LEFT JOIN grup      AS c ON a.grupo=c.grupo
 			LEFT JOIN sinvfot   AS g ON a.id=g.sinv_id ${fulltext} ";
 
-
-
 			$mSQL .= "
 			AND a.activo='S'
 			AND e.existen>0
