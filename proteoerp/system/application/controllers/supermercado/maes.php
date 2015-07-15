@@ -19,11 +19,16 @@ class Maes extends Controller {
 	}
 
 	function index(){
-		if ( !$this->datasis->iscampo('maes','id') ) {
+		$campos = $this->db->list_fields('maes');
+		if ( !in_array('id'      ,$campos) ) {
 			$this->db->simple_query('ALTER TABLE maes DROP PRIMARY KEY');
 			$this->db->simple_query('ALTER TABLE maes ADD UNIQUE INDEX codigo (codigo)');
 			$this->db->simple_query('ALTER TABLE maes ADD COLUMN id INT(11) NULL AUTO_INCREMENT, ADD PRIMARY KEY (id)');
 		};
+		if (!in_array('linfe'      ,$campos)) $this->db->simple_query("ALTER TABLE `maes` ADD COLUMN `linfe`       CHAR(1)       NULL DEFAULT 'N' ");
+		if (!in_array('lindia'     ,$campos)) $this->db->simple_query("ALTER TABLE `maes` ADD COLUMN `lindia`      INT(5)        NULL DEFAULT '0'");
+		if (!in_array('lincan'     ,$campos)) $this->db->simple_query("ALTER TABLE `maes` ADD COLUMN `lincan`      INT(5)        NULL DEFAULT '0' AFTER lindia");
+
 		//$this->datasis->creaintramenu(array('modulo'=>'330','titulo'=>'Inventario','mensaje'=>'Maestro de Inventario','panel'=>'INVENTARIO','ejecutar'=>'inventario/maes','target'=>'popu','visible'=>'S','pertenece'=>'3','ancho'=>900,'alto'=>600));
 		$this->datasis->modintramenu( 900, 600, substr($this->url,0,-1) );
 		redirect($this->url.'jqdatag');
@@ -1904,6 +1909,27 @@ class Maes extends Controller {
 		}
 		';
 
+		$script .= '
+		$("#linfe").change(function(){
+			var val=$(this).val();
+			if(val=="S"){
+				$("#lindia").show();
+				$("#lincan").show();
+				$("#linnombred").show();
+				$("#linnombrec").show();
+			}else{
+				$("#lindia").hide();
+				$("#lincan").hide();
+				$("#linnombred").hide();
+				$("#linnombrec").hide();
+			}
+		});
+		$("#linfe").change();
+
+
+		';
+
+
 /*
 		$script .= '
 		function get_familias(){
@@ -2604,6 +2630,30 @@ class Maes extends Controller {
 		$edit->garantia->css_class='inputonlynum';
 		$edit->garantia->size =13;
 		$edit->garantia->maxlength =11;
+
+		$edit->linfe = new dropdownField('Limitar ventas', 'linfe');
+		$edit->linfe->style='width:45px;';
+		$edit->linfe->option('N' ,'No');
+		$edit->linfe->option('S' ,'Si');
+		$edit->linfe->insertValue='N';
+		$edit->linfe->rule='enum[N,S]|callback_chlinfe';
+		$edit->linfe->title='Activar si desea evitar que este producto no sea vendido a la misma persona en un per&iacute;odo de d&iacute;as';
+
+		$edit->lindia = new inputField('D&iacute;as limite', 'lindia');
+		$edit->lindia->css_class='inputnum';
+		$edit->lindia->size=3;
+		$edit->lindia->maxlength=5;
+		$edit->lindia->rule='numeric';
+		$edit->lindia->insertValue='0';
+		$edit->lindia->autocomplete = false;
+
+		$edit->lincan = new inputField('Cantidad Limite', 'lincan');
+		$edit->lincan->css_class='inputnum';
+		$edit->lincan->size=3;
+		$edit->lincan->maxlength=5;
+		$edit->lincan->rule='numeric';
+		$edit->lincan->insertValue='0';
+		$edit->lincan->autocomplete = false;
 
 		$codigo=$edit->_dataobject->get("codigo");
 		$edit->almacenes = new containerField('almacenes',$this->_detalle($codigo));

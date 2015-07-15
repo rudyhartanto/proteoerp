@@ -81,22 +81,46 @@
 		</table>
 		</fieldset>
 		<br>
-		<fieldset style='border: 1px outset #B45FF4;background: #EFEFFF;'>
-		<table border='0' width="100%">
+		<table width='100%'>
 			<tr>
-				<td class="littletableheader"><?php echo $form->ensambla->label;  ?></td>
-				<td class="littletablerow"   ><?php echo $form->ensambla->output; ?></td>
-			</tr>
-			<tr>
-				<td class="littletableheader">Presentaci&oacute;n</td>
-				<td class="littletablerow"   ><?php echo $form->fracxuni->output; ?> X <?php echo $form->dempaq->output; ?> = <?php echo $form->mempaq->output; ?></td>
-			</tr>
-			<tr>
-				<td class="littletableheader"><?php echo $form->alcohol->label;   ?></td>
-				<td class="littletablerow"   ><?php echo $form->alcohol->output;  ?>X<?php echo $form->implic->output   ?></td>
+				<td>
+					<fieldset style='border: 1px outset #B45FF4;background: #EFEFFF;'>
+					<table border='0' width="100%">
+						<tr>
+							<td class="littletableheader"><?php echo $form->ensambla->label;  ?></td>
+							<td class="littletablerow"   ><?php echo $form->ensambla->output; ?></td>
+						</tr>
+						<tr>
+							<td class="littletableheader">Presentaci&oacute;n</td>
+							<td class="littletablerow"   ><?php echo $form->fracxuni->output; ?> X <?php echo $form->dempaq->output; ?> = <?php echo $form->mempaq->output; ?></td>
+						</tr>
+						<tr>
+							<td class="littletableheader"><?php echo $form->alcohol->label;   ?></td>
+							<td class="littletablerow"   ><?php echo $form->alcohol->output;  ?>X<?php echo $form->implic->output   ?></td>
+						</tr>
+					</table>
+					</fieldset>
+				</td>
+				<td>
+					<table border='0' width="100%" cellpadding='0' cellspacing='0'>
+						<tr>
+							<td class='littletableheaderc'><?php echo $form->linfe->label ?></td>
+							<td class='littletablerow'    ><?php echo $form->linfe->output ?></td>
+						</tr><tr id='linnombred'>
+							<td class='littletableheaderc'><?php echo $form->lindia->label;  ?></td>
+							<td class='littletablerow'    ><?php echo $form->lindia->output; ?></td>
+						</tr><tr id='linnombrec'>
+							<td class='littletableheaderc'><?php echo $form->lincan->label;  ?></td>
+							<td class='littletablerow'    ><?php echo $form->lincan->output; ?></td>
+						</tr>
+					</table>
+				</td>
 			</tr>
 		</table>
-		</fieldset>
+
+
+
+
 
 	</div>		
 

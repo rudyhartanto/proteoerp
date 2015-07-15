@@ -133,7 +133,11 @@ $(document).on("pagecreate", "#mainpage", function(){
 						//html += "</h2>";
 						//html += "<p>C&oacute;digo: <b>"+$('<span/>').text(val.codigo).html()+"</b> Precio: <b>"+nformat(base,2)+"</b> IVA: <b>"+nformat(iva,2)+"</b></p>";
 						//html += "Precio de venta: <b style='font-size:1.2em'>"+nformat(precio,2)+"</b>";
-						html += "<tr>";
+						if ($i%2 == 0) 
+							html += "<tr class='odd'>";
+						else
+							html += "<tr>";
+						
 						html += "<td>"+$('<span/>').text(val.codigo).html()+"</td>";
 						html += "<td>"+$('<span/>').text(val.descrip).html()+"</td>";
 						html += "<td>"+$('<span/>').text(val.unidad).html()+"</td>";
