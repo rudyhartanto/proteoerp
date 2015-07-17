@@ -3045,8 +3045,8 @@ function chrif(rif){
 				echo 'Fallo Agregado!!!';
 			}
 		}elseif($oper == 'edit'){
-			if($id<=0){ 
-				return false; 
+			if($id<=0){
+				return false;
 			}
 
 			$nuevo  = $data[$mcodp];
@@ -3071,8 +3071,8 @@ function chrif(rif){
 			echo "${mcodp} Modificada";
 
 		}elseif($oper == 'del'){
-			if($id<=0){ 
-				return false; 
+			if($id<=0){
+				return false;
 			}
 			$ruta  = $this->datasis->dameval("SELECT ${mcodp} FROM sclirut WHERE id=${id}");
 			$dbruta= $this->db->escape($ruta);
@@ -4049,26 +4049,27 @@ MAPGO;
 
 		if (!$this->db->table_exists('sclitrut')) {
 			$mSQL="
-			CREATE TABLE sclitrut (
-				id      INT(11)    NOT NULL AUTO_INCREMENT,
-				cliente VARCHAR(5) DEFAULT NULL,
-				ruta    VARCHAR(5) DEFAULT NULL,
-				dia     CHAR(1)    DEFAULT NULL,
-			PRIMARY KEY (id),
-			UNIQUE INDEX unico (cliente, ruta)
-			) ENGINE=MyISAM DEFAULT CHARSET=latin1
-			ROW_FORMAT=FIXED
-			COMMENT='Rutas de clientes'";
+			CREATE TABLE `sclitrut` (
+				`id` INT(11) NOT NULL AUTO_INCREMENT,
+				`cliente` VARCHAR(5) NULL DEFAULT NULL,
+				`ruta` VARCHAR(5) NULL DEFAULT NULL,
+				`dia` CHAR(1) NULL DEFAULT NULL,
+				`pos` INT(11) NULL DEFAULT NULL,
+				PRIMARY KEY (`id`),
+				UNIQUE INDEX `unico` (`cliente`, `ruta`)
+			)
+			COMMENT='Rutas de clientes'
+			COLLATE='latin1_swedish_ci'
+			ENGINE=MyISAM
+			ROW_FORMAT=FIXED";
+			$this->db->query($mSQL);
+		}
+
+		$campos=$this->db->list_fields('sclitrut');
+		if(!in_array('pos', $campos)){
+			$mSQL="ALTER TABLE `sclitrut` ADD COLUMN `pos` INT NULL DEFAULT NULL AFTER `dia`";
 			$this->db->query($mSQL);
 		}
 
 	}
 }
-/*
-2 	 Atún Enlatado Presentación No Regulada 	0,004
-3 	 Formula Preinfantil 	1,957
-4 	 Fórmulas Lácteas 	0,317
-5 	 Leche Condensada 	0,000
-6 	 Leche en Polvo Completa - Uso Domestico
-
-*/

@@ -255,7 +255,7 @@ foreach ($detalle as $items){ $i++;
 						$uline   = array_shift($arr_des);
 						echo $this->us_ascii2html($uline).'<br>';
 						$lineas++;
-						if($lineas >= $maxlin){
+						if($lineas >= $maxlin  && count($detalle)!=$i){
 							$lineas =0;
 							$npagina=true;
 							if(count($arr_des)>0){

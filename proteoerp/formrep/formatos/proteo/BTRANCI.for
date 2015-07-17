@@ -29,19 +29,19 @@ $efectivo = $row->efectivo;
 $comision = $row->comision;
 $islr     = $row->islr;
 $monto    = $row->monto;
-$envia    = htmlspecialchars(trim($row->envia));
-$bancoe   = htmlspecialchars(trim($row->bancoe));
-$tipoe    = htmlspecialchars(trim($row->tipoe));
-$numeroe  = htmlspecialchars(trim($row->numeroe));
+$envia    = $this->us_ascii2html(trim($row->envia));
+$bancoe   = $this->us_ascii2html(trim($row->bancoe));
+$tipoe    = $this->us_ascii2html(trim($row->tipoe));
+$numeroe  = $this->us_ascii2html(trim($row->numeroe));
 $recibe   = $row->recibe;
-$bancor   = htmlspecialchars(trim($row->bancor));
-$tipor    = htmlspecialchars(trim($row->tipor));
-$numeror  = htmlspecialchars(trim($row->numeror));
-$concepto = htmlspecialchars(trim($row->concepto));
-$benefi   = htmlspecialchars(trim($row->benefi));
+$bancor   = $this->us_ascii2html(trim($row->bancor));
+$tipor    = $this->us_ascii2html(trim($row->tipor));
+$numeror  = $this->us_ascii2html(trim($row->numeror));
+$concepto = $this->us_ascii2html(trim($row->concepto));
+$benefi   = $this->us_ascii2html(trim($row->benefi));
 $transac  = $row->transac;
-$bnumcuent= htmlspecialchars(trim($row->bnumcuent));
-$cnumcuent= htmlspecialchars(trim($row->cnumcuent));
+$bnumcuent= $this->us_ascii2html(trim($row->bnumcuent));
+$cnumcuent= $this->us_ascii2html(trim($row->cnumcuent));
 
 ?><html>
 <head>

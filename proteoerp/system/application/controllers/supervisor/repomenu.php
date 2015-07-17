@@ -305,6 +305,7 @@ class repomenu extends validaciones {
 		//$this->rapyd->jquery[]='$("#proteo").linedtextarea();';
 
 		if($edit->on_show()){
+			$data['back_url']= $edit->back_url;
 			$data['content'] = $edit->output;
 			$data['title']   = $id;
 			$data['head']    = $this->rapyd->get_head();
