@@ -1438,7 +1438,7 @@ class Sfac extends Controller {
 		#show/hide navigations buttons
 
 		//$grid->setEdit(  true);
-		$grid->setEdit(  $this->datasis->sidapuede('SFAC','MODIFICA%'));
+		$grid->setEdit(  $this->datasis->sidapuede('SFAC','MODIFICA%') || $this->datasis->sidapuede('SFAC','SFACMODI%'));
 		$grid->setAdd(   $this->datasis->sidapuede('SFAC','INCLUIR%' ));
 		$grid->setDelete($this->datasis->sidapuede('SFAC','BORR_REG%') || $this->datasis->sidapuede('SFAC','SFACANU%'));
 		$grid->setSearch($this->datasis->sidapuede('SFAC','BUSQUEDA%'));
