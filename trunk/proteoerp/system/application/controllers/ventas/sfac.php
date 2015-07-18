@@ -3344,7 +3344,9 @@ class Sfac extends Controller {
 			redirect('formatos/descargar/FACTURA/'.$uid);
 		}
 
-		$sfacforma=$this->datasis->traevalor('FORMATOSFAC','Especifica el metodo a ejecutar para descarga de formato de factura en Proteo Ej. descargartxt...');
+		$multiforma=$this->datasis->traevalor('MULTIFORMATO','Da la posibilidad de que el usuario elija PDF o TXT al momento de imprimri una factura,si es S su valor FORMATOSFAC es irrelevante.');
+
+		$sfacforma =$this->datasis->traevalor('FORMATOSFAC','Especifica el metodo a ejecutar para descarga de formato de factura en Proteo Ej. descargartxt...');
 
 		if(empty($sfacforma)) $sfacforma='descargar';
 		$_url = 'formatos/'.$sfacforma.'/FACTURA/'.$uid;
@@ -3377,6 +3379,8 @@ class Sfac extends Controller {
 		$manual = $this->datasis->dameval('SELECT manual FROM sfac WHERE id='.$this->db->escape($uid));
 		if($manual!='S'){
 			$edit->container = new containerField('impresion','La descarga se realizara en algunos segundos, en caso de no hacerlo haga click '.anchor('formatos/'.$sfacforma.'/FACTURA/'.$uid,'aqui'));
+		}elseif($multiforma=='S'){
+			$edit->container = new containerField('impresion','Elija el formato: '.anchor('formatos/descargar/FACTURA/'.$uid,'PDF').' '.anchor('formatos/descargartxt/FACTURA/'.$uid,'TXT'));
 		}else{
 			$edit->container = new containerField('impresion','Haga click '.anchor('formatos/descargar/FACTURA/'.$uid,'aqui').' para descargar el comprobante de registro');
 		}
@@ -3552,7 +3556,7 @@ class Sfac extends Controller {
 			$edit->build();
 		}
 
-		if($st=='modify' && $manual!='S'){
+		if($st=='modify' && $manual!='S' && $multiforma!='S'){
 			$script= '<script type="text/javascript" >
 			$(function() {
 				setTimeout(\'window.location="'.$url.'"\',100);';
