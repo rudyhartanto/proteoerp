@@ -2321,7 +2321,7 @@ class Sprm extends Controller {
 
 		$edit->depto = new  dropdownField('Asignar a departamento', 'depto');
 		$edit->depto->option('','Seleccionar');
-		$edit->depto->options('SELECT depto,CONCAT_WS(\'-\',depto,TRIM(descrip)) AS descrip FROM dpto WHERE tipo=\'G\' ORDER BY descrip');
+		$edit->depto->options('SELECT depto,CONCAT_WS(\'-\',depto,TRIM(descrip)) AS descrip FROM dpto WHERE tipo IN (\'G\',\'A\') ORDER BY descrip');
 		$edit->depto->style='width:180px;';
 		$edit->depto->rule ='condi_required|callback_chdepto';
 
