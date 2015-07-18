@@ -1982,16 +1982,60 @@ class Scst extends Controller {
 	//*************************************************
 	function tabla() {
 		$id  = intval($this->uri->segment($this->uri->total_segments()));
-		$mSQL= "SELECT proveed,transac FROM scst WHERE id=${id}";
+		$mSQL= "SELECT proveed, transac, tipo_doc FROM scst WHERE id=${id}";
 		$row = $this->datasis->damerow($mSQL);
 		if(!empty($row)){
-			$proveed = $row['proveed'];
-			$transac = $row['transac'];
+			$proveed  = $row['proveed'];
+			$transac  = $row['transac'];
+			$tipo_doc = $row['tipo_doc'];
 		}else{
 			return false;
 		}
 		$salida = '';
 		$dbproveed = $this->db->escape($proveed);
+
+		// Busca si esta en CXP
+		$mSQL = "SELECT count(*) FROM sprm WHERE tipo_doc= transac=";
+/*		
+
+		$mSQL = $this->datasis->damereg("SELECT * FROM sprm WHERE tipo_doc= transac=");
+
+						//Carga la CxP
+						$sprm=array();
+						$causado = $this->datasis->fprox_numero('ncausado');
+						$sprm['cod_prv']  = $proveed;
+						$sprm['nombre']   = $row['nombre'];
+						$sprm['tipo_doc'] = $row['tipo_doc'];
+						$sprm['numero']   = $row['numero'];
+						$sprm['fecha']    = $actuali;
+						$sprm['vence']    = $vence;
+						$sprm['monto']    = $row['ctotal'];
+						$sprm['impuesto'] = $row['cimpuesto'];
+						$sprm['abonos']   = $reteiva+$reten;
+						$sprm['observa1'] = 'FACTURA DE COMPRA';
+						$sprm['reteiva']  = $reteiva;
+						$sprm['causado']  = $causado;
+						$sprm['estampa']  = $estampa;
+						$sprm['usuario']  = $usuario;
+						$sprm['hora']     = $hora;
+						$sprm['transac']  = $transac;
+						$sprm['montasa']  = $row['cgenera'];
+						$sprm['tasa']     = $row['civagen'];
+						$sprm['monadic']  = $row['cadicio'];
+						$sprm['sobretasa']= $row['civaadi'];
+						$sprm['monredu']  = $row['creduci'];
+						$sprm['reducida'] = $row['civared'];
+						$sprm['exento']   = $row['cexento'];
+						if($dfaltante>0){
+							$sprm['noabonable']=$dfaltante;
+						}
+						$mSQL=$this->db->insert_string('sprm', $sprm);
+						$ban =$this->db->simple_query($mSQL);
+						if(!$ban){ memowrite($mSQL,'scst'); $error++; }
+*/
+
+
+
 
 		// Cuentas por Cobrar
 		$mSQL = "SELECT cod_prv, MID(nombre,1,25) nombre, tipo_doc, numero, monto, abonos FROM sprm WHERE cod_prv = ${dbproveed} AND abonos <> monto AND tipo_doc <> 'AB' ORDER BY fecha DESC LIMIT 5";
