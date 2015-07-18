@@ -3377,7 +3377,7 @@ class Sfac extends Controller {
 		$edit->pre_process( 'delete','_pre_print_delete');
 
 		$manual = $this->datasis->dameval('SELECT manual FROM sfac WHERE id='.$this->db->escape($uid));
-		if($manual!='S'){
+		if($manual!='S' && $multiforma!='S'){
 			$edit->container = new containerField('impresion','La descarga se realizara en algunos segundos, en caso de no hacerlo haga click '.anchor('formatos/'.$sfacforma.'/FACTURA/'.$uid,'aqui'));
 		}elseif($multiforma=='S'){
 			$edit->container = new containerField('impresion','Elija el formato: '.anchor('formatos/descargar/FACTURA/'.$uid,'PDF').' '.anchor('formatos/descargartxt/FACTURA/'.$uid,'TXT'));
