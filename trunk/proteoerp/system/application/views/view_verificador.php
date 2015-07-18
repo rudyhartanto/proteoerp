@@ -68,20 +68,20 @@
 			<table id='tabladata'>
 				<thead>
 				<tr>
-					<th data-column-id="codigo"  >C&oacute;digo</th>
+					<th data-column-id="codigo"  data-width='150px' data-identifier="true" >C&oacute;digo</th>
 					<th data-column-id="descrip" >Descripci&oacute;n</th>
-					<th data-column-id="unidad"  >Medida</th>
-					<th data-column-id="base1"   data-type="numeric">Precio</th>
-					<th data-column-id="iva"     data-type="numeric">I.V.A.</th>
-					<th data-column-id="precio1" data-type="numeric">Precio de Venta</th>
+					<th data-column-id="unidad"  data-width='100px'>Medida</th>
+					<th data-column-id="marca"   data-width='150px'>Marca</th>
+					<th data-column-id="base1"   data-width='140px' data-align='right' data-headerAlign='right'>Precio</th>
+					<th data-column-id="iva"     data-width='140px' data-align='right'>I.V.A.</th>
+					<th data-column-id="precio1" data-width='140px' data-align='right'>Precio de Venta</th>
 				</tr>
 				</thead>
 			</table>
-			
 			</td><td>
 				<img src='<?php echo site_url('images/ndisp.jpg')?>' width='200' >
 			</td>
-	</tr>
+		</tr>
 	</table>
 </div>
 
@@ -97,7 +97,7 @@ $('#tabladata').bootgrid({
 		/* To accumulate custom parameter with the request object */
 		return {id: "b0df282a-0d67-40e5-8558-c9e93b7befed"};
     },
-    rowCount: 30,
+    rowCount: 18,
     url: '<?php echo site_url('inventario/verificador/buscasinv')?>',
 	formatters: {
 		"link": function(column, row){

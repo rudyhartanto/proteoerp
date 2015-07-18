@@ -115,6 +115,17 @@ class Verificador extends Controller {
 			}
 
 			$mSQL = "
+			SELECT count(*) registros
+			FROM sinv    AS a
+			JOIN itsinv  AS e ON a.codigo=e.codigo
+			JOIN caub    AS f ON e.alma = f.ubica AND f.tipo='S'
+			WHERE a.activo='S' AND e.existen>0
+			AND MID(a.tipo,1,1)='A'";
+			
+			$rtotal = $this->datasis->dameval($mSQL);
+
+
+			$mSQL = "
 			SELECT DISTINCT TRIM(a.descrip) descrip, TRIM(a.codigo) codigo, a.marca, a.ubica, a.unidad,
 			a.precio1,precio2,precio3,precio4, a.iva,a.existen,a.tipo,a.peso, a.ultimo, a.pond, a.barras, 0 AS descufijo, c.margen AS dgrupo,0 AS promo, COALESCE(e.existen,0) existen,a.id
 			,g.sinv_id
@@ -134,36 +145,6 @@ class Verificador extends Controller {
 
 			$retArray = $retorno = array();
 			$cana=1;
-
-/*
-[
-	{"codigo":"TABAI24","base1":1325.89,"descrip":"ABRAZADERA ACERO INOXIDABLE 1.1\/4-2\"","iva":"12.00","marca":"TRUPER","unidad":"BLISTER","foto":"N"},
-	{"codigo":"TABAI06","base1":550,    "descrip":"ABRAZADERA ACERO INOXIDABLE 1\/2-3\/4\"","iva":"12.00","marca":"TRUPER","unidad":"BLISTER","foto":"N"},
-	{"codigo":"TABAI6","base1":1455.64,"descrip":"ABRAZADERA ACERO INOXIDABLE 1\/2-3\/4\"","iva":"12.00","marca":"TRUPER","unidad":"BLISTER","foto":"N"},
-	{"codigo":"TABAI10","base1":1489.29,"descrip":"ABRAZADERA ACERO INOXIDABLE 3\/4-1.1\/16","iva":"12.00","marca":"TRUPER","unidad":"BLISTER","foto":"N"},{"codigo":"TABAI16","base1":1125.89,"descrip":"ABRAZADERA ACERO INOXIDABLE 3\/4-1.1\/2","iva":"12.00","marca":"TRUPER","unidad":"BLISTER","foto":"N"},{"codigo":"TABAI04","base1":727.68,"descrip":"ABRAZADERA ACERO INOXIDABLE 3\/8-5\/8\"","iva":"12.00","marca":"TRUPER","unidad":"BLISTER","foto":"N"},{"codigo":"TABAI4","base1":1000.89,"descrip":"ABRAZADERA ACERO INOXIDABLE 3\/8-5\/8\"","iva":"12.00","marca":"TRUPER","unidad":"BLISTER","foto":"N"},{"codigo":"TABAI8","base1":1050.89,"descrip":"ABRAZADERA ACERO INOXIDABLE 5\/8-7\/8","iva":"12.00","marca":"TRUPER","unidad":"BLISTER","foto":"N"},{"codigo":"AAA","base1":17.86,"descrip":"ABRAZADERA P\/CERCA ALFAJOL","iva":"12.00","marca":"OTRAS","unidad":"UNIDAD","foto":"N"},{"codigo":"ABEMT04","base1":1.95,"descrip":"ABRAZADERA TUBO EMT 1 1\/2\"  UNA PATA","iva":"12.00","marca":"OTRAS","unidad":"UNIDAD","foto":"N"}
-]
-
-
-
-
-    {
-    "current": 1,
-    "rowCount": 10,
-    "rows": [{
-			"id": 19,
-			"sender": "123@test.de",
-			"received": "2014-05-30T22:15:00"
-		},{
-			"id": 14,
-			"sender": "123@test.de",
-			"received": "2014-05-30T20:15:00"
-		},
-    ...
-    ],
-    "total": 1123   }
-
- 
-*/
 
 			$query = $this->db->query($mSQL);
 			if ($query->num_rows() > 0){
@@ -190,12 +171,12 @@ class Verificador extends Controller {
 					//$retArray['base2']   = round($row['precio2']*100/(100+$row['iva']),2);
 					//$retArray['base3']   = round($row['precio3']*100/(100+$row['iva']),2);
 					//$retArray['base4']   = round($row['precio4']*100/(100+$row['iva']),2);
-					$retArray['descrip'] = $this->en_utf8($row['descrip']);
+					$retArray['descrip']   = $this->en_utf8($row['descrip']);
 					//$retArray['barras']  = $row['barras'];
 					//$retArray['descrip'] = wordwrap($row['descrip'], 25, '<br />');
-					$retArray['iva']     = $row['iva'];
+					$retArray['iva']       =  $row['precio1'] - $retArray['base1'];     //$row['iva'];
 					//$retArray['existen'] = (empty($row['existen']))? 0 : round($row['existen'],2);
-					$retArray['marca']   = $row['marca'];
+					$retArray['marca']     = $row['marca'];
 					//$retArray['ubica']   = $row['ubica'];
 					$retArray['unidad']  = $row['unidad'];
 					//$retArray['id']      = intval($row['id']);
@@ -209,7 +190,7 @@ class Verificador extends Controller {
 
 				}
 				$data = json_encode($retorno);
-				$data = '{"current": 1, "rowCount": 10, "rows":'.$data.', "total": 1123 }';
+				$data = '{"current": '.$pagina.', "rowCount": 10, "rows":'.$data.', "total": '.$rtotal.' }';
 			}
 		}
 		echo $data;
