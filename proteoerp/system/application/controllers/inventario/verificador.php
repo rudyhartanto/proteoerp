@@ -100,30 +100,34 @@ class Verificador extends Controller {
 		$qdb  = $this->db->escape($mid.'%');
 		$qba  = $this->db->escape($mid);
 
-		$data = '[]';
+		$data = '{"current": 1, "rowCount": '.$limite.', "rows":[], "total": 0 }';
+
 		if($mid == false) $mid = 'A';
 
 		if($mid !== false){
 
-			if(strlen($mid)>=4){
+			if(strlen($mid) >= 4 ){
 				//$fulltext= " OR MATCH(a.descrip) AGAINST (${qba})";
-				$fulltext= "WHERE (a.codigo LIKE ${qdb} OR a.barras LIKE ${qdb} OR a.alterno LIKE ${qdb} OR b.suplemen=${qba} OR MATCH(a.descrip) AGAINST (${qba})) ";
+				$fulltext= "WHERE (a.codigo LIKE ${qdb} OR a.barras LIKE ${qdb} OR a.descrip LIKE ${qdb} ) ";
 
 			}else{
 				//$fulltext= " a.descrip LIKE ${qdb}";
-				$fulltext= "WHERE a.descrip LIKE ${qdb} ";
+				$fulltext= "WHERE a.activo='S' AND e.existen>0 AND a.descrip LIKE ${qdb} ";
 			}
 
 			$mSQL = "
 			SELECT count(*) registros
 			FROM sinv    AS a
+			LEFT JOIN barraspos AS b ON a.codigo=b.codigo
 			JOIN itsinv  AS e ON a.codigo=e.codigo
 			JOIN caub    AS f ON e.alma = f.ubica AND f.tipo='S'
-			WHERE a.activo='S' AND e.existen>0
-			AND MID(a.tipo,1,1)='A'";
-			
-			$rtotal = $this->datasis->dameval($mSQL);
+			${fulltext} 
+			AND a.activo='S'
+			AND e.existen>0
+			AND MID(a.tipo,1,1)='A'
+			";
 
+			$rtotal = $this->datasis->dameval($mSQL);
 
 			$mSQL = "
 			SELECT DISTINCT TRIM(a.descrip) descrip, TRIM(a.codigo) codigo, a.marca, a.ubica, a.unidad,
@@ -142,6 +146,8 @@ class Verificador extends Controller {
 			AND MID(a.tipo,1,1)='A'
 			GROUP BY a.codigo
 			ORDER BY a.descrip LIMIT ${desde}, ${limite}";
+
+memowrite($mSQL);
 
 			$retArray = $retorno = array();
 			$cana=1;
@@ -190,7 +196,7 @@ class Verificador extends Controller {
 
 				}
 				$data = json_encode($retorno);
-				$data = '{"current": '.$pagina.', "rowCount": 10, "rows":'.$data.', "total": '.$rtotal.' }';
+				$data = '{"current": '.$pagina.', "rowCount": '.$limite.', "rows":'.$data.', "total": '.$rtotal.' }';
 			}
 		}
 		echo $data;
