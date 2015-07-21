@@ -2,6 +2,14 @@
 $_arch_nombre='sfac.fis';
 
 $tipo_iva = 'I'; //'I' manda iva incluido, 'A' manda el iva adicional
+$chancho  = 40 ; //cantidad de caracteres por lines (40 Bixolon, 33 aclas)
+
+
+//*********************************
+//Tipo de formato para las NC
+// '1':formato viejo (Bixolon 350, 270, aclas)
+// '2':formato nuevo (DT-230)
+$tipo_for = '1';
 
 if(count($parametros)==0) show_error('Faltan parametros');
 $id   = $parametros[0];
@@ -48,6 +56,12 @@ $factnumero= $tipo_doc.$numero;
 $dbtipo_doc = $this->db->escape($tipo_doc);
 $dbnumero   = $this->db->escape($numero);
 
+$encab  = 'CLIENTE: '.str_pad($cod_cli,7).' REF.:'.$factnumero."\n";
+$encab .= $nombre."\n";
+$encab .= 'RIF:'.str_pad($rifci,14).' Vende: '.$vd."\n";
+$encab .= $direccion."\n";
+$encab .= $row->observa;
+
 if($tipo_doc == 'F'){
 	$doc  = '';
 	$tasa = '!';
@@ -60,6 +74,33 @@ if($tipo_doc == 'F'){
 	$redu = '2';
 	$adic = '3';
 	$exeb = '0';
+
+	$afecta   = $row->factura;
+	$dbafecta = $this->db->escape($afecta);
+	$derow    = $this->datasis->damerow("SELECT nfiscal,maqfiscal,fecha FROM sfac WHERE tipo_doc='F' AND numero=${dbafecta}");
+	if(empty($derow)){
+		show_error('Factura inexistente');
+	}
+	$derow['nfiscal']  = trim($derow['nfiscal']);
+	$derow['maqfiscal']= trim($derow['maqfiscal']);
+
+	if($tipo_for=='2'){
+		$encab  = 'CLIENTE: '.str_pad($cod_cli,7).' REF.:'.$factnumero."\n";
+		$encab .= 'Vendedor: '.$vd."\n";
+		$encab .= $direccion."\n";
+		$encab .= $row->observa;
+		if(empty($derow['nfiscal']) || empty($derow['maqfiscal'])){
+			echo 'Esta devolucion no puede ser impresa porque a la factura ('.$afecta.') que afecta le falta el numero fiscal o el numero de serial, coloque esos valores y luego vuelva a imprimir';
+			exit();
+		}
+
+	}else{
+		$encab  .="\nFac. Afectada: ".trim($derow['nfiscal']);
+		$encab  .="\nFecha de Fac.: ".dbdate_to_human($derow['fecha']);
+		if(!empty($derow['maqfiscal'])){
+			$encab  .="\nRegistro Fac.: ".trim($derow['maqfiscal']);
+		}
+	}
 }else{
 	show_error('Factura anulada o no cobrada');
 }
@@ -70,24 +111,26 @@ $uline  = array();
 $mSQL="SELECT
 	codigoa AS codigo,desca,cana,preca,tota AS importe,iva,detalle
 FROM sitems
-WHERE numa=${dbnumero} AND tipoa=${dbtipo_doc}";
+WHERE numa=${dbnumero} AND tipoa=${dbtipo_doc} ORDER BY desca";
 
-$mSQL_2 = $this->db->query($mSQL);
-$detalle  = $mSQL_2->result();
+$mSQL_2  = $this->db->query($mSQL);
+$detalle = $mSQL_2->result();
 
-$encab  = 'CLIENTE: '.str_pad($cod_cli,9).' REF.:'.$factnumero."\n";
-$encab .= $nombre."\n";
-$encab .= 'RIF:'.str_pad($rifci,14).' Vende: '.$vd."\n";
-$encab .= $direccion."\n";
-$encab .= $row->observa;
-
-$encab  = wordwrap($encab,40,"\n");
+$encab  = wordwrap($encab,$chancho,"\n");
 $arr_lin= explode("\n",$encab);
 foreach($arr_lin as $i=>$linea){
 	$o=$i+1;
 	if(strlen(trim($linea))>0){
 		echo 'i'.str_pad($o,2,'0', STR_PAD_LEFT).$linea."\n";
 	}
+}
+
+if($tipo_doc=='D' && $tipo_for=='2'){
+	echo 'iR*'.$rifci."\n";
+	echo 'iS*'.$nombre."\n";
+	echo 'iF*'.trim($derow['nfiscal'])."\n";
+	echo 'iI*'.trim($derow['maqfiscal'])."\n";
+	echo 'iD0'.dbdate_to_human($derow['fecha'],'d/m/y')."\n";
 }
 
 foreach ($detalle as $items){
@@ -115,7 +158,7 @@ foreach ($detalle as $items){
 
 	//Descripcion
 	$descrip = trim($items->desca);
-	echo substr($descrip,0,38)."\n";
+	echo substr($descrip,0,$chancho)."\n";
 
 	$ddetall = trim($items->detalle);
 
@@ -123,7 +166,7 @@ foreach ($detalle as $items){
 		$descrip = $ddetall;
 		$descrip = str_replace("\r",'',$descrip);
 		$descrip = str_replace(array("\t"),' ',$descrip);
-		$descrip = wordwrap($descrip,40,"\n");
+		$descrip = wordwrap($descrip,$chancho,"\n");
 		$arr_des = explode("\n",$descrip);
 
 		foreach($arr_des as $linea){

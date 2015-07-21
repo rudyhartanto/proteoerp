@@ -4279,7 +4279,7 @@ class Sfac extends Controller {
 			$do->set_rel('sitems','mostrado',0,$i);
 
 
-			$rowval = $this->datasis->damerow('SELECT pond, base1,precio4,peso FROM sinv WHERE codigo='.$this->db->escape($itcodigo));
+			$rowval = $this->datasis->damerow('SELECT pond, base1,precio4,peso,descrip FROM sinv WHERE codigo='.$this->db->escape($itcodigo));
 			if(empty($rowval)){
 				$do->error_message_ar['pre_ins']=$do->error_message_ar['pre_upd']='Producto no encontrado ('.$itcodigo.') '.$cana;
 				//$do->error_message_ar['pre_ins']=$do->error_message_ar['pre_upd']=print_r($do->data_rel,true);
@@ -4289,6 +4289,7 @@ class Sfac extends Controller {
 			$do->set_rel('sitems','costo'  , $rowval['pond']   ,$i);
 			$do->set_rel('sitems','pvp'    , $rowval['base1']  ,$i);
 			$do->set_rel('sitems','precio4', $rowval['precio4'],$i);
+			$do->set_rel('sitems','descrip', $rowval['descrip'],$i);
 
 			$iva    +=$itimporte*($itiva/100);
 			$totals +=$itimporte;
