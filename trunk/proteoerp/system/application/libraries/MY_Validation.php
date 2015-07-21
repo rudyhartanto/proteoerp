@@ -156,7 +156,7 @@ class MY_Validation extends CI_Validation{
 		$flen   = intval(strlen($formato));
 
 		$dbcuenta=$this->CI->db->escape($cuenta);
-		$mSQL = "SELECT COUNT(*) AS cana FROM cpla WHERE codigo=${dbcuenta} AND LENGTH(codigo)=${flen}";
+		$mSQL = "SELECT COUNT(*) AS cana FROM cpla WHERE codigo=${dbcuenta} AND LENGTH(TRIM(codigo))=${flen}";
 		$this->set_message('existecpla', 'La cuenta contable introducida en el campo %s no es v&aacute;lida o no es de movimiento');
 
 		$query = $this->CI->db->query($mSQL);
