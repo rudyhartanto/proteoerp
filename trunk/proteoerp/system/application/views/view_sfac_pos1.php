@@ -966,6 +966,7 @@ function autocod(id){
 								$('#codigoa_'+id).data('ui-autocomplete')._trigger('select', 'autocompleteselect', {item : data[0]});
 								$('#codigoa_'+id).autocomplete('close');
 							}else{
+								$('#desca_'+id).val('');
 								$.each(data,
 									function(i, val){
 										sugiere.push( val );

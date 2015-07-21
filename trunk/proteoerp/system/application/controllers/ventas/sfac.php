@@ -4289,7 +4289,7 @@ class Sfac extends Controller {
 			$do->set_rel('sitems','costo'  , $rowval['pond']   ,$i);
 			$do->set_rel('sitems','pvp'    , $rowval['base1']  ,$i);
 			$do->set_rel('sitems','precio4', $rowval['precio4'],$i);
-			$do->set_rel('sitems','descrip', $rowval['descrip'],$i);
+			$do->set_rel('sitems','desca'  , trim($rowval['descrip']),$i);
 
 			$iva    +=$itimporte*($itiva/100);
 			$totals +=$itimporte;
