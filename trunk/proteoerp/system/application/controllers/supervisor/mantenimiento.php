@@ -1608,6 +1608,9 @@ function elminacenti(cual){
 			$numero  = $edit->numero->newValue;
 			if($numero[0] =='D') show_error('No se pueden revivir devoluciones');
 			$dbnumero= $this->db->escape($numero);
+
+
+			$salida = 'Cambio realizado';
 			$referen = $this->datasis->dameval("SELECT referen FROM sfac WHERE numero=${dbnumero} AND tipo_doc='X'");
 			if($referen=='C'){
 				$mSQL="UPDATE sfac SET tipo_doc='F' WHERE tipo_doc='X' AND numero=${dbnumero}";
@@ -1616,7 +1619,6 @@ function elminacenti(cual){
 				$mSQL="UPDATE sitems SET tipoa='F' WHERE tipoa='X' AND numa=${dbnumero}";
 				$this->db->simple_query($mSQL);
 
-				$salida = 'Cambio realizado';
 			}elseif($referen=='E'){
 				$mSQL="INSERT INTO `sfpa`
 					(`tipo_doc`, `numero`, `tipo`, `monto`, `fecha`, `f_factura`, `cod_cli`, `vd`, `cobrador`, `cobro`, `transac`, `usuario`, `estampa`, `hora`)
@@ -1627,6 +1629,7 @@ function elminacenti(cual){
 						a.cajero AS cobrador,a.fecha  AS cobro,a.transac,a.usuario,a.estampa,a.hora
 					FROM sfac AS a
 					WHERE a.numero=${dbnumero} AND a.tipo_doc='F' ";
+				$this->db->simple_query($mSQL);
 			}else{
 				$salida = 'Factura no valida para el cambio';
 			}
