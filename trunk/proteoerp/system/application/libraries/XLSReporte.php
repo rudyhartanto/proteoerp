@@ -493,7 +493,7 @@ class XLSReporte extends writeexcel_workbookbig  {
 		$i=0;
 		foreach($this->grupo as $fila) {
 			$i++;
-			if ($bache[$fila]!=$row[$fila])
+			if ($bache[$fila]!==$row[$fila])
 				return $i;
 		}
 		return false;

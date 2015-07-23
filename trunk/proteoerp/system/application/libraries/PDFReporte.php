@@ -435,7 +435,7 @@ class PDFReporte extends Fpdf {
 		$i=0;
 		foreach($this->grupo as $fila) {
 			$i++;
-			if ($bache[$fila]!=$row[$fila]) return $i;
+			if ($bache[$fila]!==$row[$fila]) return $i;
 		}
 		return false;
 	}
