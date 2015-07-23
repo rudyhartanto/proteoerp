@@ -3387,7 +3387,7 @@ class Sfac extends Controller {
 
 		$edit->nfiscal = new inputField('Control f&iacute;scal','nfiscal');
 		$edit->nfiscal->rule='max_length[12]|required';
-		$edit->nfiscal->size =14;
+		$edit->nfiscal->size =16;
 		$edit->nfiscal->maxlength =12;
 		$edit->nfiscal->autocomplete=false;
 
@@ -3422,6 +3422,7 @@ class Sfac extends Controller {
 					$nn       = $num+1;
 					$edit->nfiscal->updateValue=str_pad($nn,8,'0',STR_PAD_LEFT);
 					$edit->nfiscal->style = 'background-color:#FFDD00';
+					$chkval = true;
 				}
 			}
 
@@ -3434,9 +3435,11 @@ class Sfac extends Controller {
 			if(empty($smaqfiscal)){
 				$maqfiscal=$this->datasis->dameval("SELECT maqfiscal FROM sfac WHERE cajero=${dbcajero} AND usuario=${dbusr} AND tipo_doc=${dbtipo} AND MID(numero,1,1)!='_' AND id<>${dbid} ORDER BY id DESC LIMIT 1");
 				$edit->maqfiscal->updateValue=trim($maqfiscal);
-				$edit->maqfiscal->style = 'background-color:#FFDD00';
-				$edit->maqfiscal->title = $mmsj;
-				$chkval = true;
+				if(!empty($maqfiscal)){
+					$edit->maqfiscal->style = 'background-color:#FFDD00';
+					$edit->maqfiscal->title = $mmsj;
+					$chkval = true;
+				}
 			}
 
 			if($tipo=='D'){
@@ -3450,9 +3453,12 @@ class Sfac extends Controller {
 					$dbnumero=$this->db->escape($edit->get_from_dataobjetct('factura'));
 					$mfiscal=$this->datasis->dameval("SELECT maqfiscal FROM sfac WHERE numero=${dbnumero} AND usuario=${dbusr} AND tipo_doc='F'");
 					$edit->dmaqfiscal->updateValue=$mfiscal;
-					$edit->dmaqfiscal->style = 'background-color:#FFDD00';
-					$edit->dmaqfiscal->title = $mmsj;
-					$chkval = true;
+					if(!empty($mfiscal)){
+						$edit->dmaqfiscal->style = 'background-color:#FFDD00';
+						$edit->dmaqfiscal->title = $mmsj;
+						$chkval = true;
+					}
+
 				}
 			}
 		}elseif($manual!='S'){
@@ -3556,20 +3562,33 @@ class Sfac extends Controller {
 			$edit->build();
 		}
 
+
+		$script  = '<script type="text/javascript" >
+
+			$(function(){
+				$("form").bind("submit", function(){
+					window.onbeforeunload = function (){ };
+				});
+			';
+
 		if($st=='modify' && $manual!='S' && $multiforma!='S'){
-			$script= '<script type="text/javascript" >
-			$(function() {
-				setTimeout(\'window.location="'.$url.'"\',100);';
-				//if($chkval){
-				//	$script.= '$(window).bind("beforeunload", function() {
-				//		return confirm("No se ha guardado los campos resaltados, seguro desea salir?");
-				//	});';
-				//}
-			$script.='});
-			</script>';
-		}else{
-			$script='';
+			$script .= '
+				setTimeout(
+					function(){
+						window.location="'.$url.'";';
+
+						//if($chkval){
+						//	$script.= '
+						//	 window.onbeforeunload = function(){
+						//		return "No se ha guardado los campos resaltados, seguro desea salir?";
+						//	};';
+						//}
+
+					$script .='}
+				,100);';
 		}
+
+		$script .= "\n".'}); </script>';
 
 		$data['content'] = $edit->output;
 		$data['head']    = $this->rapyd->get_head();

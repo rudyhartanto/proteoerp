@@ -1354,7 +1354,7 @@ class Jqdatagrid
 		}
 		return $mWHERE;
 	}
-	
+
 	/*******************************************************************
 	*
 	*
@@ -1744,7 +1744,7 @@ class Jqdatagrid
 
 
 	//******************************************************************
-	// 
+	//
 	//
 	function readyLayout2( $west = 212, $south = 220, $grid0, $grid1 = ''){
 		$readyLayout = '
@@ -1952,7 +1952,7 @@ class Jqdatagrid
 				"Aceptar": function() {
 					$("#fshow").html("");
 					$( this ).dialog( "close" );
-				},
+				}
 			},
 			close: function() {
 				$("#fshow").html("");
@@ -1974,7 +1974,7 @@ class Jqdatagrid
 					$("#fborra").html("");
 					jQuery("'.$ngrid.'").trigger("reloadGrid");
 					$( this ).dialog( "close" );
-				},
+				}
 			},
 			close: function() {
 				jQuery("'.$ngrid.'").trigger("reloadGrid");
