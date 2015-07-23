@@ -1619,7 +1619,7 @@ function elminacenti(cual){
 				$this->db->simple_query($mSQL);
 				if($referen=='E'){
 					$mSQL="INSERT INTO `sfpa`
-					(`tipo_doc`, `numero`, `tipo`, `monto`, `fecha`, `f_factura`, `cod_cli`, `vd`, `cobrador`, `cobro`, `transac`, `usuario`, `estampa`, `hora`)
+					(`tipo_doc`, `numero`, `tipo`, `monto`, `fecha`, `f_factura`, `cod_cli`, `vendedor`, `cobrador`, `cobro`, `transac`, `usuario`, `estampa`, `hora`)
 					SELECT
 						'FE' AS tipo_doc,a.numero,'EF' AS tipo,
 						a.totalg AS monto,a.fecha,
