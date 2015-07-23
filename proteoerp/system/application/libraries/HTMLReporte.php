@@ -574,8 +574,9 @@ border-bottom-right-radius:5px;
 		$i=0;
 		foreach($this->grupo as $fila) {
 			$i++;
-			if ($bache[$fila]!=$row[$fila])
+			if($bache[$fila]!==$row[$fila]){
 				return $i;
+			}
 		}
 		return false;
 	}
