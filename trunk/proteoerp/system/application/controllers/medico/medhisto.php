@@ -695,10 +695,11 @@ class Medhisto extends Common {
 		$sel=array('a.id','a.nombre','b.descripcion AS value','b.id AS itid','a.tipo','a.tipoadc');
 		$this->db->from('medhtab AS a');
 		$this->db->where('a.grupo','1');
-		$historia=$edit->get_from_dataobjetct('numero');
-		$dbhistoria = $this->db->escape($historia);
-		$this->db->join('medhvisita AS b',"a.id=b.tabula AND b.historia = ${dbhistoria}",'left');
-
+		if($edit->getstatus()!=='create'){
+			$historia=$edit->get_from_dataobjetct('numero');
+			$dbhistoria = $this->db->escape($historia);
+			$this->db->join('medhvisita AS b',"a.id=b.tabula AND b.historia = ${dbhistoria}",'left');
+		}
 		$this->db->select($sel);
 		$this->db->order_by('a.indice');
 		$query = $this->db->get();
@@ -716,12 +717,14 @@ class Medhisto extends Common {
 			$rt = $this->_tabuladorfield($par);
 			$scriptadd .= $rt[1];
 
+			$value= (isset($_POST['itdetalle'][$row->id]))? $_POST['itdetalle'][$row->id] : $row->value;
+
 			$edit->$obj = $rt[0];
 			$edit->$obj->db_name     = '-';
 			$edit->$obj->data        = null;
-			$edit->$obj->value       = $row->value;
-			$edit->$obj->insertValue = $row->value;
-			$edit->$obj->updateValue = $row->value;
+			$edit->$obj->value       = $value;
+			$edit->$obj->insertValue = $value;
+			$edit->$obj->updateValue = $value;
 			$edit->$obj->pointer     = true;
 			$edit->$obj->group       = 'Datos B&aacute;sicos';
 
@@ -901,8 +904,8 @@ class Medhisto extends Common {
 			$this->db->simple_query($mSQL);
 		}
 
-		if(!in_array('identificacion',$campos)){
-			$mSQL="ALTER TABLE `medhisto` ADD COLUMN `identificacion` VARCHAR(50) NULL DEFAULT NULL AFTER `nombre`;";
+		if(!in_array('identifica',$campos)){
+			$mSQL="ALTER TABLE `medhisto` ADD COLUMN `identifica` VARCHAR(50) NULL DEFAULT NULL AFTER `nombre`;";
 			$this->db->simple_query($mSQL);
 		}
 	}

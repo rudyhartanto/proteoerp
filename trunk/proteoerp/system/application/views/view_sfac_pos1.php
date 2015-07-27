@@ -26,7 +26,7 @@ $scampos .= $campos['itiva']['field'];
 $scampos .= $campos['sinvtipo']['field'];
 $scampos .= $campos['combo']['field'];
 $scampos .= $campos['sinvpeso']['field'].'</td>';
-$scampos .= '<td class="littletablerow"><a href=# onclick="del_sitems(<#i#>);return false;">'.img('images/delete.jpg').'</a></td></tr>';
+$scampos .= '<td class="littletablerow" align="center"><a href=# onclick="del_sitems(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $campos=$form->js_escape($scampos);
 
 $sfpa_campos=$form->template_details('sfpa');
@@ -36,9 +36,9 @@ $sfpa_scampos .='<td class="littletablerow" align="left" >'.$sfpa_campos['tipo']
 $sfpa_scampos .='<td class="littletablerow" align="left" >'.$sfpa_campos['numref']['field'].'</td>';
 $sfpa_scampos .='<td class="littletablerow" align="left" >'.$sfpa_campos['banco']['field']. '</td>';
 $sfpa_scampos .='<td class="littletablerow" align="right">'.$sfpa_campos['monto']['field']. '</td>';
-$sfpa_scampos .='<td class="littletablerow"><a href=# onclick="del_sfpa(<#i#>);return false;">'.img('images/delete.jpg').'</a></td></tr>';
+$sfpa_scampos .='<td class="littletablerow" align="center"><a href=# onclick="del_sfpa(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $sfpa_campos=$form->js_escape($sfpa_scampos);
-$pidescu = $this->datasis->traevalor('SFACDESCU','ApLica Descuentos en facturacio');
+$pidescu = $this->datasis->traevalor('SFACDESCU','Aplica Descuentos en facturacion');
 
 
 echo $form_begin;
@@ -101,6 +101,7 @@ $(function(){
 		}
 		autocod(i.toString());
 		importe(i);
+		buscarep(i.toString(),codigoa,1);
 	}
 	for(var i=0;i < <?php echo $form->max_rel_count['sfpa']; ?>;i++){
 		sfpatipo(i);
@@ -333,6 +334,8 @@ $(function(){
 	});
 
 	chreferen();
+	fpaga('C');
+	$('#cod_cli').focus();
 	//$("#scliexp").dialog({ autoOpen: false, height: 420, width: 400, modal: true });
 
 <?php
@@ -359,6 +362,37 @@ $(function(){
 	});
 
 });
+
+function buscarep(id,codigo,cascada){
+	codigo=codigo.trim();
+	$('#tr_sitems_'+id).css("background-color", "transparent");
+	var arr=$('input[name^="codigoa_"]');
+	jQuery.each(arr, function() {
+		nom=this.name
+		pos=this.name.lastIndexOf('_');
+		if(pos>0){
+			if(this.value!=''){
+				ind     = this.name.substring(pos+1);
+				if(ind!=id){
+					var nind=Number(ind);
+					var nid =Number(id);
+					if(cascada){
+						if(nind>nid){
+							return true;
+						}
+					}
+
+					itcodigo= this.value.trim();
+					if(itcodigo==codigo){
+						$('#codigoa_'+ind).focus();
+						$('#codigoa_'+ind).select();
+						$('#tr_sitems_'+id).css("background-color", "#FFFF28");
+					}
+				}
+			}
+		}
+	});
+}
 
 function itdevolver(numero){
 	truncate();
@@ -795,7 +829,7 @@ function post_modbus_sinv(nind){
 	var ctipo  = $("#sclitipo").val();
 	var tipo   = Number(ctipo); if(tipo>0) tipo=tipo-1;
 	var combo  = $("#combo_"+ind).val();
-	//var codigo = $("#codigoa_"+ind).val();
+	var codigo = $("#codigoa_"+ind).val();
 	if(combo==''){
 		$("#preca_"+ind).empty();
 
@@ -815,6 +849,7 @@ function post_modbus_sinv(nind){
 			}
 		}
 	}
+	buscarep(ind,codigo,0);
 	cdescrip(nind);
 	importe(nind);
 	totalizar();
@@ -1263,8 +1298,8 @@ function apldes(){
 				<td class="littletablerow" align="right"><?php echo $form->$it_importe->output.$pprecios;?></td>
 
 				<?php if($form->_status!='show') {?>
-				<td class="littletablerow">
-					<a href='#' title='Eliminar fila' onclick='del_sitems(<?php echo $i ?>);return false;'><?php echo img('images/delete.jpg'); ?></a>
+				<td class="littletablerow" align="center">
+					<a href='#' title='Eliminar fila' onclick='del_sitems(<?php echo $i ?>);return false;'><?php echo img('images/delete.png'); ?></a>
 				</td>
 				<?php } ?>
 			</tr>
@@ -1288,7 +1323,7 @@ function apldes(){
 						<td class="littletableheaderdet">Banco</td>
 						<td class="littletableheaderdet">Monto</td>
 						<?php if($form->_status!='show') {?>
-							<td class="littletableheaderdet"><a href='#' onclick="add_sfpa()" title='Agregar otro pago'><?php echo img(array('src' =>"images/agrega4.png", 'height' => 18, 'alt'=>'Agregar otro producto', 'title' => 'Agregar otro producto', 'border'=>'0')); ?></a></td>
+							<td class="littletableheaderdet" align='center'><a href='#' onclick="add_sfpa()" title='Agregar otro pago'><?php echo img(array('src' =>"images/agrega4.png", 'height' => 18, 'alt'=>'Agregar otro producto', 'title' => 'Agregar otro producto', 'border'=>'0')); ?></a></td>
 						<?php } ?>
 					</tr>
 					<?php
@@ -1306,7 +1341,7 @@ function apldes(){
 						<td class="littletablerow"               ><?php echo $form->$banco->output     ?></td>
 						<td class="littletablerow" align="right" ><?php echo $form->$monto->output     ?></td>
 						<?php if($form->_status!='show') {?>
-							<td class="littletablerow"><a href='#' onclick="del_sfpa(<?php echo $i; ?>);return false;"><?php echo img('images/delete.jpg'); ?></a></td>
+							<td class="littletablerow" align="center"><a href='#' onclick="del_sfpa(<?php echo $i; ?>);return false;"><?php echo img('images/delete.png'); ?></a></td>
 						<?php } ?>
 					</tr>
 					<?php } ?>
