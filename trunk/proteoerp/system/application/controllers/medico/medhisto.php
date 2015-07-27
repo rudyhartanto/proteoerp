@@ -692,13 +692,16 @@ class Medhisto extends Common {
 		//inicio detalle
 		//************************************************
 		$i=0;
-		$sel=array('a.id','a.nombre','b.descripcion AS value','b.id AS itid','a.tipo','a.tipoadc');
+		$sel=array('a.id','a.nombre','b.id AS itid','a.tipo','a.tipoadc');
 		$this->db->from('medhtab AS a');
 		$this->db->where('a.grupo','1');
 		if($edit->getstatus()!=='create'){
 			$historia=$edit->get_from_dataobjetct('numero');
 			$dbhistoria = $this->db->escape($historia);
 			$this->db->join('medhvisita AS b',"a.id=b.tabula AND b.historia = ${dbhistoria}",'left');
+			$sel[]='b.descripcion AS value';
+		}else{
+			$sel[]='"" AS value';
 		}
 		$this->db->select($sel);
 		$this->db->order_by('a.indice');
