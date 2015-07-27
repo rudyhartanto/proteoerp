@@ -1162,37 +1162,6 @@ class Invresu extends Controller {
 			WHERE mes = ${mes} ";
 			$this->db->query($mSQL);
 		}
-/*
-		$mSQL = "
-SELECT mes INTO @mPAPA FROM invresu WHERE mes < mFECHA ORDER BY mes DESC LIMIT 1;
-IF @mPAPA > 0 THEN
-	REPLACE INTO invresu ( mes, codigo, descrip, inicial, compras, ventas, trans, fisico, notas, final, minicial, mcompras, mventas, mtrans, mfisico, mnotas, mfinal, mpventa )
-	SELECT mFECHA mes, codigo, '',       final,  0 compras, 0 ventas, 0 trans, 0 fisico, 0 notas, final, mfinal, 0 mcompras, 0 mventas, 0 mtrans, 0 mfisico, 0 mnotas, 0 mfiscal, 0 mpventas  FROM invresu WHERE mes=@mPAPA;
-END IF;
-DROP TABLE IF EXISTS INVRESUTEM;
-CREATE TABLE INVRESUTEM
-SELECT EXTRACT(YEAR_MONTH FROM a.fecha) AS mes, a.codigo, b.descrip, 0 AS inicial,
-sum(a.cantidad*(a.origen IN ('2C','2D'))*IF(a.origen='2D',-1,1)) AS compras,
-sum(a.cantidad*(a.origen IN ('3I','3M') )) AS ventas,
-sum(a.cantidad*(a.origen IN ('1T','6C','5C')  )) AS trans,
-sum((a.cantidad-a.anteri)*(a.origen IN ('0F','9F'))) AS fisico,
-sum(a.cantidad*(a.origen='4N')) AS notas,  0 AS final,  0 AS minicial,
-sum(a.monto*(a.origen IN ('2C','2D'))*IF(a.origen='2D',-1,1)) AS mcompras,
-sum(a.cantidad*a.promedio*(a.origen IN ('3I','3M'))) AS mventas,
-sum(a.cantidad*a.promedio*(a.origen IN ('1T','6C','5C') )) AS mtrans,
-sum((a.cantidad-a.anteri)*a.promedio*(a.origen IN ('0F','9F'))) AS mfisico,
-sum(a.cantidad*a.promedio*(a.origen='4N')) AS mnotas,
-0 AS mfinal, sum(venta)
-FROM costos AS a LEFT JOIN sinv AS b ON a.codigo=b.codigo
-WHERE EXTRACT(YEAR_MONTH FROM a.fecha) = mFECHA AND MID(b.tipo,1,1)!='S'
-GROUP BY EXTRACT(YEAR_MONTH FROM a.fecha),a.codigo ;
-UPDATE invresu a JOIN INVRESUTEM b ON a.mes=b.mes AND a.codigo=b.codigo
-SET a.compras=b.compras, a.ventas = b.ventas,a.notas = b.notas,a.trans = b.trans,a.fisico = b.fisico,
-a.mcompras = b.mcompras,a.mventas = b.mventas,a.mnotas = b.mnotas,a.mtrans = b.mtrans,
-a.mfisico = b.mfisico ;
-DROP TABLE IF EXISTS INVRESUTEM;
-UPDATE invresu SET final=inicial+compras-ventas-notas+trans+fisico,mfinal=minicial+mcompras-mventas-mnotas+mtrans+mfisico WHERE mes=mFECHA;";
-*/
 	}
 
 	function recalcula(){
