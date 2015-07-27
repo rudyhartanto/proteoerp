@@ -668,10 +668,12 @@ class Medhisto extends Common {
 		$edit->identifica->maxlength =50;
 		$edit->identifica->append("C&eacute;dula, pasaporte o partida");
 
+/*
 		$edit->nombre = new inputField('Nombre del paciente','nombre');
 		$edit->nombre->rule='strtoupper|required';
 		$edit->nombre->size =52;
 		$edit->nombre->maxlength =50;
+*/
 
 		$edit->ingreso = new dateonlyField('Ingreso','ingreso');
 		$edit->ingreso->rule='required|chfecha';

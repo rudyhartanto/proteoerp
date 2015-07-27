@@ -234,7 +234,7 @@ class Sinv extends Controller {
 		// Consulta de Movimiento
 		$funciones .= '
 		function consulta(){
-			var id     = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id     = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id)	{
 				var ret    = $("#newapi'.$grid0.'").getRowData(id);
 				window.open(\''.site_url('inventario/sinv/consulta/').'/\'+ret.id, \'_blank\', \'width=800, height=600, scrollbars=yes, status=yes, resizable=yes,screenx=((screen.availHeight/2)-300), screeny=((screen.availWidth/2)-400)\');

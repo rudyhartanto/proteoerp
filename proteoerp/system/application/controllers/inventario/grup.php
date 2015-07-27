@@ -26,10 +26,9 @@ class Grup extends Controller {
 
 
 
-	//***************************
-	//Layout en la Ventana
+	//******************************************************************
+	// Layout en la Ventana
 	//
-	//***************************
 	function jqdatag(){
 
 		$grid = $this->defgrid();
@@ -75,9 +74,9 @@ class Grup extends Controller {
 		$this->load->view('jqgrid/crud2',$param);
 	}
 
-	//***************************
-	//Funciones de los Botones
-	//***************************
+	//******************************************************************
+	// Funciones de los Botones
+	//
 	function bodyscript( $grid0 ){
 		$bodyscript = '		<script type="text/javascript">';
 
@@ -208,9 +207,9 @@ class Grup extends Controller {
 		return $bodyscript;
 	}
 
-	//***************************
-	//Definicion del Grid y la Forma
-	//***************************
+	//******************************************************************
+	// Definicion del Grid y la Forma
+	//
 	function defgrid( $deployed = false ){
 		$i      = 1;
 		$editar = 'false';
@@ -480,8 +479,6 @@ class Grup extends Controller {
 		$rs = $grid->jsonresult( $response);
 		echo $rs;
 	}
-
-
 
 	/**
 	* Guarda la Informacion

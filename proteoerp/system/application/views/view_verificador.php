@@ -70,7 +70,7 @@ $('#tabladata').bootgrid({
     },
     rowCount: 18,
     columnSelection: false,
-    selection: true,
+    //selection: true,
     url: '<?php echo site_url('inventario/verificador/buscasinv')?>',
 	formatters: {
 		"link": function(column, row){

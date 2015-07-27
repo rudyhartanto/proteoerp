@@ -130,9 +130,9 @@ class Scst extends Controller {
 		$this->load->view('jqgrid/crud2',$param);
 	}
 
-	//***************************
-	//Funciones de los Botones
-	//***************************
+	//******************************************************************
+	// Funciones de los Botones
+	//
 	function bodyscript( $grid0, $grid1 ){
 		$bodyscript = '<script type="text/javascript">';
 		$ngrid      = "#newapi".$grid0;
