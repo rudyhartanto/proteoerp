@@ -1646,7 +1646,7 @@ class gser extends Controller {
 			if($oper == 'add'){
 				echo 'Deshabilitado';
 			}elseif($oper == 'edit'){
-				if(!$this->datasis->sidapuede('GSER','MODIFICA%')){
+				if(!($this->datasis->sidapuede('GSER','MODIFICA%')  || $this->datasis->sidapuede('GSER','GSERMODI'))){
 					echo 'No tiene acceso a modificar';
 					return false;
 				}
