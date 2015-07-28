@@ -692,15 +692,15 @@ class Medhisto extends Common {
 		//inicio detalle
 		//************************************************
 		$i=0;
-		$sel=array('a.id','a.nombre','b.id AS itid','a.tipo','a.tipoadc','b.descripcion AS value');
+		$sel=array('a.id','a.nombre','a.tipo','a.tipoadc');
 		$this->db->from('medhtab AS a');
 		$this->db->where('a.grupo','1');
 		if($edit->getstatus()!=='create'){
 			$historia=$edit->get_from_dataobjetct('numero');
 			$dbhistoria = $this->db->escape($historia);
 			$this->db->join('medhvisita AS b',"a.id=b.tabula AND b.historia = ${dbhistoria}",'left');
-		}else{
-			$this->db->join('medhvisita AS b','a.id=b.tabula','left');
+			$sel[]='b.descripcion AS value';
+			$sel[]='b.id AS itid';
 		}
 		$this->db->select($sel);
 		$this->db->order_by('a.indice');
@@ -719,6 +719,7 @@ class Medhisto extends Common {
 			$rt = $this->_tabuladorfield($par);
 			$scriptadd .= $rt[1];
 
+			if(!isset($row->value)) $row->value='';
 			$value= (isset($_POST['itdetalle'][$row->id]))? $_POST['itdetalle'][$row->id] : $row->value;
 
 			$edit->$obj = $rt[0];
@@ -730,12 +731,14 @@ class Medhisto extends Common {
 			$edit->$obj->pointer     = true;
 			$edit->$obj->group       = 'Datos B&aacute;sicos';
 
+			if(!isset($row->itid)) $row->itid='';
+			$value= (isset($_POST['itid'][$row->id]))? $_POST['itid'][$row->id] : $row->itid;
 			$obj='itid_'.$i;
 			$edit->$obj = new hiddenField('','itid['.$row->id.']');
 			$edit->$obj->db_name     = '-';
-			$edit->$obj->value       = $row->itid;
-			$edit->$obj->insertValue = $row->itid;
-			$edit->$obj->updateValue = $row->itid;
+			$edit->$obj->value       = $value;
+			$edit->$obj->insertValue = $value;
+			$edit->$obj->updateValue = $value;
 			$edit->$obj->pointer     = true;
 			$edit->$obj->data        = null;
 			$edit->$obj->in          = 'descripcion_'.$i;
