@@ -1660,7 +1660,7 @@ class Reparto extends Controller {
 		if(empty($id)) return '';
 		$dbid = $this->db->escape($id);
 		$grid     = $this->jqdatagrid;
-		$mSQL     = "SELECT tipo_doc, numero, fecha, zona, peso, cod_cli, nombre, vd, totalg, almacen, id FROM sfac WHERE reparto=${dbid}";
+		$mSQL     = "SELECT tipo_doc, numero, fecha, zona, peso, cod_cli, nombre, vd, totalg, almacen, entregado, repcob, id FROM sfac WHERE reparto=${dbid}";
 		$response = $grid->getDataSimple($mSQL);
 		$rs = $grid->jsonresult( $response);
 		echo $rs;
