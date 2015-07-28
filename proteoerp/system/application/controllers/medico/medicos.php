@@ -9,7 +9,7 @@ class Medicos extends Controller {
 	var $mModulo = 'RECURSOS DE ATENCION MEDICA';
 	var $titp    = 'RECURSOS DE ATENCION MEDICA';
 	var $tits    = 'MEDICOS';
-	var $url     = 'ventas/medicos/';
+	var $url     = 'medico/medicos/';
 
 	function Medicos(){
 		parent::Controller();
@@ -25,7 +25,7 @@ class Medicos extends Controller {
 			$this->db->query('ALTER TABLE medicos ADD UNIQUE INDEX numero (numero)');
 			$this->db->query('ALTER TABLE medicos ADD COLUMN id INT(11) NULL AUTO_INCREMENT, ADD PRIMARY KEY (id)');
 		};*/
-		$this->datasis->creaintramenu(array('modulo'=>'173','titulo'=>'Medicos','mensaje'=>'Medicos','panel'=>'Salud','ejecutar'=>'ventas/medicos','target'=>'popu','visible'=>'S','pertenece'=>'1','ancho'=>900,'alto'=>600));
+		$this->datasis->creaintramenu(array('modulo'=>'173','titulo'=>'Medicos','mensaje'=>'Medicos','panel'=>'Salud','ejecutar'=>'medico/medicos','target'=>'popu','visible'=>'S','pertenece'=>'1','ancho'=>900,'alto'=>600));
 		$this->datasis->modintramenu( 800, 600, substr($this->url,0,-1) );
 		redirect($this->url.'jqdatag');
 	}
