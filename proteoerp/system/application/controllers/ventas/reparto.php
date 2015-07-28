@@ -1474,6 +1474,30 @@ class Reparto extends Controller {
 			'editoptions'   => '{ size:4, maxlength: 4 }',
 		));
 
+		$grid->addField('entregado');
+		$grid->label('Entregado');
+		$grid->params(array(
+			'search'        => 'true',
+			'editable'      => 'false',
+			'width'         => 75,
+			'align'         => "'center'",
+			'edittype'      => "'text'",
+			'editrules'     => '{ required:false, date:true}',
+			'formoptions'   => '{ label:"Fecha de Entrega" }'
+		));
+
+		$grid->addField('repcob');
+		$grid->label('T.Cobro');
+		$grid->params(array(
+			'search'        => 'true',
+			'editable'      => 'false',
+			'width'         => 75,
+			'align'         => "'center'",
+			'edittype'      => "'text'",
+			'editrules'     => '{ required:false, date:true}',
+			'formoptions'   => '{ label:"Forma de pago" }'
+		));
+
 		$grid->addField('id');
 		$grid->label('Id');
 		$grid->params(array(
