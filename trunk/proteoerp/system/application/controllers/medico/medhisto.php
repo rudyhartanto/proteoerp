@@ -913,5 +913,21 @@ class Medhisto extends Common {
 			$mSQL="ALTER TABLE `medhisto` ADD COLUMN `identifica` VARCHAR(50) NULL DEFAULT NULL AFTER `nombre`;";
 			$this->db->simple_query($mSQL);
 		}
+
+		if(!$this->db->table_exists('view_medhisto')){
+			$mSQL="CREATE ALGORITHM=UNDEFINED DEFINER=`datasis`@`localhost` SQL SECURITY DEFINER VIEW `view_medhisto` AS
+			SELECT
+				`a`.`numero` AS `numero`,`a`.`ingreso` AS `ingreso`,`a`.`usuario` AS `usuario`,`a`.`estampa` AS `estampa`,
+				GROUP_CONCAT(if((`b`.`tabula` = 3),`b`.`descripcion`,'') separator '') AS `cedula`,
+				GROUP_CONCAT(if((`b`.`tabula` = 1),`b`.`descripcion`,'') separator '') AS `nombre`,
+				group_concat(if((`b`.`tabula` = 2),`b`.`descripcion`,'') separator '') AS `apellido`
+				,`a`.`id` AS `id`
+			FROM `medhisto` `a`
+			JOIN `medhvisita` `b` ON `a`.`numero` = `b`.`historia`
+			JOIN `medhtab` `c` ON `b`.`tabula` = `c`.`id`
+			WHERE `c`.`grupo` = 1 AND `b`.`tabula` in (1,2,3)
+			GROUP BY `a`.`numero`,`a`.`ingreso`";
+			$this->db->simple_query($mSQL);
+		}
 	}
 }
