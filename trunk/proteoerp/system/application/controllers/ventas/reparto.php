@@ -40,7 +40,7 @@ class Reparto extends Controller {
 		$param['grids'][] = $grid1->deploy();
 
 		// Configura los Paneles
-		$readyLayout = $grid->readyLayout2( 212, 190, $param['grids'][0]['gridname'],$param['grids'][1]['gridname']);
+		$readyLayout = $grid->readyLayout2( 225, 190, $param['grids'][0]['gridname'],$param['grids'][1]['gridname']);
 
 		//Funciones que ejecutan los botones
 		$bodyscript = $this->bodyscript( $param['grids'][0]['gridname'], $param['grids'][1]['gridname'] );
@@ -522,7 +522,7 @@ class Reparto extends Controller {
 		}elseif($oper == 'entrega'){
 			if($tipo == 'C'){
 				if($fc>$hoy){
-					echo 'No puede cargar a una fecha futura';
+					echo 'No puede entregar a una fecha futura';
 				}else{
 					$this->db->where('id', $id);
 					$this->db->update('reparto', array('tipo' => 'E', 'entregado' => $fecha));
@@ -535,7 +535,7 @@ class Reparto extends Controller {
 		}elseif($oper == 'cierre'){
 			if($tipo == 'E'){
 				if($fc>$hoy){
-					echo 'No puede cargar a una fecha futura';
+					echo 'No puede cierre a una fecha futura';
 				}else{
 					$this->db->where('id', $id);
 					$this->db->update('reparto', array('tipo' => 'F', 'retorno' => $fecha, 'tcierre'=>date('Y-m-d H:i:s')));
@@ -1479,7 +1479,7 @@ class Reparto extends Controller {
 		$grid->params(array(
 			'search'        => 'true',
 			'editable'      => 'false',
-			'width'         => 75,
+			'width'         => 85,
 			'align'         => "'center'",
 			'edittype'      => "'text'",
 			'editrules'     => '{ required:false, date:true}',

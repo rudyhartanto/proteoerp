@@ -23,7 +23,7 @@ $scampos .= $campos['iva']['field'];
 $scampos .= $campos['ultimo']['field'];
 $scampos .= $campos['pond']['field'];
 $scampos .= $campos['sinvpeso']['field'].'</td>';
-$scampos .= '<td class="littletablerow" align="center"><a href=# onclick="del_itordc(<#i#>);return false;">'.img("images/delete.jpg").'</a></td></tr>';
+$scampos .= '<td class="littletablerow" align="center"><a href=# onclick="del_itordc(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $campos=$form->js_escape($scampos);
 
 if(isset($form->error_string)) echo '<div class="alert">'.$form->error_string.'</div>';
@@ -344,7 +344,7 @@ function del_itordc(id){
 
 				<?php if($form->_status!='show') {?>
 				<td class="littletablerow" align='center'>
-					<a href='#' onclick='del_itordc(<?php echo $i ?>);return false;'><?php echo img('images/delete.jpg');?></a>
+					<a href='#' onclick='del_itordc(<?php echo $i ?>);return false;'><?php echo img('images/delete.png');?></a>
 				</td>
 				<?php } ?>
 			</tr>

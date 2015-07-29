@@ -190,7 +190,7 @@ class Ords extends Controller {
 
 		$bodyscript .= '
 		$("#fedita").dialog({
-			autoOpen: false, height: 500, width: 900, modal: true,
+			autoOpen: false, height: 520, width: 900, modal: true,
 			buttons: {
 				"Guardar": function() {
 					var bValid = true;
@@ -1044,7 +1044,6 @@ class Ords extends Controller {
 		$edit->estampa = new autoUpdateField('estampa',date('Ymd'), date('Ymd'));
 		$edit->hora    = new autoUpdateField('hora'   ,date('H:i:s'), date('H:i:s'));
 
-		$edit->buttons('add_rel');
 		$edit->build();
 
 		if($edit->on_success()){
@@ -1093,9 +1092,9 @@ class Ords extends Controller {
 
 		$do->set('numero' , $numero);
 		$do->set('transac', $transac);
-		$do->set('estampa', 'CURDATE()', false);
+		/*$do->set('estampa', 'CURDATE()', false);
 		$do->set('hora'   , 'CURRENT_TIME()', false);
-		$do->set('usuario', $this->session->userdata('usuario'));
+		$do->set('usuario', $this->session->userdata('usuario'));*/
 	}
 
 	function _pre_update($do){
