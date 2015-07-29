@@ -17,7 +17,7 @@ $campos.=' <td class="littletablerow" align="right">'.$ccampos['iva']['field'].'
 $campos.=' <td class="littletablerow" align="right">'.$ccampos['importe']['field'].'</td>';
 $campos.=' <td class="littletablerow">'.$ccampos['departa']['field'].'</td>';
 $campos.=' <td class="littletablerow">'.$ccampos['sucursal']['field'].'</td>';
-$campos.=' <td class="littletablerow" align="center"><a href=\'#\' onclick="del_itords(<#i#>);return false;">'.img("images/delete.jpg").'</a></td></tr>';
+$campos.=' <td class="littletablerow" align="center"><a href=\'#\' onclick="del_itords(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $campos=$form->js_escape($campos);
 
 if(isset($form->error_string))echo '<div class="alert">'.$form->error_string.'</div>';
@@ -70,6 +70,13 @@ $(function(){
 			$('#nombre_val').text(ui.item.nombre);
 			$('#proveed').val(ui.item.proveed);
 			setTimeout(function() {  $("#proveed").removeAttr("readonly"); }, 1500);
+		}
+	});
+
+	$('input[name^="precio_"]').keypress(function(e) {
+		if(e.keyCode == 13) {
+		    add_itords();
+			return false;
 		}
 	});
 });
@@ -175,6 +182,16 @@ function add_itords(){
 	$("#sucursal_"+can).val(sucursal);
 	autocod(itordc_cont);
 	itordc_cont=itordc_cont+1;
+
+	$("#precio_"+can).keypress(function(e) {
+		if(e.keyCode == 13) {
+		    add_itords();
+			return false;
+		}
+	});
+
+	$('#codigo_'+can).focus();
+
 }
 
 function del_itords(id){
@@ -189,10 +206,10 @@ function del_itords(id){
 	<tr>
 	<td>
 		<fieldset style='border: 1px outset #9AC8DA;background: #FFFDE9;'>
-		<table width="100%"  style="margin:0;width:100%;">
+		<table style="margin:0;width:100%;">
 			<tr>
-				<td class="littletablerowth"><?php echo $form->proveed->label;  ?></td>
-				<td class="littletablerow"  ><?php echo $form->proveed->output; ?></td>
+				<td class="littletablerowth" style="width:15%;"><?php echo $form->proveed->label;  ?></td>
+				<td class="littletablerow"   style="width:15%;"><?php echo $form->proveed->output; ?></td>
 				<td class="littletablerowth"><?php echo $form->nombre->label;   ?></td>
 				<td class="littletablerow"  ><?php echo $form->nombre->output;  ?></td>
 			</tr><tr>
@@ -217,7 +234,7 @@ function del_itords(id){
 				<td class="littletableheaderdet">Depto.</td>
 				<td class="littletableheaderdet">Sucursal</td>
 				<?php if($form->_status!='show') {?>
-					<td class="littletableheaderdet" >&nbsp;</td>
+					<td  class="littletableheaderdet" ><a href='#' id='addlink' onclick="add_itords()" title='Agregar otro articulo'><?php echo img(array('src' =>'images/agrega4.png', 'height' => 18, 'alt'=>'Agregar otro producto', 'title' => 'Agregar otra fila', 'border'=>'0')); ?></a></td>
 				<?php } ?>
 			</tr>
 
@@ -242,32 +259,27 @@ function del_itords(id){
 				<td class="littletablerow" align="left" ><?php echo $form->$it_departa->output; ?></td>
 				<td class="littletablerow" align="left" ><?php echo $form->$it_sucursal->output;?></td>
 				<?php if($form->_status!='show') {?>
-					<td class="littletablerow" align="center"><a href='#' onclick='del_itords(<?php echo $i; ?>);return false;'><?php echo img("images/delete.jpg"); ?></a></td>
+					<td class="littletablerow" align="center"><a href='#' onclick='del_itords(<?php echo $i; ?>);return false;'><?php echo img('images/delete.png'); ?></a></td>
 				<?php } ?>
 			</tr>
 			<?php } ?>
-			<tr id='__UTPL__'>
-				<td colspan='<?php echo ($form->_status!='show')? 8 : 9; ?>'></td>
-			</tr>
 		</table>
 		</div>
 <?php echo $container_bl.$container_br; ?>
-		<legend class="titulofieldset" style='color: #114411;'>Totales</legend>
-			<table width='100%'>
+			<table width='100%' style='font-size:1.3em'>
 				<tr>
 					<td ><?php echo $form->condi->label  ?></td>
-					<td class="littletableheader" align='right'><?php echo $form->totpre->label  ?>&nbsp;</td>
-					<td class="littletablerow"    align='right'><?php echo $form->totpre->output; ?>&nbsp;</td>
+					<td style="font-weight: bold;"><?php echo $form->totpre->label   ?></td>
+					<td align='right' style="width:15%;"><?php echo $form->totpre->output; ?></td>
 				</tr><tr>
 					<td rowspan='2'><?php echo $form->condi->output;  ?></td>
-					<td class="littletableheader" align='right'><?php echo $form->totiva->label  ?>&nbsp;</td>
-					<td class="littletablerow"    align='right'><?php echo $form->totiva->output ?>&nbsp;</td>
-				</tr><tr>
-					<td class="littletableheader" align='right'><?php echo $form->totbruto->label  ?>&nbsp;</td>
-					<td class="littletablerow"    align='right'><?php echo $form->totbruto->output ?>&nbsp;</td>
+					<td style="font-weight: bold;"><?php echo $form->totiva->label   ?></td>
+					<td align='right'><?php echo $form->totiva->output  ?></td>
+				</tr><tr style="font-size:1.5em">
+					<td style="font-weight: bold;"><?php echo $form->totbruto->label  ?></td>
+					<td align='right' ><?php echo $form->totbruto->output ?></td>
 				</tr>
 			</table>
-		</fieldset>
 
 	  <td>
 	<tr>

@@ -314,13 +314,32 @@ class gser extends Controller {
 		});';
 
 		//Imprime retencion islr
+		$tfirma=intval($this->datasis->dameval('SELECT COUNT(*) AS cana FROM formatos WHERE nombre=\'GSERRT\' AND proteo LIKE \'%$sfirma%\''));
 		$bodyscript .= '
 		$("#reteislrprint").click( function(){
 			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id){
 				var ret = $("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
-				if(Number(ret.reten) > 0){
-					window.open(\''.site_url('formatos/ver/GSERRT/').'/\'+id, \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
+				if(Number(ret.reten) > 0){';
+				if($tfirma>0){
+					$bodyscript .= '
+					btns={ "Con firma": "S","Sin firma":"N"};
+
+					$.prompt("<h2>Qu&eacute; modalidad desea imprimir?</h2>",{
+						buttons: btns,
+						submit: function(e,v,m,f){
+							if(v=="S"){
+								window.open(\''.site_url('formatos/ver/GSERRT/').'/\'+id+\'/S\', \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
+							}else{
+								window.open(\''.site_url('formatos/ver/GSERRT/').'/\'+id+\'/N\', \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
+							}
+						}
+					});';
+				}else{
+					$bodyscript .= 'window.open(\''.site_url('formatos/ver/GSERRT/').'/\'+id, \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');';
+				}
+
+				$bodyscript .= '
 				}else{
 					$.prompt("<h1>El gasto seleccionado no tiene retenci&oacute;n ISLR</h1>");
 				}
@@ -1401,21 +1420,22 @@ class gser extends Controller {
 			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
 		));
 
+		$mSQL    = "SELECT TRIM(depto) AS codigo, CONCAT_WS('-',depto,TRIM(descrip)) AS label FROM dpto WHERE tipo IN ('G','A') ORDER BY depto";
+		$departa = $this->datasis->llenajqselect($mSQL, true );
 		$grid->addField('departa');
 		$grid->label('Depto.');
 		$grid->params(array(
 			'search'        => 'true',
-			'editable'      => $editar,
+			'editable'      => 'true',
 			'width'         => 40,
-			'edittype'      => "'text'",
+			'edittype'      => "'select'",
 			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:30, maxlength: 2 }',
+			'editoptions'   => '{ value: '.$departa.',  style:"width:200px"}',
 		));
 
 
 		$mSQL   = "SELECT id, CONCAT(codigo, ' ', nombre) nombre FROM usol ORDER BY codigo";
 		$cargo = $this->datasis->llenajqselect($mSQL, true );
-
 		$grid->addField('gcargo');
 		$grid->label('Cargo');
 		$grid->params(array(
