@@ -212,10 +212,10 @@ class gser extends Controller {
 		';
 
 		$bodyscript .= '
-		jQuery("#princheque").click( function(){
-			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+		$("#princheque").click( function(){
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id)	{
-				var ret = jQuery("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
+				var ret = $("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
 				window.open(\''.site_url($this->url.'/impcheque').'/\'+id, \'_blank\', \'width=300,height=400,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-200), screeny=((screen.availWidth/2)-150)\');
 			} else { $.prompt("<h1>Por favor Seleccione una Egreso</h1>");}
 		});';
@@ -321,10 +321,9 @@ class gser extends Controller {
 			if (id){
 				var ret = $("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
 				if(Number(ret.reten) > 0){';
-				if($tfirma>0){
+				if( $tfirma > 0 ){
 					$bodyscript .= '
 					btns={ "Con firma": "S","Sin firma":"N"};
-
 					$.prompt("<h2>Qu&eacute; modalidad desea imprimir?</h2>",{
 						buttons: btns,
 						submit: function(e,v,m,f){
@@ -338,7 +337,6 @@ class gser extends Controller {
 				}else{
 					$bodyscript .= 'window.open(\''.site_url('formatos/ver/GSERRT/').'/\'+id, \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');';
 				}
-
 				$bodyscript .= '
 				}else{
 					$.prompt("<h1>El gasto seleccionado no tiene retenci&oacute;n ISLR</h1>");
@@ -508,6 +506,15 @@ class gser extends Controller {
 		});';
 
 		$bodyscript .= '});';
+
+		$bodyscript .= '
+		function impislr(){
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			if (id){
+				window.open(\''.site_url('formatos/ver/GSERRT').'/\'+id+\'/S/3\', \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
+			}
+		}';
+
 		$bodyscript .= '</script>';
 		return $bodyscript;
 	}
@@ -4506,8 +4513,11 @@ class gser extends Controller {
 		$codprv = 'XXXXXXXXXXXXXXXX';
 		$salida = '';
 		$saldo = 0;
+		$tercero = $this->datasis->dameval('SELECT COUNT(*) FROM gereten WHERE tercero!="" AND idd='.$dbid);
+
 		if ( $query->num_rows() > 0 ){
-			$salida  = '<br><table width=\'100%\' border=\'1\'>';
+			if ( $tercero > 0 ) $salida = '<button onclick="impislr()" >Retencion a Terceros </button>';
+			$salida .= '<br><table width=\'100%\' border=\'1\'>';
 			$salida .= '<tr bgcolor=\'#e7e3e7\'><td>Tp</td><td align=\'center\'>Numero</td><td align=\'center\'>Monto</td></tr>';
 
 			foreach ($query->result_array() as $row){
