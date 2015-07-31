@@ -3120,7 +3120,7 @@ class gser extends Controller {
 		$edit->proveed = new inputField('Proveedor','proveed');
 		$edit->proveed->size = 6;
 		$edit->proveed->append($bSPRV);
-		$edit->proveed->rule= 'required';
+		$edit->proveed->rule= 'existesprv|required';
 
 		$edit->nfiscal  = new inputField('Control Fiscal', 'nfiscal');
 		$edit->nfiscal->size = 10;
@@ -3239,8 +3239,8 @@ class gser extends Controller {
 		$edit->reteiva->autocomplete=false;
 		//$edit->reteiva->onkeyup="reteiva()";
 
-		$edit->cnd = new checkboxField("IVA Deducible", "cnd", "S","N");
-		$edit->cnd->insertValue = "S";
+		$edit->cnd = new checkboxField('IVA Deducible', 'cnd', 'S','N');
+		$edit->cnd->insertValue = 'S';
 
 		$edit->reteica = new inputField('Ret. ICA','reteica');
 		$edit->reteica->size = 10;
@@ -3397,6 +3397,10 @@ class gser extends Controller {
 		$edit->monto->showformat ='decimal';
 		$edit->monto->type='inputhidden';
 
+		$edit->sprv = new inputField('proveedor','sprv_<#i#>');
+		$edit->sprv->size = 6;
+		$edit->sprv->rel_id    ='gereten';
+		$edit->sprv->rule= 'existesprv|required';
 		//********************************
 		// Fin de campos para detalle
 		//
@@ -3709,6 +3713,8 @@ class gser extends Controller {
 		for($i=0;$i<$rete_cana;$i++){
 			$codigorete = $do->get_rel('gereten','codigorete',$i);
 			if(!empty($codigorete)){
+				$gsprv   =  $do->get_rel('gereten','sprv',$i);
+				if(empty($gsprv)) $do->set_rel('gereten','sprv', 'RETEN',$i);
 				$importe = floatval($do->get_rel('gereten','base'  ,$i));
 				$monto   = floatval($do->get_rel('gereten','monto' ,$i));
 				$porcen  = $do->get_rel('gereten','porcen',$i);
@@ -4622,6 +4628,12 @@ class gser extends Controller {
 			$query="ALTER TABLE `gereten` ADD INDEX `transac` (`transac`)";
 			$this->db->query($query);
 		}
+
+		if(!in_array('sprv',$gcampos)){
+			$query="ALTER TABLE `gereten` ADD COLUMN `sprv` VARCHAR(5) NULL DEFAULT 'RETEN' AFTER `transac`";
+			$this->db->query($query);
+		}
+
 
 		if (!$this->db->table_exists('gserchi')) {
 			$query="

@@ -6,6 +6,7 @@
 */
 
 $sprv_nomi='RETNO'; //RETEN codigo del proveedor al que se le carga el ISLR
+$depura=false;
 
 $base_process_uri= $this->rapyd->uri->implode_uri('base_uri','gfid','orderby');
 $filter = new DataForm($this->rapyd->uri->add_clause($base_process_uri, "search"));
@@ -40,7 +41,7 @@ if($this->rapyd->uri->is_set('search') && $filter->on_success()){
 	$sql=array();
 
 	//Retenciones proteo
-	$sql[]="SELECT
+	$sql[]="SELECT '1' AS depu,
 			COALESCE(d.rif,e.rif) AS rif,
 			COALESCE(b.serie,c.serie) AS serie,
 			COALESCE(b.nfiscal,c.nfiscal) AS nfiscal,
@@ -52,7 +53,7 @@ if($this->rapyd->uri->is_set('search') && $filter->on_success()){
 			a.codigorete AS viejo
 		FROM gereten AS a
 		JOIN rete AS f ON a.codigorete=f.codigo
-		JOIN sprm AS g ON a.transac=g.transac
+		JOIN sprm AS g ON a.transac=g.transac  AND g.cod_prv='RETEN'
 		LEFT JOIN gser AS b ON a.origen='GSER' AND a.idd=b.id
 		LEFT JOIN scst AS c ON a.origen='SCST' AND a.idd=c.id
 		LEFT JOIN sprv AS d ON b.proveed=d.proveed
@@ -60,7 +61,7 @@ if($this->rapyd->uri->is_set('search') && $filter->on_success()){
 		WHERE g.monto>g.abonos AND g.fecha BETWEEN ${dbfdesde} AND ${dbfhasta}";
 
 	//Retenciones por nomina
-	$sql[]="SELECT
+	$sql[]="SELECT '2' AS depu,
 			IF(LENGTH(TRIM(c.rif))>0,c.rif,c.cedula) AS rif,
 			'00000' AS serie,
 			'' AS nfiscal,
@@ -80,7 +81,7 @@ if($this->rapyd->uri->is_set('search') && $filter->on_success()){
 
 
 	//Retenciones gasto legado
-	$sql[]="SELECT
+	$sql[]="SELECT '3' AS depu,
 			c.rif,
 			b.serie,
 			b.nfiscal,
@@ -102,14 +103,14 @@ if($this->rapyd->uri->is_set('search') && $filter->on_success()){
 	//Retenciones Compras legado
 	$conce  =$this->datasis->dameval("SELECT concepto FROM rete WHERE codigo='115'");
 	$dbconce=$this->db->escape($conce);
-	$sql[]="SELECT
+	$sql[]="SELECT '4' AS depu,
 			c.rif,
 			b.serie,
 			b.nfiscal,
 			a.fecha,
 			${dbconce} AS creten,
 			a.monto,
-			a.flete AS base,
+			b.flete AS base,
 			3.00 AS prete,
 			'115' AS viejo
 		FROM sprm    AS a
@@ -121,7 +122,7 @@ if($this->rapyd->uri->is_set('search') && $filter->on_success()){
 			a.fecha BETWEEN ${dbfdesde} AND ${dbfhasta}";
 
 	$mSQL = implode(' UNION ALL ',$sql).' ORDER BY creten';
-	//echos $mSQL; exit();
+	//echo $mSQL; exit();
 
 	$pdf = new PDFReporte($mSQL,'L');
 	$pdf->setHeadValores('TITULO1');
@@ -131,6 +132,7 @@ if($this->rapyd->uri->is_set('search') && $filter->on_success()){
 	$pdf->AddPage();
 	$pdf->setTableTitu(10,'Times');
 
+	if($depura) $pdf->AddCol('depu', 10, 'Consulta', 'L',9);
 	$pdf->AddCol('rif'     , 30, 'Rif'            ,'L',9);
 	$pdf->AddCol('serie'   , 30, 'Numero Factura' ,'L',9);
 	$pdf->AddCol('nfiscal' , 25, 'Control'        ,'L',9);

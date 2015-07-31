@@ -198,6 +198,12 @@ function del_itords(id){
 	id = id.toString();
 	obj='#tr_itords_'+id;
 	$(obj).remove();
+
+	var arr = $('input[id^="precio_"]');
+	if(arr.length<=0){
+		add_itords();
+	}
+
 	totalizar();
 }
 </script>
@@ -249,7 +255,7 @@ function del_itords(id){
 				$it_sucursal= "sucursal_${i}";
 			?>
 
-			<tr id='tr_itsnot_<?php echo $i; ?>'>
+			<tr id='tr_itords_<?php echo $i; ?>'>
 				<td class="littletablerow" align="left" ><?php echo $form->$it_codigo->output;  ?></td>
 				<td class="littletablerow" align="left" ><?php echo $form->$it_descrip->output; ?></td>
 				<td class="littletablerow" align="right"><?php echo $form->$it_precio->output;  ?></td>

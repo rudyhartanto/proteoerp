@@ -1008,7 +1008,7 @@ class Retc extends Controller {
 
 		//$edit->buttons('save', 'undo','delete', 'back','add_rel','add');
 		//$edit->buttons('save', 'undo', 'back','add_rel');
-		$edit->buttons('add_rel');
+		//$edit->buttons('add_rel');
 		$edit->build();
 
 		if($edit->on_success()){

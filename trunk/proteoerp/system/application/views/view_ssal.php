@@ -20,7 +20,7 @@ $scampos .= '<td class="littletablerow" align="left" >'.$campos['itdescrip']['fi
 $scampos .= '<td class="littletablerow" align="right">'.$campos['cantidad']['field'].  '</td>';
 $scampos .= '<td class="littletablerow" align="right">'.$campos['costo']['field']. '</td>';
 $scampos .= '<td class="littletablerow" align="left" >'.$campos['concepto']['field']. '</td>';
-$scampos .= '<td class="littletablerow"><a href=# onclick="del_itssal(<#i#>);return false;">'.img("images/delete.jpg").'</a></td></tr>';
+$scampos .= '<td class="littletablerow"><a href=# onclick="del_itssal(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $campos=$form->js_escape($scampos);
 
 if(isset($form->error_string)) echo '<div class="alert">'.$form->error_string.'</div>';
@@ -154,6 +154,12 @@ function add_itssal(){
 function del_itssal(id){
 	id = id.toString();
 	$('#tr_itssal_'+id).remove();
+
+	var arr = $('input[id^="codigo_"]');
+	if(arr.length<=0){
+		add_itssal();
+	}
+
 }
 </script>
 <?php } ?>
@@ -202,7 +208,7 @@ function del_itssal(id){
 				<td bgcolor='#7098D0'>Costo</td>
 				<td bgcolor='#7098D0'>Conceptos</td>
 				<?php if($form->_status!='show') {?>
-					<td style='background:#7098D0;'><a href='#' id='addlink' onclick="add_itssal()" title='Agregar otro articulo'><?php echo img(array('src' =>"images/agrega4.png", 'height' => 18, 'alt'=>'Agregar otro producto', 'title' => 'Agregar otro producto', 'border'=>'0')); ?></a></td>
+					<td style='background:#7098D0;'><a href='#' id='addlink' onclick="add_itssal()" title='Agregar otro articulo'><?php echo img(array('src' =>'images/agrega4.png', 'height' => 18, 'alt'=>'Agregar otro producto', 'title' => 'Agregar otro producto', 'border'=>'0')); ?></a></td>
 				<?php } ?>
 			</tr>
 
@@ -222,7 +228,7 @@ function del_itssal(id){
 				<td class="littletablerow" align="left" ><?php echo $form->$it_concepto->output;?></td>
 				<?php if($form->_status!='show') {?>
 				<td class="littletablerow">
-					<a href='#' onclick='del_itssal(<?php echo $i; ?>);return false;'><?php echo img("images/delete.jpg"); ?></a>
+					<a href='#' onclick='del_itssal(<?php echo $i; ?>);return false;'><?php echo img('images/delete.png'); ?></a>
 				</td>
 				<?php } ?>
 			</tr>

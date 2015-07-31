@@ -14,7 +14,7 @@ $scampos .='<td class="littletablerow" align="left" >'.$campos['descrip']['field
 $scampos .='<td class="littletablerow" align="right">'.$campos['cant']['field']   .'</td>';
 $scampos .='<td class="littletablerow" align="right">'.$campos['saldo']['field']  .'</td>';
 $scampos .='<td class="littletablerow" align="right">'.$campos['entrega']['field'].'</td>';
-//$scampos .='<td class="littletablerow"><a href=\'#\' onclick="del_itsnot(<#i#>);return false;">'.img('images/delete.jpg').'</a></td>';
+//$scampos .='<td class="littletablerow"><a href=\'#\' onclick="del_itsnot(<#i#>);return false;">'.img('images/delete.png').'</a></td>';
 $campos=$form->js_escape($scampos);
 
 if(isset($form->error_string)) echo '<div class="alert">'.$form->error_string.'</div>';

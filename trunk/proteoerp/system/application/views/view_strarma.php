@@ -15,7 +15,7 @@ else:
 		$html.='<td class="littletablerow" '.$align.'>'.$pivot.'</td>';
 	}
 	if($form->_status!='show') {
-		$html.='<td class="littletablerow"><a href=# onclick=\'del_itstra(<#i#>);return false;\'>'.img('images/delete.jpg').'</a></td>';
+		$html.='<td class="littletablerow"><a href=# onclick=\'del_itstra(<#i#>);return false;\'>'.img('images/delete.png').'</a></td>';
 	}
 	$html.='</tr>';
 
@@ -192,6 +192,11 @@ function add_itstra(){
 function del_itstra(id){
 	id = id.toString();
 	$('#tr_itstra_'+id).remove();
+
+	var arr = $('input[id^="codigo_"]');
+	if(arr.length<=0){
+		add_itstra();
+	}
 }
 </script>
 <?php }
@@ -246,7 +251,7 @@ function del_itstra(id){
 				<td class="littletablerow"><?php echo $form->$obj2->output ?></td>
 				<td class="littletablerow"align='right'><?php echo $form->$obj3->output ?></td>
 				<?php if($form->_status!='show') {?>
-					<td class="littletablerow"><a href='#' onclick='del_itstra(<?php echo $i; ?>);return false;'><?php echo img('images/delete.jpg'); ?></a></td>
+					<td class="littletablerow"><a href='#' onclick='del_itstra(<?php echo $i; ?>);return false;'><?php echo img('images/delete.png'); ?></a></td>
 				<?php } ?>
 			</tr>
 			<?php } ?>

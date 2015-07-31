@@ -15,7 +15,7 @@ else:
 		$html.='<td class="littletablerow" '.$align.'>'.$pivot.'</td>';
 	}
 	if($form->_status!='show') {
-		$html.='<td class="littletablerow"><a href=# onclick=\'del_itstra(<#i#>);return false;\'>'.img('images/delete.jpg').'</a></td>';
+		$html.='<td class="littletablerow" align="center"><a href=# onclick=\'del_itstra(<#i#>);return false;\'>'.img('images/delete.png').'</a></td>';
 	}
 	$html.='</tr>';
 
@@ -141,6 +141,11 @@ function add_itstra(){
 function del_itstra(id){
 	id = id.toString();
 	$('#tr_itstra_'+id).remove();
+
+	var arr = $('input[id^="codigo_"]');
+	if(arr.length<=0){
+		add_itstra();
+	}
 }
 </script>
 <?php } ?>
@@ -176,7 +181,7 @@ function del_itstra(id){
 				<td bgcolor='#7098D0'>Descripci&oacute;n</td>
 				<td width="110" align="center" bgcolor='#7098D0'>Cantidad</td>
 				<?php if($form->_status!='show') {?>
-					<td  width="20" style='background:#7098D0;'><a href='#' id='addlink' onclick="add_itstra()" title='Agregar otro articulo'><?php echo img(array('src' =>"images/agrega4.png", 'height' => 18, 'alt'=>'Agregar otro producto', 'title' => 'Agregar otro producto', 'border'=>'0')); ?></a></td>
+					<td  width="20" style='background:#7098D0;' align='center'><a href='#' id='addlink' onclick='add_itstra()' title='Agregar otro articulo'><?php echo img(array('src' =>'images/agrega4.png', 'height' => 18, 'alt'=>'Agregar otro producto', 'title' => 'Agregar otro producto', 'border'=>'0')); ?></a></td>
 				<?php } ?>
 			</tr>
 			<?php for($i=0;$i<$form->max_rel_count['itstra'];$i++) {
@@ -189,7 +194,7 @@ function del_itstra(id){
 				<td class="littletablerow"><?php echo $form->$obj2->output ?></td>
 				<td class="littletablerow"align="right"><?php echo $form->$obj3->output ?></td>
 				<?php if($form->_status!='show') {?>
-					<td class="littletablerow"><a href="#" onclick='del_itstra(<?php echo $i; ?>);return false;'><?php echo img("images/delete.jpg"); ?></a></td>
+					<td class="littletablerow" align='center'><a href="#" onclick='del_itstra(<?php echo $i; ?>);return false;'><?php echo img('images/delete.png'); ?></a></td>
 				<?php } ?>
 			</tr>
 			<?php } ?>

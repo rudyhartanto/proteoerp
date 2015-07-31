@@ -15,7 +15,7 @@ $scampos .='<td class="littletablerow" align="left" ><b id="fecha_val_<#i#>"></b
 $scampos .='<td class="littletablerow" align="right"><b id="gtotal_val_<#i#>"></b>'.$campos['it_gtotal']['field'].'</td>';
 $scampos .='<td class="littletablerow" align="right"><b id="impuesto_val_<#i#>"></b>'.$campos['it_impuesto']['field'].'</td>';
 $scampos .='<td class="littletablerow" align="right">'.$campos['it_reiva']['field'].'</td>';
-$scampos .='<td class="littletablerow"><a href=# onclick="del_itrivc(<#i#>);return false;">'.img('images/delete.jpg').'</a></td></tr>';
+$scampos .='<td class="littletablerow" align="center"><a href=# onclick="del_itrivc(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $campos=$form->js_escape($scampos);
 
 if(isset($form->error_string)) echo '<div class="alert">'.$form->error_string.'</div>';
@@ -154,6 +154,11 @@ function add_itrivc(){
 function del_itrivc(id){
 	id = id.toString();
 	$('#tr_itrivc_'+id).remove();
+
+	var arr = $('input[id^="numero_"]');
+	if(arr.length<=0){
+		add_itrivc();
+	}
 	totalizar();
 }
 
@@ -289,7 +294,7 @@ function autocod(id){
 				<th bgcolor='#7098D0'>Impuesto</th>
 				<th bgcolor='#7098D0'>Monto retenido</th>
 				<?php if($form->_status!='show') {?>
-					<th bgcolor='#7098D0'>&nbsp;</th>
+					<td bgcolor='#7098D0' align='center'><a href='#' onclick="add_itrivc()" title='Agregar'><?php echo img(array('src' =>'images/agrega4.png', 'height' => 18, 'alt'=>'Agregar', 'title' => 'Agregar otro producto', 'border'=>'0')); ?></a></td>
 				<?php } ?>
 			</tr>
 
@@ -321,8 +326,8 @@ function autocod(id){
 				</td>
 				<td class="littletablerow" align="right"><?php echo $form->$it_reiva->output;    ?></td>
 				<?php if($form->_status!='show') {?>
-				<td class="littletablerow">
-					<a href='#' onclick='del_itrivc(<?php echo $i ?>);return false;'><?php echo img('images/delete.jpg');?></a>
+				<td class="littletablerow" align='center'>
+					<a href='#' onclick='del_itrivc(<?php echo $i ?>);return false;'><?php echo img('images/delete.png');?></a>
 				</td>
 				<?php } ?>
 			</tr>
