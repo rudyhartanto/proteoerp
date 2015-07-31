@@ -222,7 +222,7 @@ class gser extends Controller {
 
 		//Agrgaga mgas
 		$bodyscript .= '
-		jQuery("#creamga").click(
+		$("#creamga").click(
 			function(){
 				$.post("'.site_url('finanzas/mgas/dataedit/create').'",
 				function(data){
@@ -3397,10 +3397,11 @@ class gser extends Controller {
 		$edit->monto->showformat ='decimal';
 		$edit->monto->type='inputhidden';
 
-		$edit->sprv = new inputField('proveedor','sprv_<#i#>');
-		$edit->sprv->size = 6;
-		$edit->sprv->rel_id    ='gereten';
-		$edit->sprv->rule= 'existesprv|required';
+		$edit->tercero = new inputField('tercero','tercero_<#i#>');
+		$edit->tercero->size = 6;
+		$edit->tercero->rel_id    ='gereten';
+		$edit->tercero->db_name='tercero';
+		//$edit->tercero->rule= 'existesprv|required';
 		//********************************
 		// Fin de campos para detalle
 		//
@@ -3713,8 +3714,8 @@ class gser extends Controller {
 		for($i=0;$i<$rete_cana;$i++){
 			$codigorete = $do->get_rel('gereten','codigorete',$i);
 			if(!empty($codigorete)){
-				$gsprv   =  $do->get_rel('gereten','sprv',$i);
-				if(empty($gsprv)) $do->set_rel('gereten','sprv', 'RETEN',$i);
+				$tercero   =  $do->get_rel('gereten','tercero',$i);
+				if(empty($tercero)) $do->set_rel('gereten','tercero', '',$i);
 				$importe = floatval($do->get_rel('gereten','base'  ,$i));
 				$monto   = floatval($do->get_rel('gereten','monto' ,$i));
 				$porcen  = $do->get_rel('gereten','porcen',$i);
@@ -4629,8 +4630,8 @@ class gser extends Controller {
 			$this->db->query($query);
 		}
 
-		if(!in_array('sprv',$gcampos)){
-			$query="ALTER TABLE `gereten` ADD COLUMN `sprv` VARCHAR(5) NULL DEFAULT 'RETEN' AFTER `transac`";
+		if(!in_array('tercero',$gcampos)){
+			$query="ALTER TABLE gereten ADD COLUMN tercero VARCHAR(5) NULL DEFAULT '' AFTER codigorete";
 			$this->db->query($query);
 		}
 

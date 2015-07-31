@@ -34,7 +34,7 @@ $ccampos=$form->detail_fields['gereten'];
 $cgereten ='<tr id="tr_gereten_<#i#>">';
 //$cgereten.=' <td class="littletablerow">'.join('</td><td align="right">',$ggereten).'</td>';
 $cgereten.=' <td class="littletablerow" nowrap>       '.$ccampos['codigorete']['field'].'</td>';
-$cgereten.=' <td class="littletablerow" align="left" >'.$ccampos['sprv']['field']      .'</td>';
+$cgereten.=' <td class="littletablerow" align="left" >'.$ccampos['tercero']['field']      .'</td>';
 $cgereten.=' <td class="littletablerow" align="right">'.$ccampos['base']['field']      .'</td>';
 $cgereten.=' <td class="littletablerow" align="right">'.$ccampos['porcen']['field']    .'</td>';
 $cgereten.=' <td class="littletablerow" align="right">'.$ccampos['monto']['field']     .'</td>';
@@ -582,7 +582,7 @@ function autocod(id){
 }
 
 function autosprv(id){
-	$('#sprv_'+id).autocomplete({
+	$('#tercero_'+id).autocomplete({
 		delay: 600,
 		autoFocus: true,
 		source: function( req, add){
@@ -595,7 +595,7 @@ function autosprv(id){
 					function(data){
 						var sugiere = [];
 						if(data.length==0){
-							$('#sprv_'+id).val('');
+							$('#tercero_'+id).val('');
 						}else{
 							$.each(data,
 								function(i, val){
@@ -609,11 +609,11 @@ function autosprv(id){
 		},
 		minLength: 2,
 		select: function( event, ui ) {
-			$('#sprv_'+id).attr("readonly", "readonly");
+			$('#tercero_'+id).attr("readonly", "readonly");
 
-			$('#sprv_'+id).val(ui.item.proveed);
+			$('#tercero_'+id).val(ui.item.proveed);
 
-			setTimeout(function(){ $('#sprv_'+id).removeAttr("readonly"); }, 1500);
+			setTimeout(function(){ $('#tercero_'+id).removeAttr("readonly"); }, 1500);
 		}
 	});
 }
@@ -787,11 +787,11 @@ function toggle() {
 							$it_base      = "base_$i";
 							$it_porcen    = "porcen_$i";
 							$it_monto     = "monto_$i";
-							$it_sprv      = "sprv_$i";
+							$it_tercero   = "tercero_$i";
 						?>
 						<tr id='tr_gereten_<?php echo $i; ?>'>
 							<td class="littletablerow" nowrap><?php echo $form->$it_codigorete->output    ?></td>
-							<td class="littletablerow" align="left" ><?php echo $form->$it_sprv->output   ?></td>
+							<td class="littletablerow" align="left" ><?php echo $form->$it_tercero->output   ?></td>
 							<td class="littletablerow" align="right"><?php echo $form->$it_base->output   ?></td>
 							<td class="littletablerow" align="right"><?php echo $form->$it_porcen->output ?></td>
 							<td class="littletablerow" align="right"><?php echo $form->$it_monto->output  ?></td>
