@@ -15,7 +15,7 @@ $scampos .='<td class="littletablerow" align="right"><b id="gtotal_val_<#i#>"></
 $scampos .='<td class="littletablerow" align="right">'.$campos['it_base']['field'].'</td>';
 $scampos .='<td class="littletablerow" align="right">'.$campos['it_codigorete']['field'].'</td>';
 $scampos .='<td class="littletablerow" align="right">'.$campos['it_monto']['field'].'</td>';
-$scampos .='<td class="littletablerow"><a href=# onclick="del_itretc(<#i#>);return false;">'.img('images/delete.jpg').'</a></td></tr>';
+$scampos .='<td class="littletablerow" align="center"><a href=# onclick="del_itretc(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $campos=$form->js_escape($scampos);
 
 if(isset($form->error_string)) echo '<div class="alert">'.$form->error_string.'</div>';
@@ -166,6 +166,11 @@ function add_itretc(){
 function del_itretc(id){
 	id = id.toString();
 	$('#tr_itretc_'+id).remove();
+	var arr = $('input[id^="numero_"]');
+	if(arr.length<=0){
+		add_itretc();
+	}
+
 	totalizar();
 }
 
@@ -319,7 +324,8 @@ function autocod(id){
 				<th bgcolor='#7098D0'>Concepto</th>
 				<th bgcolor='#7098D0'>Monto retenido</th>
 				<?php if($form->_status!='show') {?>
-					<th bgcolor='#7098D0'>&nbsp;</th>
+					<td bgcolor='#7098D0' align='center'><a href='#' onclick="add_itretc()" title='Agregar otro pago'><?php echo img(array('src' =>'images/agrega4.png', 'height' => 18, 'alt'=>'Agregar', 'title' => 'Agregar', 'border'=>'0')); ?></a></td>
+
 				<?php } ?>
 			</tr>
 
@@ -347,8 +353,8 @@ function autocod(id){
 				<td class="littletablerow" align="right"><?php echo $form->$it_monto->output;      ?></td>
 
 				<?php if($form->_status!='show') {?>
-				<td class="littletablerow">
-					<a href='#' onclick='del_itretc(<?php echo $i ?>);return false;'><?php echo img('images/delete.jpg');?></a>
+				<td class="littletablerow" align='center'>
+					<a href='#' onclick='del_itretc(<?php echo $i ?>);return false;'><?php echo img('images/delete.png');?></a>
 				</td>
 				<?php } ?>
 			</tr>

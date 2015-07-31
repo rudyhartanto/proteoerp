@@ -268,6 +268,12 @@ function add_itordc(){
 function del_itordc(id){
 	id = id.toString();
 	$('#tr_itordc_'+id).remove();
+
+	var arr = $('input[id^="codigo_"]');
+	if(arr.length<=0){
+		add_itordc();
+	}
+
 	totalizar();
 }
 </script>

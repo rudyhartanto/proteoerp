@@ -26,7 +26,7 @@ $campos.=' <td class="littletablerow" align="right">'.$ccampos['importe']['field
 $campos.=' <td class="littletablerow">'.$ccampos['departa']['field'].'</td>';
 $campos.=' <td class="littletablerow">'.$ccampos['sucursal']['field'].'</td>';
 $campos.=' <td class="littletablerow">'.$ccampos['cargo']['field'].'</td>';
-$campos.=' <td class="littletablerow" align="center"><a href=\'#\' onclick="del_gitser(<#i#>);return false;">'.img("images/delete.jpg").'</a></td></tr>';
+$campos.=' <td class="littletablerow" align="center"><a href=\'#\' onclick="del_gitser(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $campos=$form->js_escape($campos);
 
 
@@ -34,10 +34,11 @@ $ccampos=$form->detail_fields['gereten'];
 $cgereten ='<tr id="tr_gereten_<#i#>">';
 //$cgereten.=' <td class="littletablerow">'.join('</td><td align="right">',$ggereten).'</td>';
 $cgereten.=' <td class="littletablerow" nowrap>       '.$ccampos['codigorete']['field'].'</td>';
+$cgereten.=' <td class="littletablerow" align="left" >'.$ccampos['sprv']['field']      .'</td>';
 $cgereten.=' <td class="littletablerow" align="right">'.$ccampos['base']['field']      .'</td>';
 $cgereten.=' <td class="littletablerow" align="right">'.$ccampos['porcen']['field']    .'</td>';
 $cgereten.=' <td class="littletablerow" align="right">'.$ccampos['monto']['field']     .'</td>';
-$cgereten.=' <td class="littletablerow" align="center"><a href=\'#\' onclick="del_gereten(<#i#>);return false;">'.img("images/delete.jpg").'</a></td></tr>';
+$cgereten.=' <td class="littletablerow" align="center"><a href=\'#\' onclick="del_gereten(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $cgereten=$form->js_escape($cgereten);
 
 $rete=array();
@@ -107,7 +108,14 @@ $(document).ready(function() {
 
 	codb1=$('#codb1').val();
 	desactivacampo(codb1);
-	autocod(0);
+
+	var i;
+	for(i=0;i < <?php echo $form->max_rel_count['gitser']; ?>;i++){
+		autocod(i);
+	}
+	for(i=0;i < <?php echo $form->max_rel_count['gereten']; ?>;i++){
+		autosprv(i);
+	}
 
 	$('#serie').change(function (){
 		var proveed = $('#proveed').val();
@@ -503,6 +511,8 @@ function add_gereten(){
 	htm = htm.replace(/<#i#>/g,can);
 	htm = htm.replace(/<#o#>/g,con);
 	$("#__PTPL__gereten").after(htm);
+
+	autosprv(can);
 	gereten_cont=gereten_cont+1;
 }
 
@@ -510,6 +520,11 @@ function del_gereten(id){
 	id = id.toString();
 	obj='#tr_gereten_'+id;
 	$(obj).remove();
+
+	var arr = $('input[id^="codigorete_"]');
+	if(arr.length<=0){
+		add_gereten();
+	}
 	totalizar();
 }
 
@@ -517,6 +532,11 @@ function del_gitser(id){
 	id = id.toString();
 	obj='#tr_gitser_'+id;
 	$(obj).remove();
+
+	var arr = $('input[id^="importe_"]');
+	if(arr.length<=0){
+		add_gitser();
+	}
 	totalizar();
 }
 
@@ -557,6 +577,43 @@ function autocod(id){
 			$('#descrip_'+id).val(ui.item.descrip);
 			$('#precio_'+id).focus();
 			setTimeout(function() {  $('#codigo_'+id).removeAttr("readonly"); }, 1500);
+		}
+	});
+}
+
+function autosprv(id){
+	$('#sprv_'+id).autocomplete({
+		delay: 600,
+		autoFocus: true,
+		source: function( req, add){
+			$.ajax({
+				url:  "<?php echo site_url('ajax/buscasprv'); ?>",
+				type: "POST",
+				dataType: "json",
+				data: {"q":req.term},
+				success:
+					function(data){
+						var sugiere = [];
+						if(data.length==0){
+							$('#sprv_'+id).val('');
+						}else{
+							$.each(data,
+								function(i, val){
+									sugiere.push( val );
+								}
+							);
+						}
+						add(sugiere);
+					},
+			})
+		},
+		minLength: 2,
+		select: function( event, ui ) {
+			$('#sprv_'+id).attr("readonly", "readonly");
+
+			$('#sprv_'+id).val(ui.item.proveed);
+
+			setTimeout(function(){ $('#sprv_'+id).removeAttr("readonly"); }, 1500);
 		}
 	});
 }
@@ -671,7 +728,7 @@ function toggle() {
 				<td class="littletablerow"              ><?php echo $form->$obj8->output; ?></td>
 				<td class="littletablerow"              ><?php echo $form->$obj9->output; ?></td>
 				<?php if($form->_status!='show') { ?>
-					<td class="littletablerow" align="center"><a href='#' onclick='del_gitser(<?php echo $i; ?>);return false;'><?php echo img("images/delete.jpg"); ?></a></td>
+					<td class="littletablerow" align="center"><a href='#' onclick='del_gitser(<?php echo $i; ?>);return false;'><?php echo img('images/delete.png'); ?></a></td>
 				<?php }?>
 			</tr>
 				<?php if($form->_status == 'show' && $form->_dataobject->get('cajachi')=='S'){?>
@@ -716,11 +773,12 @@ function toggle() {
 					<table style="width:100%;border-collapse:collapse;padding:0px;">
 						<tr id='__PTPL__gereten'>
 							<td class="littletableheaderdet">Retenci&oacute;n ISLR</td>
+							<td class="littletableheaderdet">Prov.</td>
 							<td class="littletableheaderdet">Base</td>
 							<td class="littletableheaderdet" align="right">Tasa%</td>
 							<td class="littletableheaderdet" align="right">Monto</td>
 							<?php if($form->_status!='show') {?>
-								<td class="littletableheaderdet"><a href='#' onclick="add_gereten()" title='Agregar otra retencion'><?php echo img(array('src' =>"images/agrega4.png", 'height' => 16, 'alt'=>'Agregar otra retencion', 'title' => 'Agregar otra retencion', 'border'=>'0')); ?></a></td>
+								<td class="littletableheaderdet" align="center"><a href='#' onclick="add_gereten()" title='Agregar otra retencion'><?php echo img(array('src' =>"images/agrega4.png", 'height' => 16, 'alt'=>'Agregar otra retencion', 'title' => 'Agregar otra retencion', 'border'=>'0')); ?></a></td>
 							<?php } ?>
 						</tr>
 						<?php for($i=0; $i < $form->max_rel_count['gereten']; $i++) {
@@ -729,14 +787,16 @@ function toggle() {
 							$it_base      = "base_$i";
 							$it_porcen    = "porcen_$i";
 							$it_monto     = "monto_$i";
+							$it_sprv      = "sprv_$i";
 						?>
 						<tr id='tr_gereten_<?php echo $i; ?>'>
 							<td class="littletablerow" nowrap><?php echo $form->$it_codigorete->output    ?></td>
+							<td class="littletablerow" align="left" ><?php echo $form->$it_sprv->output   ?></td>
 							<td class="littletablerow" align="right"><?php echo $form->$it_base->output   ?></td>
 							<td class="littletablerow" align="right"><?php echo $form->$it_porcen->output ?></td>
 							<td class="littletablerow" align="right"><?php echo $form->$it_monto->output  ?></td>
 							<?php if($form->_status!='show'){ ?>
-								<td class="littletablerow" align="center"><a href='#' onclick='del_gereten(<?php echo $i; ?>);return false;'><?php echo img("images/delete.jpg"); ?></a></td>
+								<td class="littletablerow" align="center"><a href='#' onclick='del_gereten(<?php echo $i; ?>);return false;'><?php echo img('images/delete.png'); ?></a></td>
 							<?php } ?>
 						</tr>
 						<?php }?>
@@ -913,7 +973,7 @@ function toggle() {
 					<td class="littletablerow" align='right'> <?php echo nformat($row->haber) ?>&nbsp;</td>
 					<td class="littletablerow" align='right'> <?php echo nformat($row->saldo) ?>&nbsp;</td>
 				</tr>
-						<?php }; ?>
+					<?php }; ?>
 			</fieldset>
 			</table>
 				<?php }; ?>

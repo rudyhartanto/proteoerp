@@ -15,7 +15,7 @@ $scampos .='<td class="littletablerow" align="right">'.$campos['precio']['field'
 $scampos .='<td class="littletablerow" align="right">'.$campos['tasaiva']['field'].   '</td>';
 $scampos .='<td class="littletablerow" align="right">'.$campos['impuesto']['field']. '</td>';
 $scampos .='<td class="littletablerow" align="right">'.$campos['importe']['field'].  '</td>';
-$scampos .='<td class="littletablerow"><a href="#" onclick="del_itotin(<#i#>);return false;">'.img('images/delete.jpg').'</a></td>';
+$scampos .='<td class="littletablerow" align="center"><a href="#" onclick="del_itotin(<#i#>);return false;">'.img('images/delete.png').'</a></td>';
 $scampos .='</tr>';
 $campos   =$form->js_escape($scampos);
 
@@ -26,7 +26,7 @@ $sfpa_scampos .='<td class="littletablerow" align="center">'.$sfpa_campos['sfpaf
 $sfpa_scampos .='<td class="littletablerow" align="left"  >'.$sfpa_campos['numref']['field'].'</td>';
 $sfpa_scampos .='<td class="littletablerow" align="left"  >'.$sfpa_campos['banco']['field']. '</td>';
 $sfpa_scampos .='<td class="littletablerow" align="right" >'.$sfpa_campos['monto']['field']. '</td>';
-$sfpa_scampos .='<td class="littletablerow"><a href=# onclick="del_sfpa(<#i#>);return false;">'.img('images/delete.jpg').'</a></td></tr>';
+$sfpa_scampos .='<td class="littletablerow" align="center"><a href=# onclick="del_sfpa(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $sfpa_campos=$form->js_escape($sfpa_scampos);
 
 if(isset($form->error_string)) echo '<div class="alert">'.$form->error_string.'</div>';
@@ -301,6 +301,12 @@ function post_modbus_botr(nind){
 function del_itotin(id){
 	id = id.toString();
 	$('#tr_itotin_'+id).remove();
+
+	var arr = $('input[id^="codigo_"]');
+	if(arr.length<=0){
+		add_itotin();
+	}
+
 	totalizar();
 }
 
@@ -407,7 +413,7 @@ function autocod(id){
 				<td class="littletableheaderdet">Impuesto</td>
 				<td class="littletableheaderdet">Importe</td>
 				<?php if($form->_status!='show') {?>
-					<td class="littletableheaderdet"><a href='#' id='addlink' onclick="add_itotin()" title='Agregar fila'><?php echo img(array('src' =>"images/agrega4.png", 'height' => 18, 'alt'=>'Agregar fila', 'title' => 'Agregar fila', 'border'=>'0')); ?></a></td>
+					<td class="littletableheaderdet" align='center'><a href='#' id='addlink' onclick="add_itotin()" title='Agregar fila'><?php echo img(array('src' =>"images/agrega4.png", 'height' => 18, 'alt'=>'Agregar fila', 'title' => 'Agregar fila', 'border'=>'0')); ?></a></td>
 				<?php } ?>
 			</tr>
 			<?php for($i=0;$i<$form->max_rel_count['itotin'];$i++) {
@@ -433,7 +439,7 @@ function autocod(id){
 				<td class="littletablerow" align="right"><?php echo $form->$it_impuesto->output;?></td>
 				<td class="littletablerow" align="right"><?php echo $form->$it_importe->output; ?></td>
 				<?php if($form->_status!='show') {?>
-				<td class="littletablerow"><a href='#' onclick="del_itotin(<?php echo $i; ?>);return false;"><?php echo img('images/delete.jpg'); ?></a></td>
+				<td class="littletablerow" align='center'><a href='#' onclick="del_itotin(<?php echo $i; ?>);return false;"><?php echo img('images/delete.png'); ?></a></td>
 				<?php } ?>
 			</tr>
 			<?php } ?>
@@ -450,7 +456,7 @@ function autocod(id){
 				<td class="littletableheaderdet">Banco</td>
 				<td class="littletableheaderdet">Monto</td>
 				<?php if($form->_status!='show') {?>
-					<td class="littletableheaderdet"><a href='#' id='addlink' onclick="add_sfpa()" title='Agregar fila'><?php echo img(array('src' =>"images/agrega4.png", 'height' => 18, 'alt'=>'Agregar fila', 'title' => 'Agregar fila', 'border'=>'0')); ?></a></td>
+					<td class="littletableheaderdet" align='center'><a href='#' id='addlink' onclick="add_sfpa()" title='Agregar fila'><?php echo img(array('src' =>'images/agrega4.png', 'height' => 18, 'alt'=>'Agregar fila', 'title' => 'Agregar fila', 'border'=>'0')); ?></a></td>
 				<?php } ?>
 			</tr>
 			<?php
@@ -469,7 +475,7 @@ function autocod(id){
 				<td class="littletablerow">       <?php echo $form->$banco->output     ?></td>
 				<td class="littletablerow" align="right"><?php echo $form->$monto->output ?></td>
 				<?php if($form->_status!='show') {?>
-					<td class="littletablerow"><a href='#' onclick="del_sfpa(<?php echo $i; ?>);return false;"><?php echo img('images/delete.jpg'); ?></a></td>
+					<td class="littletablerow" align='center'><a href='#' onclick="del_sfpa(<?php echo $i; ?>);return false;"><?php echo img('images/delete.png'); ?></a></td>
 				<?php } ?>
 			</tr>
 			<?php } ?>
