@@ -4516,7 +4516,8 @@ class gser extends Controller {
 		$tercero = $this->datasis->dameval('SELECT COUNT(*) FROM gereten WHERE tercero!="" AND idd='.$dbid);
 
 		if ( $query->num_rows() > 0 ){
-			if ( $tercero > 0 ) $salida = '<button onclick="impislr()" >Retencion a Terceros </button>';
+			if ( $tercero > 0 ) 
+				$salida = '<button onclick="impislr()" style="width:100%;font-size:12pt;background:#0099FF;" >Retencion a Terceros </button>';
 			$salida .= '<br><table width=\'100%\' border=\'1\'>';
 			$salida .= '<tr bgcolor=\'#e7e3e7\'><td>Tp</td><td align=\'center\'>Numero</td><td align=\'center\'>Monto</td></tr>';
 
