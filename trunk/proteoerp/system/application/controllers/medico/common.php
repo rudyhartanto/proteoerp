@@ -31,11 +31,20 @@ class Common extends controller {
 				if(is_array($arr)){
 					$options=$arr;
 				}
+				break;
+
+			case 'select':
+				$tipo = 'dropdownField';
+				$rule = '';
+				$options = $par['tipoadc'];
+				break;
 
 			case 'integer':
 				$rule='integer';
+				break;
 			case '':
 				$rule='numeric';
+				break;
 		}
 
 		$campo = new $tipo($par['nombre'], $par['obj']);
@@ -54,9 +63,12 @@ class Common extends controller {
 			$campo->css_class='inputnum';
 		}elseif($par['tipo']=='dropdown'){
 			$campo->options($options);
+		}elseif($par['tipo']=='select'){
+			$campo->options($options);
+
 		}elseif($par['tipo']=='textarea'){
-			$campo->cols = 60;
-			$campo->rows = 4;
+			$campo->cols = 50;
+			$campo->rows = 2;
 		}
 
 		return array($campo,$scriptadd);

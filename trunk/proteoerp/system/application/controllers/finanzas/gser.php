@@ -4605,6 +4605,7 @@ class gser extends Controller {
 			$this->db->query($query);
 		}
 */
+
 		$query="UPDATE gitser AS a
 			JOIN gser AS b on a.numero=b.numero AND a.fecha = b.fecha AND a.proveed = b.proveed
 			SET a.idgser=b.id WHERE a.idgser IS NULL OR a.idgser=0";

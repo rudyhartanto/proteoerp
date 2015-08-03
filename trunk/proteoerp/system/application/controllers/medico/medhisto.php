@@ -681,22 +681,22 @@ class Medhisto extends Common {
 		$edit->ingreso->size =10;
 		$edit->ingreso->maxlength =8;
 		$edit->ingreso->insertValue = date('Y-m-d');
-
+/*
 		$edit->referido = new dropdownField('Referido por', 'referido');
 		$edit->referido->style='width:250px';
 		$edit->referido->option('','Seleccionar');
 		$edit->referido->options('SELECT codigo,nombre FROM medrec WHERE tipo="ME" ORDER BY nombre');
 		$edit->referido->rule='required';
-
-		//************************************************
-		//inicio detalle
-		//************************************************
+*/
+		//**************************************************************
+		// Inicio detalle
+		//
 		$i=0;
 		$sel=array('a.id','a.nombre','a.tipo','a.tipoadc');
 		$this->db->from('medhtab AS a');
 		$this->db->where('a.grupo','1');
 		if($edit->getstatus()!=='create'){
-			$historia=$edit->get_from_dataobjetct('numero');
+			$historia = $edit->get_from_dataobjetct('numero');
 			$dbhistoria = $this->db->escape($historia);
 			$this->db->join('medhvisita AS b',"a.id=b.tabula AND b.historia = ${dbhistoria}",'left');
 			$sel[]='b.descripcion AS value';
@@ -706,9 +706,8 @@ class Medhisto extends Common {
 		$this->db->order_by('a.indice');
 		$query = $this->db->get();
 		foreach ($query->result() as $row){
-
-			$obj ='descripcion_'.$i;
-			$nobj='itdetalle['.$row->id.']';
+			$obj  = 'descripcion_'.$i;
+			$nobj = 'itdetalle['.$row->id.']';
 			$par=array(
 				'tipo'   => $row->tipo,
 				'nombre' => ucfirst(strtolower($row->nombre)),
@@ -745,10 +744,9 @@ class Medhisto extends Common {
 
 			$i++;
 		}
-		//************************************************
-		//fin de campos para detalle
-		//************************************************
-
+		//**************************************************************
+		// Fin de campos para detalle
+		//
 		$edit->usuario = new autoUpdateField('usuario',$this->session->userdata('usuario'),$this->session->userdata('usuario'));
 		$edit->estampa = new autoUpdateField('estampa' ,date('Ymd'), date('Ymd'));
 		$edit->hora    = new autoUpdateField('hora',date('H:i:s'), date('H:i:s'));
@@ -835,7 +833,6 @@ class Medhisto extends Common {
 				if($tabula>0 && !empty($descrip)){
 					$data['descripcion']= $descrip;
 					$data['tabula']     = $tabula;
-
 					$sql = $this->db->insert_string('medhvisita', $data);
 					$this->db->simple_query($sql);
 				}
@@ -856,7 +853,7 @@ class Medhisto extends Common {
 			$data = array('historia' => $historia, 'fecha' => $fecha);
 			foreach($itdetalle as $tabula=>$descrip){
 				$tabula = intval($tabula);
-				if($tabula>0 && !empty($descrip)){
+				if( $tabula>0 && !empty($descrip) ){
 					$data['descripcion']= $descrip;
 					$data['tabula']     = $tabula;
 
