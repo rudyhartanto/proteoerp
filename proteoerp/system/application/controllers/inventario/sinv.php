@@ -137,7 +137,7 @@ class Sinv extends Controller {
 			editurl: \''.site_url('inventario/sinv/bpos1').'\',
 			caption: "Barras Adicionales"
 		});
-		jQuery("#bpos1").jqGrid(\'navGrid\',"#pbpos1",{edit:false, add:true, del:true, search: false, addfunc: bposadd });
+		$("#bpos1").jqGrid(\'navGrid\',"#pbpos1",{edit:false, add:true, del:true, search: false, addfunc: bposadd });
 
 		function bposadd(){
 			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
@@ -699,9 +699,9 @@ class Sinv extends Controller {
 		// Agregar
 		$bodyscript .= '
 		function sinvadd() {
-			var id   = jQuery("'.$ngrid.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id   = $("'.$ngrid.'").jqGrid(\'getGridParam\',\'selrow\');
 			var murl = "'.site_url('inventario/sinv/dataedit/create').'";
-			var grid = jQuery("'.$ngrid.'");
+			var grid = $("'.$ngrid.'");
 			mstatus = "I";
 			if (id)  murl = murl+"/"+id ;
 			$.post(murl,
@@ -2706,7 +2706,7 @@ class Sinv extends Controller {
 	//******************************************************************
 	// Dataedit
 	//
-	function dataedit($status='',$id='' ) {
+	function dataedit( $status='',$id='' ) {
 		$this->rapyd->load('dataedit','datadetails');
 
 		$modbus = array(

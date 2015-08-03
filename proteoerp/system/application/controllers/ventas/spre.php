@@ -45,12 +45,13 @@ class Spre extends Controller {
 		$grid->wbotonadd(array('id'=>'boton1',  'img'=>'assets/default/images/print.png',   'alt' => 'Reimprimir',      'label'=>'Reimprimir'));
 
 		if($this->datasis->sidapuede('SFAC','INCLUIR%' ))
-			$grid->wbotonadd(array('id'=>'bffact',  'img'=>'images/star.png',                   'alt' => 'Facturar',        'label'=>'Facturar'));
+			$grid->wbotonadd(array('id'=>'bffact',  'img'=>'images/agregar.jpg', 'alt' => 'Facturar',        'label'=>'Facturar'));
 
 		if($this->datasis->sidapuede('SNTE','INCLUIR%' ))
-			$grid->wbotonadd(array('id'=>'bsnte',   'img'=>'images/star.png',                   'alt' => 'Nota de Entrega', 'label'=>'N.Entrega'));
+			$grid->wbotonadd(array('id'=>'bsnte',   'img'=>'images/agregar.jpg', 'alt' => 'Nota de Entrega', 'label'=>'N.Entrega'));
 
-		$grid->wbotonadd(array('id'=>'bcorreo', 'img'=>'assets/default/images/mail_btn.png','alt' => 'Notificacion',    'label'=>'Notificar por email'));
+		$grid->wbotonadd(array('id'=>'bcorreo', 'img'=>'assets/default/images/mail_btn.png','alt' => 'Notificacion',  'label'=>'Notificar por email'));
+		$grid->wbotonadd(array('id'=>'bfavori', 'img'=>'images/star.png','alt'     => 'Favorito',      'label'=>'Favorito'));
 
 		$WestPanel = $grid->deploywestp();
 
@@ -92,7 +93,10 @@ class Spre extends Controller {
 
 		$bodyscript .= '
 		function spreadd() {
-			$.post("'.site_url('ventas/spre/dataedit/create').'",
+			var id  = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var agr = ""
+			if ( id ){ agr = "/"+id; }
+			$.post("'.site_url('ventas/spre/dataedit/create').'"+agr,
 			function(data){
 				$("#fedita").html(data);
 				$("#fedita").dialog( "open" );
@@ -101,7 +105,7 @@ class Spre extends Controller {
 
 		$bodyscript .= '
 		function spreedit(){
-			var id     = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id     = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if(id){
 				var ret    = $("#newapi'.$grid0.'").getRowData(id);
 				mId = id;
@@ -205,6 +209,17 @@ class Spre extends Controller {
 			} else { $.prompt("<h1>Por favor Seleccione un Presupuesto</h1>");}
 		});';
 
+		$bodyscript .= '
+		$("#bfavori").click(function(){
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			if(id){
+				var ret    = $("#newapi'.$grid0.'").getRowData(id);
+				$.post("'.site_url('ventas/spre/favorito').'/"+id,
+				function(data){
+					$.prompt(data);
+				});
+			} else { $.prompt("<h1>Por favor Seleccione un Presupuesto</h1>");}
+		});';
 
 		$bodyscript .= '
 		$("#bcorreo").click(function(){
@@ -247,7 +262,6 @@ class Spre extends Controller {
 					if($("#scliexp").dialog( "isOpen" )===true) {
 						$("#scliexp").dialog("close");
 					}
-
 					var bValid = true;
 					var murl = $("#df1").attr("action");
 					allFields.removeClass( "ui-state-error" );
@@ -425,6 +439,19 @@ class Spre extends Controller {
 
 	//******************************************************************
 	// Notificar por Correo
+	function favorito( $id = 0 ){
+		if ( $id == 0 )
+			$id = $this->uri->segment($this->uri->total_segments());
+		$id = intval($id);
+		$mSQL = "UPDATE spre SET favorito=IF(favorito='S','N','S') WHERE id=${id}";
+		$this->db->query($mSQL);
+		echo '<h1>Favorito cambiado</h1>';
+	}
+
+
+
+	//******************************************************************
+	// Notificar por Correo
 	function notifica( $id = 0 ){
 		if ( $id == 0 )
 			$id = $this->uri->segment($this->uri->total_segments());
@@ -484,6 +511,18 @@ datos vía telefónica.";
 
 		$grid  = new $this->jqdatagrid;
 
+		$grid->addField('favorito');
+		$grid->label('*');
+		$grid->params(array(
+			'search'        => 'true',
+			'editable'      => $editar,
+			'width'         => 40,
+			'align'         => "'center'",
+			'edittype'      => "'text'",
+			'editrules'     => '{ required:true}',
+			'editoptions'   => '{ size:8, maxlength: 8 }',
+		));
+
 		$grid->addField('numero');
 		$grid->label('N&uacute;mero');
 		$grid->params(array(
@@ -495,7 +534,6 @@ datos vía telefónica.";
 			'editrules'     => '{ required:true}',
 			'editoptions'   => '{ size:8, maxlength: 8 }',
 		));
-
 
 		$grid->addField('fecha');
 		$grid->label('Fecha');
@@ -509,7 +547,6 @@ datos vía telefónica.";
 			'formoptions'   => '{ label:"Fecha" }'
 		));
 
-
 		$grid->addField('notifica');
 		$grid->label('Notif.');
 		$grid->params(array(
@@ -521,7 +558,6 @@ datos vía telefónica.";
 			'editrules'     => '{ required:true}',
 			'editoptions'   => '{ size:5, maxlength: 5 }',
 		));
-
 
 		$grid->addField('cod_cli');
 		$grid->label('Cliente');
@@ -724,17 +760,18 @@ datos vía telefónica.";
 			}'
 		);
 
+		$grid->setAfterInsertRow('
+			function( rid, aData, rowe){
+				if(aData.favorito !== undefined){
+					if(aData.favorito == "S"){
+						$(this).jqGrid( "setCell", rid, "favorito","", {color:"#000CFF", background:"#FFCC00" });
+					}else {
+						$(this).jqGrid( "setCell", rid, "favorito","", {color:"#FFFFFF", background:"#FFFFFF" });
+					}
+				}
+			}
+		');
 
-/*
-					$.ajax({
-						url: "'.base_url().$this->url.'tabla/"+id,
-						success: function(msg){
-							var meco;
-							meco = $("#ladicional").html();
-							$("#ladicional").html(meco+"<br>"+msg);
-						}
-					});
-*/
 
 
 		$grid->setFormOptionsE('closeAfterEdit:true, mtype: "POST", width: 520, height:300, closeOnEscape: true, top: 50, left:20, recreateForm:true, afterSubmit: function(a,b){if (a.responseText.length > 0) $.prompt(a.responseText); return [true, a ];},afterShowForm: function(frm){$("select").selectmenu({style:"popup"});} ');
@@ -846,20 +883,6 @@ datos vía telefónica.";
 
 		$grid  = new $this->jqdatagrid;
 
-/*
-		$grid->addField('numero');
-		$grid->label('Numero');
-		$grid->params(array(
-			'hidden'        => "'false'",
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 80,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:8, maxlength: 8 }',
-		));
-*/
-
 		$grid->addField('codigo');
 		$grid->label('C&oacute;digo');
 		$grid->params(array(
@@ -871,7 +894,6 @@ datos vía telefónica.";
 			'editoptions'   => '{ size:15, maxlength: 15 }',
 		));
 
-
 		$grid->addField('desca');
 		$grid->label('Descripci&oacute;n');
 		$grid->params(array(
@@ -882,7 +904,6 @@ datos vía telefónica.";
 			'editrules'     => '{ required:true}',
 			'editoptions'   => '{ size:40, maxlength: 40 }',
 		));
-
 
 		$grid->addField('activo');
 		$grid->label('Actv');
@@ -1132,21 +1153,6 @@ datos vía telefónica.";
 			'search'        => 'false'
 		));
 
-/*
-		$grid->addField('modificado');
-		$grid->label('Modificado');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 80,
-			'align'         => "'center'",
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true,date:true}',
-			'formoptions'   => '{ label:"Fecha" }'
-		));
-*/
-
-
 		$grid->setAfterInsertRow('
 			function( rid, aData, rowe){
 				if(aData.activo !== undefined){
@@ -1163,12 +1169,7 @@ datos vía telefónica.";
 					}else {
 						$(this).jqGrid( "setCell", rid, "saldo","", {color:"#FFFFFF", background:"#0A9810" });
 					}
-
-
 				}
-
-
-
 			}
 		');
 
@@ -1244,8 +1245,10 @@ datos vía telefónica.";
 	}
 
 
-
-	function dataedit(){
+	//******************************************************************
+	// Dataedit
+	//
+	function dataedit( $status='',$id='' ){
 		$this->rapyd->load('dataobject','datadetails');
 
 		$modbus=array(
@@ -1299,13 +1302,18 @@ datos vía telefónica.";
 		$do->pointer('scli' ,'scli.cliente=spre.cod_cli','scli.tipo AS sclitipo','left');
 		$do->rel_pointer('itspre','sinv','itspre.codigo=sinv.codigo','sinv.descrip AS sinvdescrip, sinv.base1 AS sinvprecio1, sinv.base2 AS sinvprecio2, sinv.base3 AS sinvprecio3, sinv.base4 AS sinvprecio4, sinv.iva AS sinviva, sinv.peso AS sinvpeso,sinv.tipo AS sinvtipo');
 
+		if($status=='create' && !empty($id)){
+			$do->load($id);
+			//$do->set('codigo' , '');
+			//$do->set('alterno', '');
+		}
+
+
 		$edit = new DataDetails('Presupuestos', $do);
 		$edit->back_url = site_url('ventas/spre/filteredgrid');
 		$edit->set_rel_title('itspre','Producto <#o#>');
 		$edit->on_save_redirect=false;
 
-		//$edit->script($script,'create');
-		//$edit->script($script,'modify');
 
 		$edit->pre_process('insert' ,'_pre_insert');
 		$edit->pre_process('update' ,'_pre_update');
@@ -1959,6 +1967,7 @@ datos vía telefónica.";
 		if(!in_array('observa',  $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN observa  TEXT         NULL DEFAULT NULL AFTER condi2'  );
 		if(!in_array('fechadep', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN fechadep DATE         NULL DEFAULT NULL AFTER tipo_op' );
 		if(!in_array('notifica', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN notifica CHAR(1)      NULL DEFAULT NULL AFTER fechadep');
+		if(!in_array('favorito', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN favorito CHAR(1)      NULL DEFAULT NULL AFTER notifica');
 	}
 
 }

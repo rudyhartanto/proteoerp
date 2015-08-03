@@ -632,6 +632,7 @@ class Medhtab extends Controller {
 			'text'    =>'Texto Corto',
 			'textarea'=>'Texto Grande',
 			'dropdown'=>'Lista Opciones',
+			'select'  =>'Tabla Opciones',
 			'numeric' =>'Numerico',
 			'integer' =>'Entero',
 			'date'    =>'Fecha',
