@@ -1947,6 +1947,64 @@ datos vía telefónica.";
 	}
 
 	//******************************************************************
+	// Duplica un Presupuesto
+	//
+	function duplica( $id = 0 ){
+		$data = '[ ]';
+		if($id !== false){
+			$dbid = $this->db->escape($id);
+			$retArray = $retorno = array();
+
+			$mSQL="SELECT b.codigo,b.descrip,b.tipo,b.ultimo,b.pond,
+			a.precio, b.peso, b.precio1, b.iva, a.cantidad
+			FROM itspre AS a
+			JOIN spre   AS b ON a.numero = b.numero
+			JOIN sinv   AS c ON a.codigo = c.codigo
+			WHERE a.combo=";
+
+
+			$mSQL="
+			SELECT TRIM(a.descrip) AS descrip, TRIM(a.codigo) AS codigo, a.unidad,
+			a.precio1,a.precio2,a.precio3,a.precio4, a.iva, a.existen, a.tipo, a.peso, a.ultimo, 
+			a.pond, a.barras, 0 AS descufijo, 0 AS dgrupo,0 AS promo, a.existen, 
+			a.marca, a.ubica,a.id, c.cana
+			FROM itspre AS c
+			JOIN spre   AS b ON c.numero = b.numero
+			JOIN sinv   AS a ON a.codigo=c.codigo
+			WHERE b.id = ${dbid}
+			ORDER BY a.descrip ";
+
+			$query = $this->db->query($mSQL);
+			if($query->num_rows() > 0){
+				foreach( $query->result_array() as $id=>$row ){
+					$retArray['codigo']  = $this->en_utf8($row['codigo']);
+					$retArray['cana']    = $row['cana'];
+					$retArray['tipo']    = $row['tipo'];
+					$retArray['peso']    = $row['peso'];
+					$retArray['ultimo']  = $row['ultimo'];
+					$retArray['pond']    = $row['pond'];
+					$retArray['base1']   = round($row['precio1']*100/(100+$row['iva']),2);
+					$retArray['base2']   = round($row['precio2']*100/(100+$row['iva']),2);
+					$retArray['base3']   = round($row['precio3']*100/(100+$row['iva']),2);
+					$retArray['base4']   = round($row['precio4']*100/(100+$row['iva']),2);
+					$retArray['descrip'] = $this->en_utf8($row['descrip']);
+					$retArray['barras']  = $row['barras'];
+					$retArray['iva']     = $row['iva'];
+					$retArray['existen'] = (empty($row['existen']))? 0 : round($row['existen'],2);
+					$retArray['marca']   = $row['marca'];
+					$retArray['ubica']   = $row['ubica'];
+					$retArray['unidad']  = $row['unidad'];
+					$retArray['id']      = intval($row['id']);
+					array_push($retorno, $retArray);
+				}
+				$data = json_encode($retorno);
+	        }
+		}
+		echo $data;
+	}
+
+
+	//******************************************************************
 	// Instalar
 	//
 	function instalar(){
@@ -1968,6 +2026,14 @@ datos vía telefónica.";
 		if(!in_array('fechadep', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN fechadep DATE         NULL DEFAULT NULL AFTER tipo_op' );
 		if(!in_array('notifica', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN notifica CHAR(1)      NULL DEFAULT NULL AFTER fechadep');
 		if(!in_array('favorito', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN favorito CHAR(1)      NULL DEFAULT NULL AFTER notifica');
+	}
+
+	function en_utf8($str){
+		if($this->config->item('charset')=='UTF-8' && $this->db->char_set=='latin1'){
+			return utf8_encode($str);
+		}else{
+			return $str;
+		}
 	}
 
 }

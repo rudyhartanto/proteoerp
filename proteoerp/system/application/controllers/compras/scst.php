@@ -234,8 +234,8 @@ class Scst extends Controller {
 
 		$bodyscript .= '
 		function itscstedit(){
-			var id  = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
-			var iid = jQuery("#newapi'.$grid1.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id  = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var iid = $("#newapi'.$grid1.'").jqGrid(\'getGridParam\',\'selrow\');
 			if(iid){
 				var ret = $("#newapi'.$grid0.'").getRowData(id);
 				if(ret.actuali >= ret.fecha){
@@ -365,7 +365,7 @@ class Scst extends Controller {
 
 		$bodyscript .= '
 			$("#bcmonto").click(function(){
-				var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+				var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 				if (id){
 					var ret    = $("#newapi'.$grid0.'").getRowData(id);
 					if ( ret.actuali >= ret.fecha ) {
@@ -1398,8 +1398,8 @@ class Scst extends Controller {
 			function(id){
 			if (id){
 				var ret = $(gridId1).getRowData(id);
-				jQuery(gridId2).jqGrid(\'setGridParam\',{url:"'.site_url($this->url.'getdatait/').'/"+id+"/", page:1});
-				jQuery(gridId2).trigger("reloadGrid");
+				$(gridId2).jqGrid(\'setGridParam\',{url:"'.site_url($this->url.'getdatait/').'/"+id+"/", page:1});
+				$(gridId2).trigger("reloadGrid");
 				$.ajax({
 					url: "'.base_url().$this->url.'tabla/"+id,
 					success: function(msg){
