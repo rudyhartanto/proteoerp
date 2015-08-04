@@ -34,7 +34,7 @@ $ccampos=$form->detail_fields['gereten'];
 $cgereten ='<tr id="tr_gereten_<#i#>">';
 //$cgereten.=' <td class="littletablerow">'.join('</td><td align="right">',$ggereten).'</td>';
 $cgereten.=' <td class="littletablerow" nowrap>       '.$ccampos['codigorete']['field'].'</td>';
-$cgereten.=' <td class="littletablerow" align="left" >'.$ccampos['tercero']['field']      .'</td>';
+$cgereten.=' <td class="littletablerow" align="left" >'.$ccampos['terceroi']['field']      .'</td>';
 $cgereten.=' <td class="littletablerow" align="right">'.$ccampos['base']['field']      .'</td>';
 $cgereten.=' <td class="littletablerow" align="right">'.$ccampos['porcen']['field']    .'</td>';
 $cgereten.=' <td class="littletablerow" align="right">'.$ccampos['monto']['field']     .'</td>';
@@ -113,9 +113,10 @@ $(document).ready(function() {
 	for(i=0;i < <?php echo $form->max_rel_count['gitser']; ?>;i++){
 		autocod(i);
 	}
-	for(i=0;i < <?php echo $form->max_rel_count['gereten']; ?>;i++){
-		autosprv(i);
-	}
+
+	//for(i=0;i < <?php echo $form->max_rel_count['gereten']; ?>;i++){
+		//autosprv(i);
+	//}
 
 	$('#serie').change(function (){
 		var proveed = $('#proveed').val();
@@ -182,6 +183,43 @@ $(document).ready(function() {
 			ajaxsanncprov();
 		}
 	});
+
+
+	$('#tercero').autocomplete({
+		delay: 600,
+		autoFocus: true,
+		source: function( req, add){
+			$.ajax({
+				url:  "<?php echo site_url('ajax/buscasprv'); ?>",
+				type: "POST",
+				dataType: "json",
+				data: {"q":req.term},
+				success:
+					function(data){
+						var sugiere = [];
+						if(data.length==0){
+							$('#tercero').val('');
+						}else{
+							$.each(data,
+								function(i, val){
+									sugiere.push( val );
+								}
+							);
+						}
+						add(sugiere);
+					},
+			})
+		},
+		minLength: 2,
+		select: function( event, ui ) {
+			$('#tercero').attr("readonly", "readonly");
+			$('#nomter').text(ui.item.nombre);
+			$('#tercero').val(ui.item.proveed);
+			setTimeout(function(){ $('#tercero').removeAttr("readonly"); }, 1500);
+		}
+	});
+
+
 
 	$('#tipo_doc').change();
 });
@@ -512,7 +550,7 @@ function add_gereten(){
 	htm = htm.replace(/<#o#>/g,con);
 	$("#__PTPL__gereten").after(htm);
 
-	autosprv(can);
+	//autosprv(can);
 	gereten_cont=gereten_cont+1;
 }
 
@@ -572,48 +610,10 @@ function autocod(id){
 		minLength: 1,
 		select: function( event, ui ) {
 			$('#codigo_'+id).attr("readonly", "readonly");
-
 			$('#codigo_'+id).val(ui.item.codigo);
 			$('#descrip_'+id).val(ui.item.descrip);
 			$('#precio_'+id).focus();
 			setTimeout(function() {  $('#codigo_'+id).removeAttr("readonly"); }, 1500);
-		}
-	});
-}
-
-function autosprv(id){
-	$('#tercero_'+id).autocomplete({
-		delay: 600,
-		autoFocus: true,
-		source: function( req, add){
-			$.ajax({
-				url:  "<?php echo site_url('ajax/buscasprv'); ?>",
-				type: "POST",
-				dataType: "json",
-				data: {"q":req.term},
-				success:
-					function(data){
-						var sugiere = [];
-						if(data.length==0){
-							$('#tercero_'+id).val('');
-						}else{
-							$.each(data,
-								function(i, val){
-									sugiere.push( val );
-								}
-							);
-						}
-						add(sugiere);
-					},
-			})
-		},
-		minLength: 2,
-		select: function( event, ui ) {
-			$('#tercero_'+id).attr("readonly", "readonly");
-
-			$('#tercero_'+id).val(ui.item.proveed);
-
-			setTimeout(function(){ $('#tercero_'+id).removeAttr("readonly"); }, 1500);
 		}
 	});
 }
@@ -650,12 +650,12 @@ function toggle() {
 		<fieldset style='border: 1px outset #9AC8DA;background: #EFEFFF;'>
 		<table style="width:100%;border-collapse:collapse;padding:0px;">
 			<tr>
-				<td class="littletableheader"><?php echo $form->tipo_doc->label  ?>*&nbsp;</td>
-				<td class="littletablerow"   ><?php echo $form->tipo_doc->output ?>&nbsp; </td>
-				<td class="littletableheader"><?php echo $form->proveed->label   ?>*&nbsp;</td>
+				<td class="littletableheader" width='90;'><?php echo $form->tipo_doc->label  ?>*&nbsp;</td>
+				<td class="littletablerow"    width='90;'><?php echo $form->tipo_doc->output ?>&nbsp; </td>
+				<td class="littletableheader" width='90;'><?php echo $form->proveed->label   ?>*&nbsp;</td>
 				<td class="littletablerow"   ><?php echo $form->proveed->output.$form->sprvtipo->output.$form->sprvreteiva->output  ?>&nbsp; </td>
-				<td class="littletableheader"><?php echo $form->ffactura->label  ?>*&nbsp;</td>
-				<td class="littletablerow"   ><?php echo $form->ffactura->output ?>&nbsp; </td>
+				<td class="littletableheader" width='70;'><?php echo $form->ffactura->label  ?>*&nbsp;</td>
+				<td class="littletablerow"    width='90;'><?php echo $form->ffactura->output ?>&nbsp; </td>
 			</tr>
 			<tr>
 				<td class="littletableheader"><?php echo $form->numero->label  ?>*</td>
@@ -675,6 +675,19 @@ function toggle() {
 			</tr>
 		</table>
 		</fieldset>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<table style="width:100%;border-collapse:collapse;padding:0px;">
+			<tr>
+				<td class="littletableheader" width='210;'><?php echo $form->tercero->label   ?>&nbsp;</td>
+				<td class="littletablerow"    width='90;'><?php echo $form->tercero->output   ?>&nbsp; </td>
+				<td class="littletablerow"   ><div id='nomter'>&nbsp;</div></td>
+				<td class="littletableheader" width='90;'><?php echo $form->reteter->label   ?>&nbsp;</td>
+				<td class="littletablerow"    width='90;'><?php echo $form->reteter->output   ?>&nbsp; </td>
+			</tr>
+		</table>
 		</td>
 	</tr>
 	<tr>
@@ -773,7 +786,7 @@ function toggle() {
 					<table style="width:100%;border-collapse:collapse;padding:0px;">
 						<tr id='__PTPL__gereten'>
 							<td class="littletableheaderdet">Retenci&oacute;n ISLR</td>
-							<td class="littletableheaderdet">Prov.</td>
+							<td class="littletableheaderdet">Tercero</td>
 							<td class="littletableheaderdet">Base</td>
 							<td class="littletableheaderdet" align="right">Tasa%</td>
 							<td class="littletableheaderdet" align="right">Monto</td>
@@ -787,7 +800,7 @@ function toggle() {
 							$it_base      = "base_$i";
 							$it_porcen    = "porcen_$i";
 							$it_monto     = "monto_$i";
-							$it_tercero   = "tercero_$i";
+							$it_tercero   = "terceroi_$i";
 						?>
 						<tr id='tr_gereten_<?php echo $i; ?>'>
 							<td class="littletablerow" nowrap><?php echo $form->$it_codigorete->output    ?></td>

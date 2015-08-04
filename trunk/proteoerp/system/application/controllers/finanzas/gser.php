@@ -144,7 +144,7 @@ class gser extends Controller {
 
 		$bodyscript .= '
 		function gseredit() {
-			var id     = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id     = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id)	{
 				var ret    = $("#newapi'.$grid0.'").getRowData(id);
 				mId = id;
@@ -158,7 +158,7 @@ class gser extends Controller {
 
 		$bodyscript .= '
 		function gsershow() {
-			var id = jQuery("#newapi'. $grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id = $("#newapi'. $grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id)	{
 				$.post("'.site_url($this->url.'dataedit/show').'/"+id,
 					function(data){
@@ -172,7 +172,7 @@ class gser extends Controller {
 
 		$bodyscript .= '
 		function gserdel() {
-			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if(id){
 				if(confirm(" Seguro desea eliminar el registro?")){
 					var ret    = $("#newapi'.$grid0.'").getRowData(id);
@@ -182,7 +182,7 @@ class gser extends Controller {
 							var json = JSON.parse(data);
 							if (json.status == "A"){
 								apprise("Gasto eliminado");
-								jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+								$("#newapi'.$grid0.'").trigger("reloadGrid");
 							}else{
 								apprise("Registro no se puede eliminado");
 							}
@@ -204,7 +204,7 @@ class gser extends Controller {
 			var mId = 0;
 			var montotal = 0;
 			var ffecha = $("#ffecha");
-			var grid = jQuery("#newapi'.$grid0.'");
+			var grid = $("#newapi'.$grid0.'");
 			var s;
 			var allFields = $( [] ).add( ffecha );
 			var tips = $( ".validateTips" );
@@ -422,8 +422,6 @@ class gser extends Controller {
 				}
 			});';
 
-
-
 		$bodyscript .= '
 			$("#fsprv").dialog({
 				autoOpen: false, height: 450, width: 900, modal: true,
@@ -450,7 +448,6 @@ class gser extends Controller {
 									}catch(e){
 										$("#fsprv").html(r);
 									}
-
 								}
 							});
 						}
@@ -495,12 +492,12 @@ class gser extends Controller {
 			buttons: {
 				"Aceptar": function() {
 					$("#fborra").html("");
-					jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+					$("#newapi'.$grid0.'").trigger("reloadGrid");
 					$( this ).dialog( "close" );
 				},
 			},
 			close: function() {
-				jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+				$("#newapi'.$grid0.'").trigger("reloadGrid");
 				$("#fborra").html("");
 			}
 		});';
@@ -514,6 +511,17 @@ class gser extends Controller {
 				window.open(\''.site_url('formatos/ver/GSERRT').'/\'+id+\'/S/3\', \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
 			}
 		}';
+
+		$bodyscript .= '
+		function teriva(){
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			if (id){
+				window.open(\''.site_url($this->url.'printrete').'/\'+id+\'/S/S\', \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
+				//window.open(\''.site_url('formatos/ver/GSERRT').'/\'+id+\'/S/3\', \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
+			}
+		}';
+
+
 
 		$bodyscript .= '</script>';
 		return $bodyscript;
@@ -1105,8 +1113,8 @@ class gser extends Controller {
 		$grid->setOnSelectRow('
 			function(id){
 				if (id){
-					jQuery(gridId2).jqGrid(\'setGridParam\',{url:"'.site_url($this->url.'getdatait/').'/"+id+"/", page:1});
-					jQuery(gridId2).trigger("reloadGrid");
+					$(gridId2).jqGrid(\'setGridParam\',{url:"'.site_url($this->url.'getdatait/').'/"+id+"/", page:1});
+					$(gridId2).trigger("reloadGrid");
 					$.ajax({
 						url: "'.base_url().$this->url.'tabla/"+id,
 						success: function(msg){
@@ -3129,6 +3137,22 @@ class gser extends Controller {
 		$edit->proveed->append($bSPRV);
 		$edit->proveed->rule= 'existesprv|required';
 
+		$edit->tercero = new inputField('Facturado a nombre de Tercero','tercero');
+		$edit->tercero->size = 6;
+		//$edit->tercero->append($bSPRV);
+		$edit->tercero->rule= '';
+
+		$edit->reteter = new inputField('Ret IVA Bs','reteter');
+		$edit->reteter->rule = 'numeric|positive';
+		$edit->reteter->size = 10;
+		$edit->reteter->maxlength=10;
+		//$edit->reteter->rule = 'callback_chreteiva';
+		//$edit->reteter->onchange ='totalizar()';
+		$edit->reteter->css_class='inputnum';
+		$edit->reteter->showformat ='decimal';
+		$edit->reteter->autocomplete=false;
+
+
 		$edit->nfiscal  = new inputField('Control Fiscal', 'nfiscal');
 		$edit->nfiscal->size = 10;
 		$edit->nfiscal->autocomplete=false;
@@ -3404,11 +3428,11 @@ class gser extends Controller {
 		$edit->monto->showformat ='decimal';
 		$edit->monto->type='inputhidden';
 
-		$edit->tercero = new inputField('tercero','tercero_<#i#>');
-		$edit->tercero->size = 6;
-		$edit->tercero->rel_id    ='gereten';
-		$edit->tercero->db_name='tercero';
-		//$edit->tercero->rule= 'existesprv|required';
+		$edit->terceroi = new checkboxField('terceroi','terceroi_<#i#>','S','N');
+		$edit->terceroi->insertValue = 'N';
+		$edit->terceroi->rel_id    ='gereten';
+		$edit->terceroi->db_name='tercero';
+
 		//********************************
 		// Fin de campos para detalle
 		//
@@ -4477,7 +4501,7 @@ class gser extends Controller {
 		}
 	}
 
-	function printrete($id_gser,$firma='N'){
+	function printrete( $id_gser, $firma='N', $tercero='N'){
 		$sel=array('b.id');
 		$this->db->select($sel);
 		$this->db->from('gser AS a');
@@ -4492,8 +4516,7 @@ class gser extends Controller {
 		if(!($firma=='N' || $firma=='S')){
 			$firma='N';
 		}
-
-		redirect("formatos/ver/RIVA/${id}/${firma}");
+		redirect("formatos/ver/RIVA/${id}/${firma}/${tercero}");
 	}
 
 	function sprvbu(){
@@ -4513,11 +4536,21 @@ class gser extends Controller {
 		$codprv = 'XXXXXXXXXXXXXXXX';
 		$salida = '';
 		$saldo = 0;
-		$tercero = $this->datasis->dameval('SELECT COUNT(*) FROM gereten WHERE tercero!="" AND idd='.$dbid);
+		$tercero = $this->datasis->dameval('SELECT COUNT(*) FROM gser WHERE tercero!="" AND id='.$dbid);
 
 		if ( $query->num_rows() > 0 ){
-			if ( $tercero > 0 ) 
-				$salida = '<button onclick="impislr()" style="width:100%;font-size:12pt;background:#0099FF;" >Retencion a Terceros </button>';
+			if ( $tercero > 0 ) {
+				$tislr = $this->datasis->dameval('SELECT COUNT(*) FROM gereten WHERE tercero!="" AND idd='.$dbid);
+				if ( $tislr > 0 ) 
+					$salida = '<button onclick="impislr()" style="width:100%;font-size:12pt;background:#0099FF;" >Retencion ISLR a Terceros </button>';
+				else
+					$salida = '';
+					
+				$salida = '<button onclick="teriva()" style="width:100%;font-size:12pt;background:#00FF00;" >Retencion IVA a Terceros </button>';
+
+			}
+
+
 			$salida .= '<br><table width=\'100%\' border=\'1\'>';
 			$salida .= '<tr bgcolor=\'#e7e3e7\'><td>Tp</td><td align=\'center\'>Numero</td><td align=\'center\'>Monto</td></tr>';
 
@@ -4561,12 +4594,14 @@ class gser extends Controller {
 
 	function instalar(){
 		$campos=$this->db->list_fields('gser');
-		if(!in_array('reteica',   $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN reteica    DECIMAL(12,2) NULL DEFAULT NULL");
-		if(!in_array('retesimple',$campos)) $this->db->query("ALTER TABLE gser ADD COLUMN retesimple DECIMAL(12,2) NULL DEFAULT NULL");
-		if(!in_array('negreso',   $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN negreso    CHAR(8)    NULL DEFAULT NULL");
-		if(!in_array('ncausado',  $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN ncausado   VARCHAR(8) NULL DEFAULT NULL");
-		if(!in_array('fondo',     $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN fondo      CHAR(2)    NULL DEFAULT NULL");
-		if(!in_array('cnd',       $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN cnd        CHAR(1)    NULL DEFAULT NULL");
+		if(!in_array('reteica',   $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN reteica    DECIMAL(12,2) NULL DEFAULT '0'");
+		if(!in_array('retesimple',$campos)) $this->db->query("ALTER TABLE gser ADD COLUMN retesimple DECIMAL(12,2) NULL DEFAULT '0'");
+		if(!in_array('negreso',   $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN negreso    CHAR(8)       NULL DEFAULT NULL");
+		if(!in_array('ncausado',  $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN ncausado   VARCHAR(8)    NULL DEFAULT NULL");
+		if(!in_array('fondo',     $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN fondo      CHAR(2)       NULL DEFAULT NULL");
+		if(!in_array('cnd',       $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN cnd        CHAR(1)       NULL DEFAULT NULL");
+		if(!in_array('tercero',   $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN tercero    CHAR(5)       NULL DEFAULT NULL");
+		if(!in_array('reteter',   $campos)) $this->db->query("ALTER TABLE gser ADD COLUMN reteter    DECIMAL(12,2) NULL DEFAULT '0'");
 
 		if(!in_array('id',$campos)){
 			$query="ALTER TABLE `gser` DROP PRIMARY KEY";
@@ -4643,7 +4678,7 @@ class gser extends Controller {
 		}
 
 		if(!in_array('tercero',$gcampos)){
-			$query="ALTER TABLE gereten ADD COLUMN tercero VARCHAR(5) NULL DEFAULT '' AFTER codigorete";
+			$query="ALTER TABLE gereten ADD COLUMN tercero CHAR(1) NULL DEFAULT 'N' AFTER codigorete";
 			$this->db->query($query);
 		}
 
