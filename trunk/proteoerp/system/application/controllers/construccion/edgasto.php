@@ -875,6 +875,11 @@ class Edgasto extends Controller {
 		$edit->grupo->insertValue = $grupo;
 		$edit->grupo->type        = 'inputhidden';
 
+		$edit->medidor = new hiddenField('Medidor','medidor');
+		$edit->medidor->insertValue = $medidor;
+		$edit->medidor->type        = 'inputhidden';
+
+
 		$edit->anomes = new dropDownField('Ano Mes','anomes');
 		$edit->anomes->insertValue = $anomes;
 		$edit->anomes->type='inputhidden';
@@ -956,6 +961,7 @@ class Edgasto extends Controller {
 			$anomes  = $this->input->post('anomes');
 			$gasto   = $this->input->post('gasto');
 			$grupo   = $this->input->post('grupo');
+			$medidor = $this->input->post('medidor');
 
 			$this->db->delete('edgasmed',array('grupo'=>$grupo,'fecha'=>$anomes.'01','gasto'=>$gasto));
 			

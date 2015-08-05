@@ -517,7 +517,6 @@ class gser extends Controller {
 			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id){
 				window.open(\''.site_url($this->url.'printrete').'/\'+id+\'/S/S\', \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
-				//window.open(\''.site_url('formatos/ver/GSERRT').'/\'+id+\'/S/3\', \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
 			}
 		}';
 
@@ -3146,8 +3145,6 @@ class gser extends Controller {
 		$edit->reteter->rule = 'numeric|positive';
 		$edit->reteter->size = 10;
 		$edit->reteter->maxlength=10;
-		//$edit->reteter->rule = 'callback_chreteiva';
-		//$edit->reteter->onchange ='totalizar()';
 		$edit->reteter->css_class='inputnum';
 		$edit->reteter->showformat ='decimal';
 		$edit->reteter->autocomplete=false;

@@ -129,7 +129,7 @@ function totalizar(){
 	var peso   =0;
 	var cana   =0;
 	var arr=$('input[name^="importe_"]');
-	jQuery.each(arr, function() {
+	$.each(arr, function() {
 		nom=this.name;
 		pos=this.name.lastIndexOf('_');
 		if(pos>0){
@@ -218,7 +218,7 @@ function post_modbus_scli(){
 	//var cambio=confirm('¿Deseas cambiar los precios por los que tenga asginado el cliente?');
 
 	var arr=$('select[name^="preca_"]');
-	jQuery.each(arr, function() {
+	$.each(arr, function() {
 		nom=this.name;
 		pos=this.name.lastIndexOf('_');
 		if(!otro){
@@ -245,7 +245,7 @@ function post_modbus_sinv(nind){
 	var arr=$('#preca_'+ind);
 	cdropdown(nind);
 	cdescrip(nind);
-	jQuery.each(arr, function() { this.selectedIndex=tipo; });
+	$.each(arr, function() { this.selectedIndex=tipo; });
 	importe(nind);
 	totalizar();
 }
@@ -394,7 +394,7 @@ function autocod(id){
 			cdescrip(id);
 
 			var arr  = $('#preca_'+id);
-			jQuery.each(arr, function() { this.selectedIndex=tipo; });
+			$.each(arr, function() { this.selectedIndex=tipo; });
 			importe(id);
 			totalizar();
 

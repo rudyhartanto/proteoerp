@@ -17,6 +17,7 @@ if($form->_status <> 'show'){ ?>
 <?php echo $form->grupo->output; ?>
 <?php echo $form->anomes->output; ?>
 <?php echo $form->longi->output; ?>
+<?php echo $form->medidor->output; ?>
 
 <fieldset  style='border: 1px outset #FEB404;background: #FFFCE8;'>
 <table width='100%'>
