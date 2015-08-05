@@ -1913,9 +1913,6 @@ datos vía telefónica.";
 		}
 	}
 
-
-
-
 	function _pre_insertc($do){
 		$do->error_message_ar['pre_ins']='';
 		return false;
