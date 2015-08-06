@@ -387,7 +387,7 @@ class Pretab extends Controller {
 			';
 
 
-		$titulo = $this->datasis->dameval("SELECT concat_ws(' ',b.codigo, b.nombre, 'Fecha:', a.fecha) contrato FROM prenom a JOIN noco b ON a.contrato=b.codigo LIMIT 1");
+		$titulo = $this->datasis->dameval("SELECT CONCAT_WS(' ',b.codigo, b.nombre, 'Fecha:', a.fecha) contrato FROM prenom a JOIN noco b ON a.contrato=b.codigo LIMIT 1");
 
 		$bodyscript .= '
 		$("#fedita").dialog({

@@ -1685,7 +1685,7 @@ class gser extends Controller {
 					return false;
 				}
 
-				$posibles=array('descrip','codigo','gcargo');
+				$posibles=array('descrip','codigo','gcargo','departa');
 				foreach($data as $ind=>$val){
 					if(!in_array($ind,$posibles)){
 						echo 'Campo no permitido ('.$ind.')';
@@ -3646,22 +3646,22 @@ class gser extends Controller {
 		$update="UPDATE gser SET serie=$numero WHERE transac=$dbtransac";
 		$this->db->query($update);
 
-		$update2="UPDATE gitser SET fecha=$fecha, proveed=$proveed,numero=$numero WHERE transac=$dbtransac";
+		$update2="UPDATE gitser SET fecha=$fecha, proveed=$proveed,numero=${numero} WHERE transac=${dbtransac}";
 		$this->db->query($update2);
 
 		//MODIFICA SPRM
-		$update3="UPDATE sprm SET fecha=$fecha,vence=$vence, numero=$numero, cod_prv=$proveed,nombre=$nombre WHERE tipo_doc='FC' AND transac=$dbtransac";
+		$update3="UPDATE sprm SET fecha=$fecha,vence=$vence, numero=${numero}, cod_prv=${proveed},nombre=$nombre WHERE tipo_doc='FC' AND transac=${dbtransac}";
 		$this->db->query($update3);
 
 		//MODIFICA BMOV
-		$update4="UPDATE bmov SET fecha=$fecha, numero=$numero, codcp=$proveed,nombre=$nombre WHERE clipro='P' AND transac=$dbtransac";
+		$update4="UPDATE bmov SET fecha=$fecha, numero=${numero}, codcp=${proveed},nombre=${nombre} WHERE clipro='P' AND transac=${dbtransac}";
 		$this->db->query($update4);
 
 		//MODIFICA RIVA
 		$update5="UPDATE riva SET fecha=${fecha}, numero=$numero,clipro=$proveed,nombre=$nombre WHERE transac=$dbtransac";
 		$this->db->query($update5);
 
-		logusu('GSER',"Gasto $numero CAMBIADO");
+		logusu('GSER',"Gasto ${numero} CAMBIADO");
 		return true;
 	}
 

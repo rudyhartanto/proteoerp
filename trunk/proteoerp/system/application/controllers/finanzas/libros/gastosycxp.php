@@ -8,8 +8,9 @@ class gastosycxp{
 		$fhasta=$mes.$udia;
 
 		//Procesando Compras gser
-		$CI->db->simple_query("UPDATE gser SET cajachi='N' WHERE cajachi='' or cajachi IS NULL");
+		$CI->db->simple_query("UPDATE gser SET cajachi='N' WHERE cajachi='' OR cajachi IS NULL");
 		$CI->db->simple_query("DELETE FROM siva WHERE EXTRACT(YEAR_MONTH FROM fechal) = ${mes} AND fuente='GS' ");
+		$CI->db->simple_query("UPDATE sprv SET nomfis=nombre WHERE nomfis='' OR nomfis IS NULL ");
 
 		// REVISA GSER A VER SI HAY PROBLEMAS
 		$CI->db->simple_query("UPDATE gser SET exento=totbruto WHERE exento<>totbruto and totiva=0");
@@ -29,7 +30,7 @@ class gastosycxp{
 			referen, planilla, clipro, nombre, contribu, rif, registro,
 			nacional, exento, general, geneimpu,
 			adicional, adicimpu,  reducida,  reduimpu, stotal, impuesto,
-			gtotal, reiva, fechal, fafecta $iserie)
+			gtotal, reiva, fechal, fafecta ${iserie})
 			SELECT 0 AS id,
 			'C' AS libro,
 			a.tipo_doc AS tipo,
@@ -44,10 +45,10 @@ class gastosycxp{
 			IF(a.tipo_doc='ND', a.afecta,'  ') AS referen,
 			'  ' AS planilla,
 			a.proveed AS clipro,
-			a.nombre,
+			c.nomfis AS nombre,
 			'CO' AS contribu,
 			c.rif,
-			IF(a.ffactura >= $fciva  ,'01','05') AS registro,
+			IF(a.ffactura >= ${fciva}  ,'01','05') AS registro,
 			'S' AS nacional,
 			a.exento  AS exento,
 			a.montasa AS general,   a.tasa      AS geneimpu,
@@ -110,7 +111,8 @@ class gastosycxp{
 			0 AS reiva,
 			".$mes."01 AS fechal,
 			0 AS fafecta
-			FROM gitser AS a JOIN gser AS b ON
+			FROM gitser AS a
+			JOIN gser AS b ON
 			a.fecha=b.fecha AND a.proveed=b.proveed AND a.numero=b.numero
 			WHERE b.fecha BETWEEN ${fdesde} AND ${fhasta}
 			AND b.tipo_doc='FC' AND b.cajachi='S'
@@ -132,7 +134,7 @@ class gastosycxp{
 		//Procesando Compras scst
 		$CI->db->simple_query("DELETE FROM siva WHERE EXTRACT(YEAR_MONTH FROM fechal) = $mes AND fuente='MP' ");
 		$CI->db->simple_query("UPDATE sprv SET nomfis=nombre WHERE nomfis='' OR nomfis IS NULL ");
-		$mFECHAF = $CI->datasis->dameval("SELECT max(fecha) FROM civa WHERE fecha<=$mes"."01");
+		$mFECHAF = $CI->datasis->dameval("SELECT MAX(fecha) FROM civa WHERE fecha<=$mes"."01");
 		$mFECHAF = preg_replace('/[^0-9]+/','', $mFECHAF);
 
 		$mSQL = "
