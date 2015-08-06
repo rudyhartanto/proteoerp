@@ -1872,7 +1872,12 @@ class Casi extends Controller {
 			if($cana>0){
 				$transacs=$etransacs=$fechs=$estam=array();
 				$tables = $this->db->list_tables();
-				$ignoratabla = array('casi','itcasi','pfac','itpfac','ordc','itordc','spre','itspre','stra','conv');
+				$ignoratabla = array(
+					'casi'  ,'itcasi','pfac',
+					'itpfac','ordc','itordc',
+					'spre','itspre','stra','conv',
+					'sitems','itrivc'
+				);
 				foreach ($tables as $table){
 					if (preg_match("/^view_.*$|^sp_.*$|^viemovinxventas$|^vietodife$/i",$table)) continue;
 					if(in_array($table,$ignoratabla)) continue;
@@ -1893,10 +1898,18 @@ class Casi extends Controller {
 							$estampa=$busc;
 						}
 
+						$ww   = '';
+						$tdoc = '""';
 						if($table=='sfac'){
 							$tdoc='a.tipo_doc';
-						}else{
-							$tdoc='""';
+							$ww  ='AND a.tipo_doc NOT IN (\'X\')';
+						}elseif($table=='gser'){
+							$tdoc='a.tipo_doc';
+							$ww  ='AND a.tipo_doc NOT IN (\'XX\')';
+						}elseif($table=='banc'){
+							$ww  ='AND a.anulado<>\'S\')';
+						}elseif($table=='rivc'){
+							$ww  ='AND a.anulado<>\'S\'';
 						}
 
 
@@ -1907,7 +1920,7 @@ class Casi extends Controller {
 								AND `a`.`${busc}` BETWEEN ${dbfdesde} AND ${dbfhasta}
 								AND `a`.`transac` IS NOT NULL
 								AND `a`.`transac`<>''
-								AND `a`.`transac` NOT LIKE '\_%'";
+								AND `a`.`transac` NOT LIKE '\_%' ${ww}";
 						$query = $this->db->query($mSQL);
 						foreach ($query->result() as $row){
 							$idtransac=trim($row->transac);
@@ -1915,7 +1928,7 @@ class Casi extends Controller {
 							$fechs[$idtransac] = dbdate_to_human($row->fecha);
 							$estam[$idtransac] = $row->estampa;
 
-							if($row->tipo_doc=='D' || $row->tipo_doc=='F' || $row->tipo_doc=='X' || $row->tipo_doc=='T'){
+							if($row->tipo_doc=='D' || $row->tipo_doc=='F' || $row->tipo_doc=='X' || $row->tipo_doc=='T' || $row->tipo_doc=='XX'){
 								$etransacs[]=$row->transac;
 							}
 						}
