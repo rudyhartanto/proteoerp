@@ -309,8 +309,8 @@ function cdescrip(nind){
 		ddetalle.setAttribute("id"    , "detalle_"+ind);
 		ddetalle.setAttribute("name"  , "detalle_"+ind);
 		ddetalle.setAttribute("class" , "textarea");
-		ddetalle.setAttribute("cols"  , 34);
-		ddetalle.setAttribute("rows"  , 3);
+		ddetalle.setAttribute("cols"  , 66);
+		ddetalle.setAttribute("rows"  , 1);
 		$("#detalle_"+ind).replaceWith(ddetalle);
 
 		if(detalle.length==0){

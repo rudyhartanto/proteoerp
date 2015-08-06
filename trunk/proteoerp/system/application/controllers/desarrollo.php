@@ -1311,7 +1311,7 @@ $tabla .= '
 
 			$str .= $tab2.'$bodyscript .= \''."\n";
 			$str .= $tab2.'function '.strtolower($db).'edit(){'."\n";
-			$str .= $tab3.'var id     = jQuery("#newapi\'.$grid0.\'").jqGrid(\\\'getGridParam\\\',\\\'selrow\\\');'."\n";
+			$str .= $tab3.'var id     = $("#newapi\'.$grid0.\'").jqGrid(\\\'getGridParam\\\',\\\'selrow\\\');'."\n";
 			$str .= $tab3.'if(id){'."\n";
 			$str .= $tab4.'var ret    = $("#newapi\'.$grid0.\'").getRowData(id);'."\n";
 			$str .= $tab4.'mId = id;'."\n";
@@ -1326,7 +1326,7 @@ $tabla .= '
 
 			$str .= $tab2.'$bodyscript .= \''."\n";
 			$str .= $tab2.'function '.strtolower($db).'show(){'."\n";
-			$str .= $tab3.'var id     = jQuery("#newapi\'.$grid0.\'").jqGrid(\\\'getGridParam\\\',\\\'selrow\\\');'."\n";
+			$str .= $tab3.'var id     = $("#newapi\'.$grid0.\'").jqGrid(\\\'getGridParam\\\',\\\'selrow\\\');'."\n";
 			$str .= $tab3.'if(id){'."\n";
 			$str .= $tab4.'var ret    = $("#newapi\'.$grid0.\'").getRowData(id);'."\n";
 			$str .= $tab4.'mId = id;'."\n";
@@ -1341,7 +1341,7 @@ $tabla .= '
 
 			$str .= $tab2.'$bodyscript .= \''."\n";
 			$str .= $tab2.'function '.strtolower($db).'del() {'."\n";
-			$str .= $tab3.'var id = jQuery("#newapi\'.$grid0.\'").jqGrid(\\\'getGridParam\\\',\\\'selrow\\\');'."\n";
+			$str .= $tab3.'var id = $("#newapi\'.$grid0.\'").jqGrid(\\\'getGridParam\\\',\\\'selrow\\\');'."\n";
 			$str .= $tab3.'if(id){'."\n";
 			$str .= $tab3.'	if(confirm(" Seguro desea eliminar el registro?")){'."\n";
 			$str .= $tab3.'		var ret    = $("#newapi\'.$grid0.\'").getRowData(id);'."\n";
@@ -1351,7 +1351,7 @@ $tabla .= '
 			$str .= $tab3.'				var json = JSON.parse(data);'."\n";
 			$str .= $tab3.'				if (json.status == "A"){'."\n";
 			$str .= $tab3.'					apprise("Registro eliminado");'."\n";
-			$str .= $tab3.'					jQuery("#newapi\'.$grid0.\'").trigger("reloadGrid");'."\n";
+			$str .= $tab3.'					$("#newapi\'.$grid0.\'").trigger("reloadGrid");'."\n";
 			$str .= $tab3.'				}else{'."\n";
 			$str .= $tab3.'					apprise("Registro no se puede eliminado");'."\n";
 			$str .= $tab3.'				}'."\n";
@@ -1374,7 +1374,7 @@ $tabla .= '
 			$str .= $tab3.'var mId = 0;'."\n";
 			$str .= $tab3.'var montotal = 0;'."\n";
 			$str .= $tab3.'var ffecha = $("#ffecha");'."\n";
-			$str .= $tab3.'var grid = jQuery("#newapi\'.$grid0.\'");'."\n";
+			$str .= $tab3.'var grid = $("#newapi\'.$grid0.\'");'."\n";
 			$str .= $tab3.'var s;'."\n";
 			$str .= $tab3.'var allFields = $( [] ).add( ffecha );'."\n";
 			$str .= $tab3.'var tips = $( ".validateTips" );'."\n";
@@ -1455,12 +1455,12 @@ $tabla .= '
 			$str .= $tab3.'buttons: {'."\n";
 			$str .= $tab4.'"Aceptar": function() {'."\n";
 			$str .= $tab5.'$("#fborra").html("");'."\n";
-			$str .= $tab5.'jQuery("#newapi\'.$grid0.\'").trigger("reloadGrid");'."\n";
+			$str .= $tab5.'$("#newapi\'.$grid0.\'").trigger("reloadGrid");'."\n";
 			$str .= $tab5.'$( this ).dialog( "close" );'."\n";
 			$str .= $tab4.'},'."\n";
 			$str .= $tab3.'},'."\n";
 			$str .= $tab3.'close: function() {'."\n";
-			$str .= $tab4.'jQuery("#newapi\'.$grid0.\'").trigger("reloadGrid");'."\n";
+			$str .= $tab4.'$("#newapi\'.$grid0.\'").trigger("reloadGrid");'."\n";
 			$str .= $tab4.'$("#fborra").html("");'."\n";
 			$str .= $tab3.'}'."\n";
 			$str .= $tab2.'});\''.";\n\n";
@@ -1493,8 +1493,8 @@ $tabla .= '
 			$str .= $tab2.'$grid->setOnSelectRow(\''."\n";
 			$str .= $tab3.'function(id){'."\n";
 			$str .= $tab4.'if (id){'."\n";
-			$str .= $tab5.'jQuery(gridId2).jqGrid("setGridParam",{url:"\'.site_url($this->url.\'getdatait/\').\'/"+id+"/", page:1});'."\n";
-			$str .= $tab5.'jQuery(gridId2).trigger("reloadGrid");'."\n";
+			$str .= $tab5.'$(gridId2).jqGrid("setGridParam",{url:"\'.site_url($this->url.\'getdatait/\').\'/"+id+"/", page:1});'."\n";
+			$str .= $tab5.'$(gridId2).trigger("reloadGrid");'."\n";
 			$str .= $tab4.'}'."\n";
 			$str .= $tab3.'}\''."\n";
 			$str .= $tab2.');'."\n";

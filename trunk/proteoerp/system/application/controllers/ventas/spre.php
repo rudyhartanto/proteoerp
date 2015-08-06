@@ -51,7 +51,7 @@ class Spre extends Controller {
 			$grid->wbotonadd(array('id'=>'bsnte',   'img'=>'images/agregar.jpg', 'alt' => 'Nota de Entrega', 'label'=>'N.Entrega'));
 
 		$grid->wbotonadd(array('id'=>'bcorreo', 'img'=>'assets/default/images/mail_btn.png','alt' => 'Notificacion',  'label'=>'Notificar por email'));
-		$grid->wbotonadd(array('id'=>'bfavori', 'img'=>'images/star.png','alt'     => 'Favorito',      'label'=>'Favorito'));
+		$grid->wbotonadd(array('id'=>'bfavori', 'img'=>'images/star.png','alt'     => 'Marcar Favorito',      'label'=>'Marcar Favorito'));
 
 		$WestPanel = $grid->deploywestp();
 
@@ -82,22 +82,127 @@ class Spre extends Controller {
 		$param['encabeza']     = $this->titp;
 		$param['tamano']       = $this->datasis->getintramenu( substr($this->url,0,-1) );
 		$this->load->view('jqgrid/crud2',$param);
-
 	}
 
 	//******************************************************************
 	// Funciones de los Botones
 	//
 	function bodyscript( $grid0, $grid1 ){
+
+		$btguardar ='
+			"Guardar": function() {
+				if($("#scliexp").dialog( "isOpen" )===true) {
+					$("#scliexp").dialog("close");
+				}
+				var murl = $("#df1").attr("action");
+				allFields.removeClass( "ui-state-error" );
+				$.ajax({
+					type: "POST", dataType: "html", async: false,
+					url: murl,
+					data: $("#df1").serialize(),
+					success: function(r,s,x){
+						try{
+							var json = JSON.parse(r);
+							if (json.status == "A"){
+								$( "#fedita" ).dialog( "close" );
+								grid.trigger("reloadGrid");
+								'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
+								return true;
+							} else {
+								apprise(json.mensaje);
+							}
+						} catch(e) { $("#fedita").html(r);}
+					}
+				})
+			},
+		';
+
+		$btduplicar = '
+			"Duplicar": function() {
+				if($("#scliexp").dialog( "isOpen" )===true) {
+					$("#scliexp").dialog("close");
+				}
+				var bValid = true;
+				var murl = $("#df1").attr("action");
+				var m = 0;
+				murl = murl.replace("update","insert");
+				m = murl.indexOf("insert")+6;
+				if ( m > 6){murl = murl.substring(0,m);}
+				alert(murl);
+				allFields.removeClass( "ui-state-error" );
+				$.ajax({
+					type: "POST", dataType: "html", async: false,
+					url: murl,
+					data: $("#df1").serialize(),
+					success: function(r,s,x){
+						try{
+							var json = JSON.parse(r);
+							if (json.status == "A"){
+								//apprise("Registro Guardado");
+								$( "#fedita" ).dialog( "close" );
+								grid.trigger("reloadGrid");
+								'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
+								return true;
+							} else {
+								apprise(json.mensaje);
+							}
+						}catch(e){
+							$("#fedita").html(r);
+						}
+					}
+				})
+			},
+		';
+
+		$btcancelar = '
+		"Cancelar": function() {
+				$("#fedita").html("");
+				$( this ).dialog( "close" );
+			}
+		';
+
+		$btcerrar = '
+			close: function() { 
+				if($("#scliexp").dialog( "isOpen" )===true) {
+					$("#scliexp").dialog("close");
+				}
+				$("#fedita").html("");
+				//allFields.val("").removeClass( "ui-state-error" );
+			}
+		';
+
 		$bodyscript = '		<script type="text/javascript">';
 
 		$bodyscript .= '
 		function spreadd() {
 			var id  = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
-			var agr = ""
-			if ( id ){ agr = "/"+id; }
-			$.post("'.site_url('ventas/spre/dataedit/create').'"+agr,
+			var favo = "N";
+			var ruta = "'.site_url('ventas/spre/dataedit/create').'";
+			if(id){	
+				var ret = $("#newapi'.$grid0.'").getRowData(id);
+				favo = ret.favorito;
+				ruta = "'.site_url('ventas/spre/dataedit/modify/').'/"+id;
+			}
+
+			$.post(ruta,
 			function(data){
+				if (favo != "S"){  // Guardar y Cancelar
+					$("#fedita").dialog({
+						buttons: { 
+							'.$btguardar.'
+							'.$btcancelar.'
+						},
+						'.$btcerrar.'
+					});
+				} else { // Solo Duplicar
+					$("#fedita").dialog({
+						buttons: { 
+							'.$btduplicar.'
+							'.$btcancelar.'
+						},
+						'.$btcerrar.'
+					});
+				};
 				$("#fedita").html(data);
 				$("#fedita").dialog( "open" );
 			})
@@ -107,12 +212,31 @@ class Spre extends Controller {
 		function spreedit(){
 			var id     = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if(id){
-				var ret    = $("#newapi'.$grid0.'").getRowData(id);
+				var ret  = $("#newapi'.$grid0.'").getRowData(id);
+				var favo = ret.favorito;
 				mId = id;
-				$.post("'.site_url($this->url.'dataedit/modify').'/"+id, function(data){
+				$.post("'.site_url($this->url.'dataedit/modify').'/"+id, 
+				function(data){
+					if (favo != "S"){  // Guardar y Cancelar
+						$("#fedita").dialog({
+							buttons: { 
+								'.$btguardar.'
+								'.$btcancelar.'
+							},
+							'.$btcerrar.'
+						});
+					} else { // Solo Duplicar
+						$("#fedita").dialog({
+							buttons: { 
+								'.$btduplicar.'
+								'.$btcancelar.'
+							},
+							'.$btcerrar.'
+						});
+					};
 					$("#fedita").html(data);
 					$("#fedita").dialog( "open" );
-				});
+				})
 			} else {
 				$.prompt("<h1>Por favor Seleccione un Registro</h1>");
 			}
@@ -120,7 +244,7 @@ class Spre extends Controller {
 
 		$bodyscript .= '
 		function spreshow(){
-			var id     = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id     = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if(id){
 				var ret    = $("#newapi'.$grid0.'").getRowData(id);
 				mId = id;
@@ -135,7 +259,7 @@ class Spre extends Controller {
 
 		$bodyscript .= '
 		function spredel() {
-			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if(id){
 				if(confirm(" Seguro desea eliminar el registro?")){
 					var ret    = $("#newapi'.$grid0.'").getRowData(id);
@@ -145,7 +269,7 @@ class Spre extends Controller {
 							var json = JSON.parse(data);
 							if (json.status == "A"){
 								apprise("Registro eliminado");
-								jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+								$("#newapi'.$grid0.'").trigger("reloadGrid");
 							}else{
 								apprise("Registro no se puede eliminado");
 							}
@@ -167,7 +291,7 @@ class Spre extends Controller {
 			var mId = 0;
 			var montotal = 0;
 			var ffecha = $("#ffecha");
-			var grid = jQuery("#newapi'.$grid0.'");
+			var grid = $("#newapi'.$grid0.'");
 			var s;
 			var allFields = $( [] ).add( ffecha );
 			var tips = $( ".validateTips" );
@@ -255,55 +379,190 @@ class Spre extends Controller {
 
 
 		$bodyscript .= '
-		$("#fedita").dialog({
-			autoOpen: false, height: 550, width: 800, modal: true,
-			buttons: {
-				"Guardar": function() {
-					if($("#scliexp").dialog( "isOpen" )===true) {
-						$("#scliexp").dialog("close");
-					}
-					var bValid = true;
-					var murl = $("#df1").attr("action");
-					allFields.removeClass( "ui-state-error" );
-					$.ajax({
-						type: "POST", dataType: "html", async: false,
-						url: murl,
-						data: $("#df1").serialize(),
-						success: function(r,s,x){
-							try{
-								var json = JSON.parse(r);
-								if (json.status == "A"){
-									apprise("Registro Guardado");
-									$( "#fedita" ).dialog( "close" );
-									grid.trigger("reloadGrid");
-									'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
-									return true;
-								} else {
-									apprise(json.mensaje);
-								}
-							}catch(e){
-								$("#fedita").html(r);
-							}
-						}
-					})
-				},
-				"Cancelar": function() {
-					if($("#scliexp").dialog( "isOpen" )===true) {
-						$("#scliexp").dialog("close");
-					}
+		$("#fedita").dialog({ autoOpen: false, height: 550, width: 800, modal: true });';
 
-					$("#fedita").html("");
-					$( this ).dialog( "close" );
-				}
-			},
-			close: function() {
+
+		$bodyscript .= '
+		function bfedita( tipo ){
+			if (tipo == 1){
+				$("#fedita").dialog({
+					buttons: {
+						"Guardar": function() {
+							if($("#scliexp").dialog( "isOpen" )===true) {
+								$("#scliexp").dialog("close");
+							}
+							var murl = $("#df1").attr("action");
+							allFields.removeClass( "ui-state-error" );
+							$.ajax({
+								type: "POST", dataType: "html", async: false,
+								url: murl,
+								data: $("#df1").serialize(),
+								success: function(r,s,x){
+									try{
+										var json = JSON.parse(r);
+										if (json.status == "A"){
+											apprise("Registro Guardado");
+											$( "#fedita" ).dialog( "close" );
+											grid.trigger("reloadGrid");
+											'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
+											return true;
+										} else {
+											apprise(json.mensaje);
+										}
+									}catch(e){
+										$("#fedita").html(r);
+									}
+								}
+							})
+						},
+						"Cancelar": function() {
+							$("#fedita").html("");
+							$( this ).dialog( "close" );
+						}
+					},
+					close: function() { 
+						cierra("fedita");
+					}
+				});
+			} else if( tipo == 2) {
+				$("#fedita").dialog({buttons: {
+					"Duplicar": function() {
+						if($("#scliexp").dialog( "isOpen" )===true) {
+							$("#scliexp").dialog("close");
+						}
+						var bValid = true;
+						var murl = $("#df1").attr("action");
+						var m = 0;
+						murl = murl.replace("update","insert");
+						m = murl.indexOf("insert")+6;
+						if ( m > 6){murl = murl.substring(0,m);}
+						alert(murl);
+						allFields.removeClass( "ui-state-error" );
+						$.ajax({
+							type: "POST", dataType: "html", async: false,
+							url: murl,
+							data: $("#df1").serialize(),
+							success: function(r,s,x){
+								try{
+									var json = JSON.parse(r);
+									if (json.status == "A"){
+										//apprise("Registro Guardado");
+										$( "#fedita" ).dialog( "close" );
+										grid.trigger("reloadGrid");
+										'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
+										return true;
+									} else {
+										apprise(json.mensaje);
+									}
+								}catch(e){
+									$("#fedita").html(r);
+								}
+							}
+						})
+					},
+					"Cancelar": function() {
+						if($("#scliexp").dialog( "isOpen" )===true) {
+							$("#scliexp").dialog("close");
+						}
+		
+						$("#fedita").html("");
+						$( this ).dialog( "close" );
+					}
+				}});
+			} else {
+		
+		
+			}
+		};
+		';
+
+
+
+/*
+						"Guardar": function() {
+							if($("#scliexp").dialog( "isOpen" )===true) {
+								$("#scliexp").dialog("close");
+							}
+							var murl = $("#df1").attr("action");
+							allFields.removeClass( "ui-state-error" );
+							$.ajax({
+								type: "POST", dataType: "html", async: false,
+								url: murl,
+								data: $("#df1").serialize(),
+								success: function(r,s,x){
+									try{
+										var json = JSON.parse(r);
+										if (json.status == "A"){
+											apprise("Registro Guardado");
+											$( "#fedita" ).dialog( "close" );
+											grid.trigger("reloadGrid");
+											'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
+											return true;
+										} else {
+											apprise(json.mensaje);
+										}
+									}catch(e){
+										$("#fedita").html(r);
+									}
+								}
+							})
+						},
+						"Cancelar": function() {
+							$("#fedita").html("");
+							$( this ).dialog( "close" );
+						}
+					},
+					close: function() { cierra("fedita");}
+				});
+			} else if( tipo == 2) {
+				$("#fedita").dialog({buttons: {
+					"Duplicar": function() {
+						if($("#scliexp").dialog( "isOpen" )===true) {
+							$("#scliexp").dialog("close");
+						}
+						var bValid = true;
+						var murl = $("#df1").attr("action");
+						var m = 0;
+						murl = murl.replace("update","insert");
+						m = murl.indexOf("insert")+6;
+						if ( m > 6){murl = murl.substring(0,m);}
+						alert(murl);
+						allFields.removeClass( "ui-state-error" );
+						$.ajax({
+							type: "POST", dataType: "html", async: false,
+							url: murl,
+							data: $("#df1").serialize(),
+							success: function(r,s,x){
+								try{
+									var json = JSON.parse(r);
+									if (json.status == "A"){
+										//apprise("Registro Guardado");
+										$( "#fedita" ).dialog( "close" );
+										grid.trigger("reloadGrid");
+										'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
+										return true;
+									} else {
+										apprise(json.mensaje);
+									}
+								}catch(e){
+									$("#fedita").html(r);
+								}
+							}
+						})
+					},
+
+
+*/
+
+		$bodyscript .= '
+		function cierra(dlg){
 				if($("#scliexp").dialog( "isOpen" )===true) {
 					$("#scliexp").dialog("close");
 				}
-				$("#fedita").html("");
-				allFields.val( "" ).removeClass( "ui-state-error" );
-			}
-		});';
+				$("#"+dlg).html("");
+				allFields.val("").removeClass( "ui-state-error" );
+		};';
+
 
 		//Convertir Factura
 		$bodyscript .= '
@@ -377,12 +636,12 @@ class Spre extends Controller {
 			buttons: {
 				"Aceptar": function() {
 					$("#fborra").html("");
-					jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+					$("#newapi'.$grid0.'").trigger("reloadGrid");
 					$( this ).dialog( "close" );
 				},
 			},
 			close: function() {
-				jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+				$("#newapi'.$grid0.'").trigger("reloadGrid");
 				$("#fborra").html("");
 			}
 		});';
@@ -402,25 +661,15 @@ class Spre extends Controller {
 								$("#sclidialog").find(".alert").html(r.mensaje);
 							}else{
 								$("#scliexp").dialog( "close" );
-
 								$("#cod_cli").val(r.data.cliente);
-
 								$("#nombre").val(r.data.nombre);
-								//$("#nombre_val").text(r.data.nombre);
-
 								$("#rifci").val(r.data.rifci);
-								//$("#rifci_val").text(r.data.rifci);
-
 								$("#sclitipo").val(r.data.tipo);
-
 								$("#direc").val(r.data.direc);
-								//$("#direc_val").text(r.data.direc);
-
 								return true;
 							}
 						}
 					});
-
 				},
 				"Cancelar": function(){
 					$("#scliexp").html("");
@@ -748,8 +997,8 @@ datos vía telefónica.";
 		$grid->setOnSelectRow('
 			function(id){
 				if (id){
-					jQuery(gridId2).jqGrid(\'setGridParam\',{url:"'.site_url($this->url.'getdatait/').'/"+id+"/", page:1});
-					jQuery(gridId2).trigger("reloadGrid");
+					$(gridId2).jqGrid(\'setGridParam\',{url:"'.site_url($this->url.'getdatait/').'/"+id+"/", page:1});
+					$(gridId2).trigger("reloadGrid");
 					$.ajax({
 						url: "'.site_url('ventas/scli/respres/').'/"+id,
 						success: function(msg){
@@ -760,18 +1009,24 @@ datos vía telefónica.";
 			}'
 		);
 
+
+		$iruta = site_url('images/star.png');
 		$grid->setAfterInsertRow('
 			function( rid, aData, rowe){
 				if(aData.favorito !== undefined){
 					if(aData.favorito == "S"){
-						$(this).jqGrid( "setCell", rid, "favorito","", {color:"#000CFF", background:"#FFCC00" });
+						$(this).jqGrid( "setCell", rid, "favorito","", {"color":"#000CFF", "background-image":"url(\''.$iruta.'\')" });
+
 					}else {
-						$(this).jqGrid( "setCell", rid, "favorito","", {color:"#FFFFFF", background:"#FFFFFF" });
+						$(this).jqGrid( "setCell", rid, "favorito","", {color:"#FFFFFF", background:"none" });
 					}
 				}
 			}
 		');
 
+//						$(this).jqGrid( "setCell", rid, "favorito","", {color:"#000CFF", background-image:"url(\''.$iruta.'\')" });
+//						$("#"+rid,this).css({ "background-image":"url(\''.$iruta.'\')" });
+//						$(this).jqGrid( "setCell", rid, "favorito","", {color:"#000CFF", background:"YELLOW" });
 
 
 		$grid->setFormOptionsE('closeAfterEdit:true, mtype: "POST", width: 520, height:300, closeOnEscape: true, top: 50, left:20, recreateForm:true, afterSubmit: function(a,b){if (a.responseText.length > 0) $.prompt(a.responseText); return [true, a ];},afterShowForm: function(frm){$("select").selectmenu({style:"popup"});} ');
@@ -1304,16 +1559,12 @@ datos vía telefónica.";
 
 		if($status=='create' && !empty($id)){
 			$do->load($id);
-			//$do->set('codigo' , '');
-			//$do->set('alterno', '');
 		}
-
 
 		$edit = new DataDetails('Presupuestos', $do);
 		$edit->back_url = site_url('ventas/spre/filteredgrid');
 		$edit->set_rel_title('itspre','Producto <#o#>');
 		$edit->on_save_redirect=false;
-
 
 		$edit->pre_process('insert' ,'_pre_insert');
 		$edit->pre_process('update' ,'_pre_update');
@@ -1562,8 +1813,15 @@ datos vía telefónica.";
 		$edit->num_ref->size =20;
 		$edit->num_ref->maxlength =20;
 
+		//$edit->_details_fields();
+		//sniff and build fields
+		//$edit->_sniff_fields();
+
+
+
 		$edit->buttons('add_rel');
 		$edit->build();
+
 
 		if($edit->on_success()){
 			$rt=array(
