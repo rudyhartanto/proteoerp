@@ -56,12 +56,12 @@ class Scli extends validaciones {
 		<tr><td><div class=\"anexos\">
 			<table cellpadding='0' cellspacing='0'>
 				<tr>
-					${cabeza} id='edocta'>".img(array('src' =>"images/pdf_logo.gif", 'height' => 15, 'alt' => 'Estado de Cuenta',          'title' => 'Estado de Cuenta',          'border'=>'0'))." E.Cta.</a></div></td>
-					${cabeza} id='editacr'>".img(array('src' =>"images/check.png",   'height' => 15, 'alt' => 'Cambiar limite de credito', 'title' => 'Cambiar limite de credito', 'border'=>'0'))." Credito</a></div></td>
+					${cabeza} id='edocta'>".img(array('src' =>'images/pdf_logo.gif', 'height' => 15, 'alt' => 'Estado de Cuenta',          'title' => 'Estado de Cuenta',          'border'=>'0'))." E.Cta.</a></div></td>
+					${cabeza} id='editacr'>".img(array('src' =>'images/check.png',   'height' => 15, 'alt' => 'Cambiar limite de credito', 'title' => 'Cambiar limite de credito', 'border'=>'0'))." Credito</a></div></td>
 				</tr>
 				<tr>
-					${cabeza} id='gciud' >".img(array('src' =>"images/star.png",   'height' => 15, 'alt'=>'Ciudades',         'title' => 'Ciudades',        'border'=>'0'))." Ciudad</a></div></td>
-					${cabeza} id='gclave'>".img(array('src' =>"images/candado.png",'height' => 15, 'alt'=>'Cambio de Clave.', 'title' => 'Cambio de Clave', 'border'=>'0'))." Clave</a></div></td>
+					${cabeza} id='gciud' >".img(array('src' =>'images/star.png',   'height' => 15, 'alt'=>'Ciudades',         'title' => 'Ciudades',        'border'=>'0'))." Ciudad</a></div></td>
+					${cabeza} id='gclave'>".img(array('src' =>'images/candado.png','height' => 15, 'alt'=>'Cambio de Clave.', 'title' => 'Cambio de Clave', 'border'=>'0'))." Clave</a></div></td>
 				</tr>
 				";
 
@@ -307,7 +307,7 @@ class Scli extends validaciones {
 			$.post("'.site_url($this->url.'rutasver').'/"+ruta,
 			function(data){
 				$("#fciud").html(data);
-				$("#fciud").dialog({height: 470, width: 520, title: "Clientes en Rutas"});
+				$("#fciud").dialog({height: 470, width: 580, title: "Clientes en Rutas"});
 				$("#fciud").dialog( "open" );
 			});
 		});';
@@ -436,31 +436,31 @@ class Scli extends validaciones {
 	//
 	function funciones($grid){
 
-		$forma = "No tiene Acceso a Modificar Credito";
+		$forma = 'No tiene Acceso a Modificar Credito';
 		if ( $this->datasis->puede_ejecuta('SCLILIMITE', 'SCLI') ) {
 			if ( $this->datasis->puede_ejecuta('SCLITOLERA', 'SCLI') ) {
 				if ( $this->datasis->puede_ejecuta('SCLIMAXTOLE', 'SCLI')) {
 					$forma .= "<table align='center' width='95%'>";
-					$forma .= "<tr><td>Tiene Credito:</td><td> <select name='credito' id='credito' title='Asignar o suspender Credito' value='\"+ret.credito+\"'><option value='S'>Activo</option><option value='N'>Suspender</option></select></td></tr>";
-					$forma .= "<tr><td>Dias de Credito: </td><td><input class='inputnum' type='text' id='formap' name='formap' value='\"+ret.formap+\"' size='3' style='text-align:right;'></td></tr>";
-					$forma .= "<tr><td>Monto Limite: </td><td><input class='inputnum' type='text' id='limite' name='limite' value='\"+ret.limite+\"' size='7' style='text-align:right;'></td></tr>";
+					$forma .= "<tr><td>Tiene Cr&eacute;dito:</td><td> <select name='credito' id='credito' title='Asignar o suspender Credito' value='\"+ret.credito+\"'><option value='S'>Activo</option><option value='N'>Suspender</option></select></td></tr>";
+					$forma .= "<tr><td>D&iacute;as de Cr&eacute;dito: </td><td><input class='inputnum' type='text' id='formap' name='formap' value='\"+ret.formap+\"' size='3' style='text-align:right;'></td></tr>";
+					$forma .= "<tr><td>Monto L&iacute;mite: </td><td><input class='inputnum' type='text' id='limite' name='limite' value='\"+ret.limite+\"' size='7' style='text-align:right;'></td></tr>";
 					$forma .= "<tr><td>Margen de Tolerancia:</td><td><input class='inputnum' type='text' id='tolera' name='tolera' value='\"+ret.tolera+\"' size='7' style='text-align:right;'>%</td></tr>";
-					$forma .= "<tr><td>Maxima Tolerancia:</td><td><input class='inputnum' type='text' id='maxtole' name='maxtole' value='\"+ret.maxtole+\"' size='7' style='text-align:right;'>%</td></tr>";
+					$forma .= "<tr><td>M&aaacute;xima Tolerancia:</td><td><input class='inputnum' type='text' id='maxtole' name='maxtole' value='\"+ret.maxtole+\"' size='7' style='text-align:right;'>%</td></tr>";
 				} else {
 					$forma .= "<table align=\'center\' width=\'95%\'>";
-					$forma .= "<tr><td>Tiene Credito:</td><td> <select name=\'credito\' id=\'credito\' title=\'Asignar o suspender Credito\' value=\'\"+ret.credito+\"\'><option value=\'S\'>Activo</option><option value=\'N\'>Suspender</option></select></td></tr>";
+					$forma .= "<tr><td>Tiene Cr&eacute;dito:</td><td> <select name=\'credito\' id=\'credito\' title=\'Asignar o suspender Credito\' value=\'\"+ret.credito+\"\'><option value=\'S\'>Activo</option><option value=\'N\'>Suspender</option></select></td></tr>";
 					$forma .= "<tr><td>D&iacute;as de Cr&eacute;dito: </td><td><input class=\'inputnum\' type=\'text\' id=\'formap\' name=\'formap\' value=\'\"+ret.formap+\"\' size=\'3\' style=\'text-align:right;\'></td></tr>";
-					$forma .= "<tr><td>Monto Limite: </td><td><span style=\'text-align:right;\'>\"+ret.limite+\"</span></td></tr>";
+					$forma .= "<tr><td>Monto L&iacute;mite: </td><td><span style=\'text-align:right;\'>\"+ret.limite+\"</span></td></tr>";
 					$forma .= "<tr><td>Margen de Tolerancia:</td><td><input class=\'inputnum\' type=\'text\' id=\'tolera\' name=\'tolera\' value=\'\"+ret.tolera+\"\' size=\'7\' style=\'text-align:right;\'>%</td></tr>";
-					$forma .= "<tr><td>Maxima Tolerancia:</td><td><span style=\'text-align:right;font-size:130%;\'>\"+ret.maxtole+\"%</td></tr>";
+					$forma .= "<tr><td>M&aacute;xima Tolerancia:</td><td><span style=\'text-align:right;font-size:130%;\'>\"+ret.maxtole+\"%</td></tr>";
 				}
 			} else {
 				$forma .= "<table align=\'center\' width=\'95%\'>";
 				$forma .= "<tr><td width=\'40%\'>Tiene Credito:</td><td>\"+mcredito+\"</td></tr>";
-				$forma .= "<tr><td>Dias de Cr&eacute;dito:</td><td><input class=\'inputnum\' type=\'text\' id=\'formap\' name=\'formap\' value=\'\"+ret.formap+\"\' size=\'3\' style=\'text-align:right;\'></td></tr>";
-				$forma .= "<tr><td>Monto Limite:</td><td><span  style=\'text-align:right;font-size:130%;\'>\"+ret.limite+\"</td></tr>";
+				$forma .= "<tr><td>D&iacute;as de Cr&eacute;dito:</td><td><input class=\'inputnum\' type=\'text\' id=\'formap\' name=\'formap\' value=\'\"+ret.formap+\"\' size=\'3\' style=\'text-align:right;\'></td></tr>";
+				$forma .= "<tr><td>Monto L&iacute;mite:</td><td><span  style=\'text-align:right;font-size:130%;\'>\"+ret.limite+\"</td></tr>";
 				$forma .= "<tr><td>Margen de Tolerancia:</td><td><span style=\'text-align:right;font-size:130%;\'>\"+ret.tolera+\"%</td></tr>";
-				$forma .= "<tr><td>Maxima Tolerancia:</td><td><span style=\'text-align:right;font-size:130%;\'>\"+ret.maxtole+\"%</td></tr>";
+				$forma .= "<tr><td>M&aacute;xima Tolerancia:</td><td><span style=\'text-align:right;font-size:130%;\'>\"+ret.maxtole+\"%</td></tr>";
 			}
 			$forma .= "<tr><td colspan=\'2\'>Observaciones: </td></tr><tr><td colspan=\'2\'><textarea id=\'observa\' name=\'observa\' rows=\'3\' cols=\'50\' ></textarea></td></tr>";
 			$forma .= "</table>";
@@ -500,40 +500,46 @@ class Scli extends validaciones {
 		function fusionar(){
 			var yurl = "";
 			var id = jQuery("#newapi'.$grid.'").jqGrid(\'getGridParam\',\'selrow\');
-			if (id)	{
+			if(id){
 				var mnuevo = "";
 				var ret = jQuery("#newapi'.$grid.'").jqGrid(\'getRowData\',id);
 				var mviejo = ret.cliente;
-				$.prompt("<h1>Cambiar Codigo</h1>Cliente: <b>"+ret.nombre+"</b><br>Codigo Actual: <b>"+ret.cliente+"</b><br><br>Codigo Nuevo <input type=\'text\' id=\'codnuevo\' name=\'mcodigo\' size=\'6\' maxlength=\'5\' >",{
-					buttons: { Cambiar:true, Salir:false},
-					callback: function(e,v,m,f){
+				$.prompt("<h1>Cambiar C&oacute;digo</h1>Cliente: <b>"+ret.nombre+"</b><br>C&oacute;digo Actual: <b>"+ret.cliente+"</b><br><br>C&oacute;digo Nuevo <input type=\'text\' id=\'codnuevo\' name=\'mcodigo\' size=\'6\' maxlength=\'5\' autocomplete=\'off\'>",{
+					buttons: { Cambiar: true, Salir: false},
+					submit: function(e,v,m,f){
 						mnuevo = f.mcodigo;
-						if (v) {
-							yurl = encodeURIComponent(mnuevo);
-							$.ajax({
-								url: "'.site_url('ventas/scli/scliexiste').'",
-								global: false,
-								type: "POST",
-								data: ({ codigo : encodeURIComponent(mnuevo) }),
-								dataType: "text",
-								async: false,
-								success: function(sino) {
-									sclicambia(sino, mviejo, mnuevo, ret.nombre);
-								},
-								error: function(h,t,e) { apprise("Error..codigo="+yurl+" ",e) }
-							});
+						if(v==1){
+							if(mnuevo==""){
+								apprise("El c&oacute;digo nuevo es obligatorio",e);
+							}else{
+								$.ajax({
+									url: "'.site_url('ventas/scli/scliexiste').'",
+									global: false,
+									type: "POST",
+									data: {\'codigo\' : mnuevo },
+									dataType: "text",
+									async: false,
+									success: function(sino) {
+										sclicambia(sino, mviejo, mnuevo, ret.nombre);
+									},
+									error: function(h,t,e){
+										apprise("Error..codigo="+mnuevo+" ",e);
+									}
+								});
+							}
 						}
 					}
 				});
-			} else
+			}else{
 				$.prompt("<h1>Por favor Seleccione un Cliente</h1>");
+			}
 		};
 
 		function sclicambia( sino, mviejo, mnuevo, nviejo ) {
 			//$.prompt(sino+" "+mviejo+" "+mnuevo);
 			var aprueba = false;
 			if (sino.substring(0,1)=="S"){
-				apprise("<h1>FUSIONAR: Ya existe el cliente</h1><h2 style=\"background: #ffdddd;text-align:center;\">("+mnuevo+") "+sino.substring(1)+"</h2><p style=\"font-size:130%\">Si prosigue se eliminara el cliente ("+mviejo+") "+nviejo+"<br>y los movimientos seran agregados a ("+mnuevo+") </"+"p> <p style=\"align:center;font-size:150%\">Desea <strong>Fusionarlos?</"+"strong></"+"p>",
+				apprise("<h1>FUSIONAR: Ya existe el cliente</h1><h2 style=\"background: #ffdddd;text-align:center;\">("+mnuevo+") "+sino.substring(1)+"</h2><p style=\"font-size:130%\">Si prosigue se eliminara el cliente ("+mviejo+") "+nviejo+"<br>y los movimientos seran agregados a ("+mnuevo+") </p> <p style=\"font-size:2em;color:red;text-align:center\">**Tenga en cuenta de que este procedimiento es irreversible**</p> <p style=\"align:center;font-size:150%\">Desea <strong>Fusionarlos?</"+"strong></"+"p>",
 					{ "confirm":true, "textCancel":"Salir", "textOk":"Proseguir"},
 					function(v){
 						if (v) {
@@ -543,7 +549,7 @@ class Scli extends validaciones {
 					}
 				);
 			} else {
-				apprise("<h1>Sustitur Codigo actual</h1> <center><h2 style=\"background: #ddeedd\">"+mviejo+" por "+mnuevo+"</"+"h2></"+"center> <p style=\"font-size:130%\">Al cambiar de codigo del cliente, todos los movimientos y estadisticas <br>se cambiaran correspondientemente.</"+"p> ",
+				apprise("<h1>Sustitur C&oacute;digo actual</h1> <center><h2 style=\"background: #ddeedd\">"+mviejo+" por "+mnuevo+"</"+"h2></"+"center> <p style=\"font-size:130%\">Al cambiar de codigo del cliente, todos los movimientos y estadisticas <br>se cambiaran correspondientemente.</p><p style=\"font-size:2em;color:red;text-align:center\">**Tenga en cuenta de que este procedimiento es irreversible**</p> ",
 					{ "confirm":true, "textCancel":"Salir", "textOk":"Proseguir"},
 					function(v){
 						if (v) {
@@ -560,14 +566,15 @@ class Scli extends validaciones {
 				url: "'.site_url('ventas/scli/sclifusion').'",
 				global: false,
 				type: "POST",
-				data: ({mviejo: encodeURIComponent(mviejo),
-					mnuevo: encodeURIComponent(mnuevo) }),
+				data: { mviejo: mviejo, mnuevo:mnuevo },
 				dataType: "text",
 				async: false,
 				success: function(sino) {
-					alert("Cambio finalizado "+sino,"Finalizado Exitosamente")
+					alert(sino,"Finalizado Exitosamente");
 				},
-				error: function(h,t,e) {alert("Error..","Finalizado con Error" )}
+				error: function(h,t,e) {
+					alert("Error..","Finalizado con Error" );
+				}
 			});
 		};';
 
@@ -981,6 +988,18 @@ class Scli extends validaciones {
 			'formoptions'   => '{ rowpos:'.$linea.', colpos:2 }'
 		));
 
+		$grid->addField('fecha2');
+		$grid->label('U.Venta');
+		$grid->params(array(
+			'search'        => 'true',
+			'editable'      => $editar,
+			'width'         => 70,
+			'align'         => "'center'",
+			'edittype'      => "'text'",
+			'editrules'     => '{ required:true,date:true}',
+			'formoptions'   => '{ label:"Fecha" }'
+		));
+
 		$grid->addField('cobrador');
 		$grid->label('Cobrador');
 		$grid->params(array(
@@ -990,7 +1009,7 @@ class Scli extends validaciones {
 			'edittype'      => "'select'",
 			'editrules'     => '{ required:false}',
 			'editoptions'   => '{ value: '.$avende.',  style:"width:220px"}',
-			'stype'         => "'text'",
+			'type'         => "'text'",
 			'formoptions'   => '{ rowpos:'.$linea.', colpos:1 }'
 		));
 
@@ -1118,7 +1137,12 @@ class Scli extends validaciones {
 		function(id){
 			if (id){
 				var ret = jQuery(gridId1).jqGrid(\'getRowData\',id);
-				$(gridId1).jqGrid("setCaption", ret.nombre+" U. Venta "+ret.fecha1);
+				var uve = " U. Venta "+ret.fecha2;
+				if(ret.fecha2==""){
+					uve = "";
+				}
+
+				$(gridId1).jqGrid("setCaption", ret.nombre+uve);
 				$.ajax({
 					url: "'.base_url().$this->url.'resumen/"+id,
 					success: function(msg){
@@ -2101,7 +2125,6 @@ class Scli extends validaciones {
 									buttons: { Continuar: true },
 									focus: 1,
 									submit:function(e,v,m,f){
-
 										$("#nombre").focus();
 									}
 								});
@@ -2112,7 +2135,6 @@ class Scli extends validaciones {
 					//Fin del chequeo repetido
 
 				}
-
 			});
 		});
 
@@ -3087,69 +3109,290 @@ function chrif(rif){
 		}
 	}
 
+	function citrut(){
+		$cdia  = boolval($this->input->post('cdia'));
+		$antes = intval($this->input->post('antes'));
+		$despu = intval($this->input->post('despu'));
+		$mismo = intval($this->input->post('mismo'));
+
+		$rt = array('status'=>'b');
+		if($mismo>0){
+			$arr_data= array();
+			$mcero   = function($par){ return ($par>0)? true : false; };
+			$arr_ids = array($antes,$despu,$mismo);
+			$arr_ids = array_filter($arr_ids, $mcero);
+
+			$ruta  = '';
+			$dia   = 0;
+			$sql   = 'SELECT id,ruta,dia,pos FROM sclitrut WHERE id IN ('.implode(',',$arr_ids).')';
+			$query = $this->db->query($sql);
+			foreach($query->result() as $row){
+				$arr_data[$row->id] = array('ruta'=>$row->ruta,'pos'=>intval($row->pos), 'dia'=>intval($row->dia));
+				if(intval($row->id)==$mismo){
+					$ruta=$row->ruta;
+				}
+			}
+
+			if(!isset($arr_data[$mismo])){
+				$rt['msj'] = 'Ruta movida inexistente ('.$mismo.')';
+				echo json_encode($rt);
+				return false;
+			}
+
+			//Cheque si esta en frontera
+			$npos = 0;
+			if($despu>0 && $antes>0 && isset($arr_data[$antes]) && isset($arr_data[$despu]) && $arr_data[$despu]['dia']!=$arr_data[$antes]['dia']){
+				if($cdia){
+					$despu=0;
+				}else{
+					$antes=0;
+				}
+			}
+
+			if($antes>0 && isset($arr_data[$antes]) && $ruta==$arr_data[$antes]['ruta']){
+				$dia  = $arr_data[$antes]['dia'];
+				if($arr_data[$mismo]['dia']==$dia && $arr_data[$antes]['pos']>$arr_data[$mismo]['pos']){
+					$npos = $arr_data[$antes]['pos'];
+				}else{
+					$npos = $arr_data[$antes]['pos']+1;
+				}
+			}elseif($despu>0 && isset($arr_data[$despu]) && $ruta==$arr_data[$despu]['ruta']){
+				$dia  = $arr_data[$despu]['dia'];
+				$npos = $arr_data[$despu]['pos'];
+			}
+
+			if($npos>0){
+				$mSQL = "UPDATE sclitrut SET pos=${npos}, dia=${dia} WHERE id=${mismo}";
+				$ban  = $this->db->simple_query($mSQL);
+
+
+				if(($arr_data[$mismo]['dia']==$dia && $arr_data[$mismo]['pos']>$npos) || $arr_data[$mismo]['dia']!=$dia){
+					//sube
+					$op_baj = '>=';
+					$op_sub = '<';
+				}else{
+					//baja
+					$op_baj = '>';
+					$op_sub = '<=';
+				}
+
+
+				$rt['status'] = 'A';
+				$rt['data']   = $this->datasis->damerow('SELECT a.cliente, a.rifci, a.nombre, b.pos, b.dia , a.id eli, a.id AS id_scli, b.id FROM scli a JOIN sclitrut b ON a.cliente=b.cliente WHERE b.id='.$mismo);
+
+				//Arreglo hacia abajo
+				$pos    = $npos;
+				$dbruta = $this->db->escape($ruta);
+				$mSQL   = "SELECT id,ruta,dia,pos FROM sclitrut WHERE ruta=${dbruta} AND dia=${dia} AND pos${op_baj}${npos} AND id<>${mismo} ORDER BY pos";
+				$query  = $this->db->query($mSQL);
+				foreach($query->result() as $row){
+					$pos++;
+					if(intval($row->pos)!=$pos){
+						$sql = "UPDATE sclitrut SET pos=${pos} WHERE id=".$row->id;
+						$this->db->simple_query($sql);
+					}
+				}
+
+				//Arreglo hacia arriba
+				$pos    = $npos;
+				$dbruta = $this->db->escape($ruta);
+				$mSQL   = "SELECT id,ruta,dia,pos FROM sclitrut WHERE ruta=${dbruta} AND dia=${dia} AND pos${op_sub}${npos} AND id<>${mismo} ORDER BY pos DESC";
+				$query  = $this->db->query($mSQL);
+				foreach($query->result() as $row){
+					$pos--;
+					if(intval($row->pos)!=$pos){
+						$sql = "UPDATE sclitrut SET pos=${pos} WHERE id=".$row->id;
+						$this->db->simple_query($sql);
+					}
+				}
+
+				//Si cambio de dia arregla la secuencia del dia donde salio
+				if($dia!=$arr_data[$mismo]['dia']){
+					$pos   = $arr_data[$mismo]['pos'];
+					$dia   = $arr_data[$mismo]['dia'];
+					$mSQL  = "SELECT id,ruta,dia,pos FROM sclitrut WHERE ruta=${dbruta} AND dia=${dia} AND pos>=${pos} AND id<>${mismo} ORDER BY pos";
+					$query = $this->db->query($mSQL);
+					foreach($query->result() as $row){
+						if(intval($row->pos)!=$pos){
+							$sql = "UPDATE sclitrut SET pos=${pos} WHERE id=".$row->id;
+							$this->db->simple_query($sql);
+						}
+						$pos++;
+					}
+				}
+				echo json_encode($rt);
+				return true;
+			}
+		}
+		echo json_encode($rt);
+		return false;
+	}
+
 	//******************************************************************
 	// Ver Rutas
 	//
 	function rutasver(){
-		$ruta = $this->uri->segment($this->uri->total_segments());
+		$ruta   = $this->uri->segment($this->uri->total_segments());
 		$dbruta = $this->db->escape($ruta);
 
 		$mSQL = 'SELECT COUNT(*) AS cana FROM scli a JOIN sclitrut b ON a.cliente=b.cliente WHERE b.ruta='.$dbruta;
-		if( intval($this->datasis->dameval($mSQL)) == 0 ) {
+		if(intval($this->datasis->dameval($mSQL)) == 0 ){
 			echo '<h1>No hay Clientes asignados a esta ruta...</h1>';
 			return;
+		}else{
+			//Arregla la secuencia de las rutas
+			$dia   = 0;
+			$pos   = 1;
+			$mSQL  = "SELECT id,ruta,dia,pos FROM sclitrut WHERE ruta=${dbruta} ORDER BY dia,pos";
+			$query = $this->db->query($mSQL);
+			foreach($query->result() as $row){
+				if($dia!=intval($row->dia)){
+					$pos  = 1;
+					$dia  = $row->dia;
+				}
+
+				if($pos!=intval($row->pos)){
+					$sql = "UPDATE sclitrut SET pos=${pos} WHERE id=".$row->id;
+					$this->db->simple_query($sql);
+				}
+				$pos++;
+			}
+
 		}
 
 		$nombre = 'verutatab';
-		$mSQL = 'SELECT a.cliente, a.rifci, a.nombre, b.dia , a.id eli, a.id FROM scli a JOIN sclitrut b ON a.cliente=b.cliente WHERE b.ruta='.$dbruta.' ORDER BY b.dia, a.nombre';
+		$mSQL = 'SELECT a.cliente, a.rifci, a.nombre, b.pos, b.dia , a.id eli, a.id AS id_scli, b.id FROM scli a JOIN sclitrut b ON a.cliente=b.cliente WHERE b.ruta='.$dbruta.' ORDER BY b.dia, b.pos';
 		$columnas = $this->datasis->jqdata($mSQL,'verutatabdat');
 		$colModel = "
-		{name:'cliente', index:'cliente', label:'Cliente', width:50 },
-		{name:'dia',     index:'dia',     label:'Dia',     width:20 },
-		{name:'rifci',   index:'rifci',   label:'RIF/CI',  width:80 },
-		{name:'nombre',  index:'nombre',  label:'Nombre',  width:250},
-		{name:'eli',     index:'eli',     label:' ',       width: 25, formatter: fsele },
-		{name:'id',      index:'id',      label:'id', hidden:'true'} ";
+		{name:'cliente', index:'cliente', label:'Cliente', width: 50, sortable:false},
+		{name:'pos',     index:'pos',     label:'Pos.',    width: 20, sortable:false, align:'right'},
+		{name:'dia',     index:'dia',     label:'Dia',     width: 20, sortable:false, formatter: diaSemana},
+		{name:'rifci',   index:'rifci',   label:'RIF/CI',  width: 80, sortable:false},
+		{name:'nombre',  index:'nombre',  label:'Nombre',  width:300, sortable:false},
+		{name:'eli',     index:'eli',     label:' ',       width: 25, sortable:false, formatter: fsele },
+		{name:'id',      index:'id',      label:'id',      width: 10, sortable:false, hidden:'true'} ";
 
+		$url=site_url($this->url.'citrut');
 		$Salida  = '<script>';
 		$Salida .= '
 		$("#'.$nombre.'").jqGrid({
 			datatype: "local",
 			height: 350,
-			colModel:[{name:\'id\',index:\'id\', hidden:true},'.$colModel.'],
+			colModel:['.$colModel.'],
 			multiselect: false,
 			shrinkToFit: false,
 			hiddengrid:  false,
-			width: 480,
+			width: 550,
 			rowNum:'.$columnas['i'].',
 			loadonce: true,
 			viewrecords: true,
-			editurl: ""
+			editurl: "",
+			multiSort: false
+		}).jqGrid("sortableRows",{
+			update: function (ev, ui){
+
+				var npos = 0;
+				var envdata = {
+					mismo: $("#'.$nombre.'").getRowData(ui.item[0].id).id,
+					antes: 0,
+					despu: 0,
+					cdia:  false
+				};
+
+				if(ui.item[0].previousSibling.id!=""){
+					envdata["antes"] = $("#'.$nombre.'").getRowData(ui.item[0].previousSibling.id).id;
+				}
+
+				if(ui.item[0].nextSibling){
+					envdata["despu"] = $("#'.$nombre.'").getRowData(ui.item[0].nextSibling.id).id;
+				}
+
+				$.post("'.$url.'", envdata).done(function(rt){
+					var json = JSON.parse(rt);
+					if(json.status == "A"){
+						$("#'.$nombre.'").jqGrid("setRowData",ui.item[0].id,json.data);
+
+						var iid=Number(ui.item[0].id);
+						var ddi=Number(json.data.dia);
+						totaliza(iid,ddi);
+					}else{
+						alert(json.msj);
+					}
+				});
+
+			}
 		});
+
+		function diaSemana(cellvalue, options, rowObject){
+			var dsemana = new Array("","Dom","Lun","Mar","Mie","Jue","Vie","Sab");
+			var color   = new Array("","#DC143C","#0000FF","#006400","#FF8C00","#A0522D","#8A2BE2","#483D8B");
+			var ind = Number(cellvalue);
+			if(ind>0 && ind < 8){
+				return "<span style=\'color:"+color[ind]+"\' title=\'"+ind+"\'>"+dsemana[ind]+"</span>";
+			}
+			return "--";
+		}
+
+		function totaliza(iid,ddi){
+			var sdias = new Array(0,0,0,0,0,0,0,0);
+			var lista = $("#'.$nombre.'").getDataIDs();
+			var pos = dia = pdia = 0;
+			for(i=0;i<lista.length;i++){
+				if (iid == lista[i]){
+					pos = pos+1;
+					sdias[ddi] = sdias[ddi]+1;
+					continue;
+				}
+
+				rowData  = $("#'.$nombre.'").getRowData(lista[i]);
+				dia = Number($(rowData.dia).attr("title"));
+				if(pdia!=dia){
+					pdia=dia;
+					pos=0;
+				}
+
+				pos      = pos+1;
+				sdias[0] = sdias[0]+1;
+				if(dia > 0 && dia < 8){
+					sdias[dia]=sdias[dia]+1;
+				}
+				$("#'.$nombre.'").jqGrid("setCell", lista[i], "pos", pos);
+			}
+
+			$(\'td[id^="tdsum_"]\').text("0");
+			for(i=0;i<8;i++){
+				$("#tdsum_"+i).text(sdias[i]);
+			}
+			$("#td_sum").text(sdias[0]);
+		}
+
+
 		'.$columnas['data'].'
 		for(var i=0;i<='.$nombre."dat".'.length;i++) $("#'.$nombre.'").jqGrid(\'addRowData\',i+1,'.$nombre.'dat[i]);
 		';
 
-			$Salida .= '
+		$Salida .= '
 		function fsele( el, val, opts ){
-			var meco=\'<div><a onclick="quitaruta(\\\''.$ruta.'\\\',\'+el+\')">'.img(array('src'=>"images/elimina4.png", 'height'=> 20, 'alt'=>'Elimina el cliente de la ruta', 'title'=>'Elimina el cliente de la ruta', 'border'=>'0')).'</a></div>\';
+			var meco=\'<div><a onclick="quitaruta(\\\''.$ruta.'\\\',\'+el+\')">'.img(array('src'=>'images/elimina4.png', 'height'=> 20, 'alt'=>'Elimina el cliente de la ruta', 'title'=>'Elimina el cliente de la ruta', 'border'=>'0')).'</a></div>\';
 			return meco;
 		}
+
 		function quitaruta(ruta, id){
-			$.post("'.site_url($this->url.'rutaresta').'/"+id+"/"+ruta);
-			//$("#verutatab").jqGrid("delGridRow",id,{reloadAfterSubmit:false});
+			//$.post("'.site_url($this->url.'rutaresta').'/"+id+"/"+ruta);
+			$("#'.$nombre.'").jqGrid("delGridRow", id,{ });
+			//totaliza(-1,-1);
 		}';
 		$Salida .= '</script><table id="verutatab"></table><div id="pnewapi_21293249"></div>';
 
 		$detalle = '<table width="100%"><tr>
-			<td style="text-align:center;background:#E1F0FE"><b>Domingo</b></td>
-			<td style="text-align:center;background:#E1F0FE">Lunes</td>
-			<td style="text-align:center;background:#E1F0FE">Martes</td>
-			<td style="text-align:center;background:#E1F0FE">Mi&eacute;rcoles</td>
-			<td style="text-align:center;background:#E1F0FE">Jueves</td>
-			<td style="text-align:center;background:#E1F0FE">Viernes</td>
-			<td style="text-align:center;background:#E1F0FE"><b>S&aacute;bado</b></td>
-			<td style="text-align:center;background:#E1F0FE">Total</td>
+			<td style="text-align:center;background:#E1F0FE"><b><span style="color:#DC143C">Dom</span>ingo</b></td>
+			<td style="text-align:center;background:#E1F0FE"><span style="color:#0000FF">Lun</span>es</td>
+			<td style="text-align:center;background:#E1F0FE"><span style="color:#006400">Mar</span>tes</td>
+			<td style="text-align:center;background:#E1F0FE"><span style="color:#FF8C00">Mi&eacute;</span>rcoles</td>
+			<td style="text-align:center;background:#E1F0FE"><span style="color:#A0522D">Jue</span>ves</td>
+			<td style="text-align:center;background:#E1F0FE"><span style="color:#8A2BE2">Vie</span>rnes</td>
+			<td style="text-align:center;background:#E1F0FE"><b><span style="color:#483D8B">S&aacute;b</span>ado</b></td>
+			<td style="text-align:center;">Total</td>
 		</tr><tr>';
 		$total   = 0;
 		$mSQL    = "SELECT dia, COUNT(*) AS total FROM sclitrut WHERE ruta=${dbruta} GROUP BY dia";
@@ -3164,7 +3407,7 @@ function chrif(rif){
 		}
 
 		for($i=1;$i<8;$i++){
-			$detalle .= '<td style="text-align:center">';
+			$detalle .= '<td style="text-align:center" id="tdsum_'.$i.'">';
 			if(isset($arrsclis[$i])){
 				$detalle .= $arrsclis[$i];
 			}else{
@@ -3173,7 +3416,7 @@ function chrif(rif){
 			$detalle .= '</td>';
 		}
 
-		$detalle .= '<td style="text-align:center">'.$total.'</td></tr></table>';
+		$detalle .= '<td style="text-align:center"><b id="td_sum">'.$total.'</b></td></tr></table>';
 		$Salida  .= '<div id="resumenruta">'.$detalle.'</div>';
 		echo $Salida;
 	}
@@ -3263,8 +3506,8 @@ function chrif(rif){
 	function scliexiste(){
 		$cliente  = rawurldecode($this->input->post('codigo'));
 		$dbcliente= $this->db->escape($cliente);
-		$existe  = $this->datasis->dameval("SELECT COUNT(*) FROM scli WHERE cliente=${dbcliente}");
-		$devo    = 'N ';
+		$existe   = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM scli WHERE cliente=${dbcliente}"));
+		$devo     = 'N ';
 		if($existe > 0){
 			$devo  ='S';
 			$devo .= $this->datasis->dameval("SELECT nombre FROM scli WHERE cliente=${dbcliente}");
@@ -3274,7 +3517,7 @@ function chrif(rif){
 
 	function chtarifa($id){
 		$dbid = $this->db->escape($id);
-		$cana=$this->datasis->dameval("SELECT COUNT(*) FROM tarifa WHERE id=${dbid}");
+		$cana = intval($this->datasis->dameval("SELECT COUNT(*) FROM tarifa WHERE id=${dbid}"));
 		if($cana>0){
 			return true;
 		}else{
@@ -3535,78 +3778,130 @@ function chrif(rif){
 		$this->load->view('view_ventanas', $data);
 	}
 
-	function sclimemo() {
-		$mid     = $_REQUEST['mid'];
+	function sclimemo(){
+		$mid     = intval($_REQUEST['mid']);
 		$mensaje = urldecode($_REQUEST['mensaje']);
-
-		$this->db->query("UPDATE scli SET observa=? WHERE id=$mid",array($mensaje));
-		echo "Observaciones Guardadas";
+		if($mid>0){
+			$this->db->query("UPDATE scli SET observa=? WHERE id=${mid}",array($mensaje));
+			echo 'Observaciones Guardadas';
+		}
 	}
 
-	function sclifusion() {
-		$mviejo    = strtoupper($_REQUEST['mviejo']);
-		$mnuevo    = strtoupper($_REQUEST['mnuevo']);
+	function sclifusion(){
+		$mviejo    = trim(strtoupper($_REQUEST['mviejo']));
+		$mnuevo    = trim(strtoupper($_REQUEST['mnuevo']));
+		$dbmviejo  = $this->db->escape($mviejo);
+        $dbmnuevo  = $this->db->escape($mnuevo);
 
-		//ELIMINAR DE SCLI
-		$mYaEsta = $this->datasis->dameval("SELECT count(*) FROM scli WHERE cliente=".$this->db->escape($mnuevo));
+		$cana = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM scli WHERE cliente=${dbmviejo}"));
+		if($cana<=0){
+			echo 'No existe el cliente '.$mnuevo;
+			return false;
+		}
 
-		if ( $mYaEsta > 0 )
-			$this->db->query("DELETE FROM scli WHERE cliente=".$this->db->escape($mviejo));
-		else
-			$this->db->query("UPDATE scli SET cliente=".$this->db->escape($mnuevo)." WHERE cliente=".$this->db->escape($mviejo));
+		if(strlen($mnuevo)<=5){
 
-		$this->db->query("UPDATE scli SET socio=".$this->db->escape($mnuevo)." WHERE socio=".$this->db->escape($mviejo));
-		// SPRV
-		$this->db->query("UPDATE sprv SET cliente=".$this->db->escape($mnuevo)." WHERE cliente=".$this->db->escape($mviejo));
-		// SMOV
-		$this->db->query("UPDATE smov SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// APAN
-		$this->db->query("UPDATE apan SET clipro=".$this->db->escape($mnuevo)." WHERE clipro=".$this->db->escape($mviejo)." AND tipo='C' ");
-		$this->db->query("UPDATE apan SET reinte=".$this->db->escape($mnuevo)." WHERE reinte=".$this->db->escape($mviejo)." AND tipo='P' ");
-		// ITCCLI
-		$this->db->query("UPDATE itccli SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// BMOV CLIPRO='C'  CODCP
-		$this->db->query("UPDATE bmov SET codcp=".$this->db->escape($mnuevo)." WHERE codcp=".$this->db->escape($mviejo)." AND clipro='C'");
-		// SFPA
-		$this->db->query("UPDATE sfpa SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// OTIN
-		$this->db->query("UPDATE otin SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// CRUC
-		$this->db->query("UPDATE cruc SET cliente=".$this->db->escape($mnuevo)." WHERE cliente=".$this->db->escape($mviejo)." AND MID(tipo,1,1)='C' ");
-		// CRUC
-		$this->db->query("UPDATE cruc SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo)." AND MID(tipo,3,1)='C' ");
-		// PRMO
-		$this->db->query("UPDATE prmo SET clipro=".$this->db->escape($mnuevo)." WHERE clipro=".$this->db->escape($mviejo)." AND tipop IN ('1','3','6') ");
-		// RIVC
-		$this->db->query("UPDATE rivc SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
+			//ELIMINAR DE SCLI
+			$mYaEsta = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM scli WHERE cliente=${dbmnuevo}"));
+			if($mYaEsta > 0){
+				$this->db->query("DELETE FROM scli WHERE cliente=${dbmviejo}");
+			}else{
+				$this->db->query("UPDATE scli SET cliente=${dbmnuevo} WHERE cliente=${dbmviejo}");
+			}
 
-		// FMAY
-		if ( $this->datasis->istabla('fmay'))
-			$this->db->query("UPDATE fmay SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// SFAC
-		if ( $this->datasis->istabla('sfac') )
-			$this->db->query("UPDATE sfac SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// PFAC
-		if ( $this->datasis->istabla('pfac'))
-			$this->db->query("UPDATE pfac SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// PRES
-		if ( $this->datasis->istabla('pres'))
-			$this->db->query("UPDATE pres SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// SPRE
-		if ( $this->datasis->istabla('spre'))
-			$this->db->query("UPDATE spre SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// ITPRES
-		if ( $this->datasis->istabla('itpres'))
-			$this->db->query("UPDATE itpres SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// SNTE
-		if ( $this->datasis->istabla('snte'))
-			$this->db->query("UPDATE snte SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
-		// SNOT
-		if ( $this->datasis->istabla('snot'))
-			$this->db->query("UPDATE snot SET cod_cli=".$this->db->escape($mnuevo)." WHERE cod_cli=".$this->db->escape($mviejo));
+			$this->db->query("UPDATE scli SET socio=${dbmnuevo} WHERE socio=${dbmviejo}");
 
-		logusu('SCLI',"Cambio/Fusion de cliente ${mviejo} ==> ${mnuevo} ");
-		echo "Cambios concluidos ";
+			// SPRV
+			$this->db->query("UPDATE sprv SET cliente=${dbmnuevo} WHERE cliente=${dbmviejo}");
+
+			// SMOV
+			$this->db->query("UPDATE smov SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+
+			// APAN
+			$this->db->query("UPDATE apan SET clipro=${dbmnuevo} WHERE clipro=${dbmviejo} AND tipo='C' ");
+			$this->db->query("UPDATE apan SET reinte=${dbmnuevo} WHERE reinte=${dbmviejo} AND tipo='P' ");
+
+			// ITCCLI
+			$this->db->query("UPDATE itccli SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+
+			// BMOV CLIPRO='C'  CODCP
+			$this->db->query("UPDATE bmov SET codcp=${dbmnuevo} WHERE codcp=${dbmviejo} AND clipro='C'");
+
+			// SFPA
+			$this->db->query("UPDATE sfpa SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+
+			// OTIN
+			$this->db->query("UPDATE otin SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+
+			// CRUC
+			$this->db->query("UPDATE cruc SET cliente=${dbmnuevo} WHERE cliente=${dbmviejo} AND MID(tipo,1,1)='C' ");
+			$this->db->query("UPDATE cruc SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo} AND MID(tipo,3,1)='C' ");
+
+			// PRMO
+			$this->db->query("UPDATE prmo SET clipro=${dbmnuevo} WHERE clipro=${dbmviejo} AND tipop IN ('1','3','6') ");
+
+			// RIVC
+			$this->db->query("UPDATE rivc SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+
+			//PERS
+			$this->db->query("UPDATE pers SET enlace=${dbmnuevo} WHERE enlace=${dbmviejo}");
+
+
+
+			$tables = $this->db->list_tables();
+			//SCLIBITALIMI
+			if(in_array('sclibitalimit', $tables)){
+				$this->db->query("UPDATE sclibitalimit SET cliente=${dbmnuevo} WHERE cliente=${dbmviejo}");
+			}
+
+			// RETC
+			if(in_array('retc', $tables)){
+				$this->db->query("UPDATE retc SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+			}
+
+			// FMAY
+			if(in_array('fmay', $tables)){
+				$this->db->query("UPDATE fmay SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+			}
+
+			// SFAC
+			if(in_array('sfac', $tables)){
+				$this->db->query("UPDATE sfac SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+			}
+
+			// PFAC
+			if(in_array('pfac', $tables)){
+				$this->db->query("UPDATE pfac SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+			}
+
+			// PRES
+			if(in_array('pres', $tables)){
+				$this->db->query("UPDATE pres SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+			}
+
+			// SPRE
+			if(in_array('spre', $tables)){
+				$this->db->query("UPDATE spre SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+			}
+
+			// ITPRES
+			if(in_array('itpres', $tables)){
+				$this->db->query("UPDATE itpres SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+			}
+
+			// SNTE
+			if(in_array('snte', $tables)){
+				$this->db->query("UPDATE snte SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+			}
+
+			// SNOT
+			if(in_array('snot', $tables)){
+				$this->db->query("UPDATE snot SET cod_cli=${dbmnuevo} WHERE cod_cli=${dbmviejo}");
+			}
+
+			logusu('SCLI',"Cambio/Fusion de cliente ${mviejo} ==> ${mnuevo} ");
+			echo 'Cambios concluidos';
+		}
 
 	}
 
@@ -4069,6 +4364,21 @@ MAPGO;
 		if(!in_array('pos', $campos)){
 			$mSQL="ALTER TABLE `sclitrut` ADD COLUMN `pos` INT NULL DEFAULT NULL AFTER `dia`";
 			$this->db->query($mSQL);
+
+			$pos   = 0;
+			$ruta  = $dia = '';
+			$mSQL  = "SELECT id,ruta,dia,pos FROM sclitrut ORDER BY ruta,dia";
+			$query = $this->db->query($mSQL);
+			foreach($query->result() as $row){
+				if($ruta!=$row->ruta || $dia!=$row->dia){
+					$pos  = 1;
+					$ruta = $row->ruta;
+					$dia  = $row->dia;
+				}
+				$sql = "UPDATE sclitrut SET pos=${pos} WHERE id=".$row->id;
+				$this->db->simple_query($sql);
+				$pos++;
+			}
 		}
 
 	}
