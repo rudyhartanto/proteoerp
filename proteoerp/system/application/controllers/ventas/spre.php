@@ -128,8 +128,6 @@ class Spre extends Controller {
 				murl = murl.replace("update","insert");
 				m = murl.indexOf("insert")+6;
 				if ( m > 6){murl = murl.substring(0,m);}
-				alert(murl);
-				allFields.removeClass( "ui-state-error" );
 				$.ajax({
 					type: "POST", dataType: "html", async: false,
 					url: murl,
@@ -138,7 +136,7 @@ class Spre extends Controller {
 						try{
 							var json = JSON.parse(r);
 							if (json.status == "A"){
-								//apprise("Registro Guardado");
+								apprise("Registro Guardado");
 								$( "#fedita" ).dialog( "close" );
 								grid.trigger("reloadGrid");
 								'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
@@ -381,7 +379,7 @@ class Spre extends Controller {
 		$bodyscript .= '
 		$("#fedita").dialog({ autoOpen: false, height: 550, width: 800, modal: true });';
 
-
+/*
 		$bodyscript .= '
 		function bfedita( tipo ){
 			if (tipo == 1){
@@ -475,7 +473,7 @@ class Spre extends Controller {
 			}
 		};
 		';
-
+*/
 
 
 /*
@@ -560,7 +558,7 @@ class Spre extends Controller {
 					$("#scliexp").dialog("close");
 				}
 				$("#"+dlg).html("");
-				allFields.val("").removeClass( "ui-state-error" );
+				//allFields.val("").removeClass( "ui-state-error" );
 		};';
 
 
