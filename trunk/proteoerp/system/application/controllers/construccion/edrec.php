@@ -1264,7 +1264,7 @@ class Edrec extends Controller {
 				HAVING codigo<>'COMADM'
 				UNION ALL
 				SELECT '000002' numero, c.departa tipo, c.codigo, c.descrip, 
-				(SELECT sum(monto) FROM edgasmed WHERE EXTRACT(YEAR_MONTH FROM edgasmed.fecha) = ${anomes} ) total, 
+				(SELECT sum(monto) FROM edgasmed WHERE EXTRACT(YEAR_MONTH FROM edgasmed.fecha) = ${anomes} AND edgasmed.gasto=c.id) total, 
 				a.lectura alicuota, a.monto cuota,  
 				curdate() fecha, '321' usuario, curdate() estampa, curtime() hora, 0 transac, 0 id, 0 id_edrc, 'XXXX' grupo
 				FROM edgasmed a 
