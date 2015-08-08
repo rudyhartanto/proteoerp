@@ -1906,9 +1906,7 @@ class Casi extends Controller {
 						}elseif($table=='gser'){
 							$tdoc='a.tipo_doc';
 							$ww  ='AND a.tipo_doc NOT IN (\'XX\')';
-						}elseif($table=='banc'){
-							$ww  ='AND a.anulado<>\'S\')';
-						}elseif($table=='rivc'){
+						}elseif($table=='banc' || $table=='rivc' || $table=='retc'){
 							$ww  ='AND a.anulado<>\'S\'';
 						}
 

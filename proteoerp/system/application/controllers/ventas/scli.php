@@ -57,9 +57,8 @@ class Scli extends validaciones {
 			<table cellpadding='0' cellspacing='0'>
 				<tr>
 					${cabeza} id='edocta'>".img(array('src' =>'images/pdf_logo.gif', 'height' => 15, 'alt' => 'Estado de Cuenta',          'title' => 'Estado de Cuenta',          'border'=>'0'))." E.Cta.</a></div></td>
-					${cabeza} id='editacr'>".img(array('src' =>'images/check.png',   'height' => 15, 'alt' => 'Cambiar limite de credito', 'title' => 'Cambiar limite de credito', 'border'=>'0'))." Credito</a></div></td>
-				</tr>
-				<tr>
+					${cabeza} id='editacr'>".img(array('src' =>'images/check.png',   'height' => 15, 'alt' => 'Cambiar limite de credito', 'title' => 'Cambiar limite de credito', 'border'=>'0'))." Cr&eacute;dito</a></div></td>
+				</tr><tr>
 					${cabeza} id='gciud' >".img(array('src' =>'images/star.png',   'height' => 15, 'alt'=>'Ciudades',         'title' => 'Ciudades',        'border'=>'0'))." Ciudad</a></div></td>
 					${cabeza} id='gclave'>".img(array('src' =>'images/candado.png','height' => 15, 'alt'=>'Cambio de Clave.', 'title' => 'Cambio de Clave', 'border'=>'0'))." Clave</a></div></td>
 				</tr>
@@ -69,12 +68,12 @@ class Scli extends validaciones {
 				<tr>
 					<td colspan='2'>
 						<table style='border-collapse:collapse;padding:0px;width:99%;border:1px solid #AFAFAF;'><tr>
-							<td style='vertical-align:top;'><a id='verutas'>".img(array('src' =>"images/camion.png", 'height'=>30, 'alt'=>'Ver de Rutas', 'title'=> 'Ver Rutas', 'border'=>'0'))."</a></td>
+							<td style='vertical-align:top;'><a id='verutas'>".img(array('src' =>'images/camion.png', 'height'=>30, 'alt'=>'Ver de Rutas', 'title'=> 'Ver Rutas', 'border'=>'0'))."</a></td>
 							${cabeza1} id='rutas'>Rutas</a></div></td>
-							<td style='vertical-align:center;'><a id='sumarutas' >".img(array('src' =>"images/agrega4.png",     'height'=> 25, 'alt'=>'Asignacion de Rutas',           'title'=>'Agregar cliente a ruta',        'border'=>'0'))."</a></td>
-							<td style='vertical-align:center;'><a id='restarutas'>".img(array('src' =>"images/elimina4.png",    'height'=> 25, 'alt'=>'Elimina el cliente de la ruta', 'title'=>'Elimina el cliente de la ruta', 'border'=>'0'))."</a></td>
-							<td style='vertical-align:center;'><a id='todorutas' >".img(array('src' =>"images/agregatodo4.png", 'height'=> 25, 'alt'=>'Agrega todo lo seleccionado',   'title'=>'Agrega todo lo seleccionado',   'border'=>'0'))."</a></td>
-						</tr>
+							<td style='vertical-align:center;'><a id='sumarutas' >".img(array('src' =>'images/agrega4.png',     'height'=> 25, 'alt'=>'Asignacion de Rutas',           'title'=>'Agregar cliente a ruta',        'border'=>'0'))."</a></td>
+							<td style='vertical-align:center;'><a id='restarutas'>".img(array('src' =>'images/elimina4.png',    'height'=> 25, 'alt'=>'Elimina el cliente de la ruta', 'title'=>'Elimina el cliente de la ruta', 'border'=>'0'))."</a></td>
+							<td style='vertical-align:center;'><a id='todorutas' >".img(array('src' =>'images/agregatodo4.png', 'height'=> 25, 'alt'=>'Agrega todo lo seleccionado',   'title'=>'Agrega todo lo seleccionado',   'border'=>'0'))."</a></td>
+						</tr><tr>
 							<td colspan='5'>Ruta: ${srutas} </td>
 						</tr>
 						</table>
@@ -1179,9 +1178,9 @@ class Scli extends validaciones {
 		#GET url
 		$grid->setUrlget(site_url($this->url.'getdata/'));
 
-		if ($deployed) {
+		if($deployed){
 			return $grid->deploy();
-		} else {
+		}else{
 			return $grid;
 		}
 	}
@@ -1305,28 +1304,42 @@ class Scli extends validaciones {
 	//******************************************************************
 	//  Resta a las rutas
 	//
-	function rutaresta() {
+	function rutaresta($id) {
 		$salida = 'Guardado';
-		$id   = $this->uri->segment($this->uri->total_segments()-1);
-		$ruta = $this->uri->segment($this->uri->total_segments());
-		$dbid   = $this->db->escape($id);
-		$dbruta = $this->db->escape($ruta);
-		// Comprueba si existe el cliente
-		$mSQL = "SELECT COUNT(*) AS cana FROM scli WHERE id=${dbid}";
-		$rcli = intval($this->datasis->dameval($mSQL));
-		// Comprueba si existe la Ruta
-		$mSQL = "SELECT COUNT(*) AS cana FROM sclirut WHERE ruta=${dbruta}";
-		$resta = intval($this->datasis->dameval($mSQL));
-		if($resta == 1 && $rcli == 1){
-			$mSQL = "SELECT cliente FROM scli WHERE id=${dbid}";
-			$cliente = $this->datasis->dameval($mSQL);
-			$dbcliente = $this->db->escape($cliente);
-			$mSQL = "DELETE FROM sclitrut WHERE cliente=${dbcliente} AND ruta=${dbruta} ";
-			$this->db->query($mSQL);
+		$id     = intval($id);
+		if($id>0){
+			$dbid = $this->db->escape($id);
+			$mSQL = "SELECT ruta,dia FROM sclitrut WHERE id=${dbid}";
+			$row  = $this->datasis->damerow($mSQL);
+			if(!empty($row)){
+				$ruta  = $row['ruta'];
+				$dia   = intval($row['dia']);
+
+				$dbruta = $this->db->escape($ruta);
+				$mSQL   = "DELETE FROM sclitrut WHERE id=${dbid}";
+				$ban =$this->db->simple_query($mSQL);
+
+				if($ban){
+					//Arregla la secuencia
+					$pos    = 0;
+					$mSQL   = "SELECT id,ruta,dia,pos FROM sclitrut WHERE ruta=${dbruta} AND dia=${dia} ORDER BY pos";
+					$query  = $this->db->query($mSQL);
+					foreach($query->result() as $row){
+						$pos++;
+						if(intval($row->pos)!=$pos){
+							$sql = "UPDATE sclitrut SET pos=${pos} WHERE id=".$row->id;
+							$this->db->simple_query($sql);
+						}
+					}
+				}
+			}else{
+				$salida = 'Error en los datos';
+			}
 		}else{
-			$salida = 'Error en los datos';
+			$salida = 'Id no valido';
 		}
 		echo $salida;
+		return true;
 	}
 
 
@@ -3261,7 +3274,10 @@ function chrif(rif){
 		}
 
 		$nombre = 'verutatab';
-		$mSQL = 'SELECT a.cliente, a.rifci, a.nombre, b.pos, b.dia , a.id eli, a.id AS id_scli, b.id FROM scli a JOIN sclitrut b ON a.cliente=b.cliente WHERE b.ruta='.$dbruta.' ORDER BY b.dia, b.pos';
+		$mSQL = 'SELECT a.cliente, a.rifci, a.nombre, b.pos, b.dia , b.id eli, a.id AS id_scli, b.id
+			FROM scli a
+			JOIN sclitrut b ON a.cliente=b.cliente
+			WHERE b.ruta='.$dbruta.' ORDER BY b.dia, b.pos';
 		$columnas = $this->datasis->jqdata($mSQL,'verutatabdat');
 		$colModel = "
 		{name:'cliente', index:'cliente', label:'Cliente', width: 50, sortable:false},
@@ -3270,7 +3286,8 @@ function chrif(rif){
 		{name:'rifci',   index:'rifci',   label:'RIF/CI',  width: 80, sortable:false},
 		{name:'nombre',  index:'nombre',  label:'Nombre',  width:300, sortable:false},
 		{name:'eli',     index:'eli',     label:' ',       width: 25, sortable:false, formatter: fsele },
-		{name:'id',      index:'id',      label:'id',      width: 10, sortable:false, hidden:'true'} ";
+		{name:'id',      index:'id',      label:'id',      width:  2, sortable:false, hidden:'true'},
+		{name:'id_scli', index:'id_scli', label:'scli',    width:  2, sortable:false, hidden:'true'}";
 
 		$url=site_url($this->url.'citrut');
 		$Salida  = '<script>';
@@ -3287,7 +3304,13 @@ function chrif(rif){
 			loadonce: true,
 			viewrecords: true,
 			editurl: "",
-			multiSort: false
+			multiSort: false,
+			ondblClickRow: function(id,row,col,e){
+				var ret = $("#'.$nombre.'").jqGrid(\'getRowData\',id);
+				if(ret){
+					window.open("'.site_url('ventas/scli/mapa').'/"+ret.id_scli, "mapa", "directories=no, location=no, menubar=no, scrollbars=yes, statusbar=no, tittlebar=no, width=605, height=615");
+				}
+			}
 		}).jqGrid("sortableRows",{
 			update: function (ev, ui){
 
@@ -3327,7 +3350,7 @@ function chrif(rif){
 			var dsemana = new Array("","Dom","Lun","Mar","Mie","Jue","Vie","Sab");
 			var color   = new Array("","#DC143C","#0000FF","#006400","#FF8C00","#A0522D","#8A2BE2","#483D8B");
 			var ind = Number(cellvalue);
-			if(ind>0 && ind < 8){
+			if(ind>0 && ind<8){
 				return "<span style=\'color:"+color[ind]+"\' title=\'"+ind+"\'>"+dsemana[ind]+"</span>";
 			}
 			return "--";
@@ -3341,6 +3364,8 @@ function chrif(rif){
 				if (iid == lista[i]){
 					pos = pos+1;
 					sdias[ddi] = sdias[ddi]+1;
+					continue;
+				}else if(iid == (-1)*lista[i]){
 					continue;
 				}
 
@@ -3366,21 +3391,26 @@ function chrif(rif){
 			$("#td_sum").text(sdias[0]);
 		}
 
-
 		'.$columnas['data'].'
 		for(var i=0;i<='.$nombre."dat".'.length;i++) $("#'.$nombre.'").jqGrid(\'addRowData\',i+1,'.$nombre.'dat[i]);
 		';
 
 		$Salida .= '
 		function fsele( el, val, opts ){
-			var meco=\'<div><a onclick="quitaruta(\\\''.$ruta.'\\\',\'+el+\')">'.img(array('src'=>'images/elimina4.png', 'height'=> 20, 'alt'=>'Elimina el cliente de la ruta', 'title'=>'Elimina el cliente de la ruta', 'border'=>'0')).'</a></div>\';
+			var meco=\'<div><a onclick="quitaruta(\'+el+\',\'+val.rowId+\')">'.img(array('src'=>'images/elimina4.png', 'height'=> 20, 'alt'=>'Elimina el cliente de la ruta', 'title'=>'Elimina el cliente de la ruta', 'border'=>'0')).'</a></div>\';
 			return meco;
 		}
 
-		function quitaruta(ruta, id){
-			//$.post("'.site_url($this->url.'rutaresta').'/"+id+"/"+ruta);
-			$("#'.$nombre.'").jqGrid("delGridRow", id,{ });
-			//totaliza(-1,-1);
+		function quitaruta(id, rowid){
+			$("#'.$nombre.'").jqGrid("delGridRow", rowid,{
+				url : "'.site_url($this->url.'rutaresta').'/"+id+"/",
+				mtype : "post",
+				reloadAfterSubmit : false,
+				afterSubmit : function(response, postdata){
+					totaliza((-1)*rowid,-1);
+					return [true,"act"];
+				}
+			});
 		}';
 		$Salida .= '</script><table id="verutatab"></table><div id="pnewapi_21293249"></div>';
 
