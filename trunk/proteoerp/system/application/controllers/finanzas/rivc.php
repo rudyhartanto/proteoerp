@@ -2143,7 +2143,7 @@ class Rivc extends Controller {
 		if(!empty($sprmreinte)){
 			$dbsprmreinte=$this->db->escape($sprmreinte);
 			//Chequea que no este abonado
-			$abonos=$this->datasis->dameval("SELECT abonos FROM sprm WHERE numero=${dbsprmreinte} AND transac=$dbtransac");
+			$abonos=$this->datasis->dameval("SELECT abonos FROM sprm WHERE numero=${dbsprmreinte} AND transac=${dbtransac}");
 			if($abonos>0){
 				$do->error_message_ar['pre_del'] = $do->error_message_ar['delete']='Algunos de los movimientos asociados han sido aplicados, debe reversarlos antes de proceder';
 				return false;
