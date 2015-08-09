@@ -913,7 +913,7 @@ class Casi extends Controller {
 		$edit->total->type ='inputhidden';
 
 		$edit->usuario = new autoUpdateField('usuario',$this->session->userdata('usuario'),$this->session->userdata('usuario'));
-		$edit->origen = new autoUpdateField('origen'  ,'MANUAL','MANUAL');
+		$edit->origen  = new autoUpdateField('origen'  ,'MANUAL','MANUAL');
 
 		$edit->buttons('add_rel');
 		$edit->build();
