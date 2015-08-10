@@ -2257,15 +2257,6 @@ datos vía telefónica.";
 		if(!in_array('notifica', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN notifica CHAR(1)      NULL DEFAULT NULL AFTER fechadep');
 		if(!in_array('favorito', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN favorito CHAR(1)      NULL DEFAULT NULL AFTER notifica');
 		if(!in_array('grupo',    $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN grupo    INT          NULL DEFAULT "0"  AFTER favorito');
-	}
-
-	function en_utf8($str){
-		if($this->config->item('charset')=='UTF-8' && $this->db->char_set=='latin1'){
-			return utf8_encode($str);
-		}else{
-			return $str;
-		}
-	}
 
 
 		if(!$this->db->table_exists('spregr')){
@@ -2281,9 +2272,17 @@ datos vía telefónica.";
 			ENGINE=MyISAM
 			ROW_FORMAT=DYNAMIC;";
 			$this->db->simple_query($mSQL);
+		}
 
+	}
 
-
+	function en_utf8($str){
+		if($this->config->item('charset')=='UTF-8' && $this->db->char_set=='latin1'){
+			return utf8_encode($str);
+		}else{
+			return $str;
+		}
+	}
 
 
 }
