@@ -52,6 +52,7 @@ class Spre extends Controller {
 
 		$grid->wbotonadd(array('id'=>'bcorreo', 'img'=>'assets/default/images/mail_btn.png','alt' => 'Notificacion',  'label'=>'Notificar por email'));
 		$grid->wbotonadd(array('id'=>'bfavori', 'img'=>'images/star.png','alt'     => 'Marcar Favorito',      'label'=>'Marcar Favorito'));
+		$grid->wbotonadd(array('id'=>'bgrfavo', 'img'=>'images/star.png','alt'     => 'Grupo de Favorito',    'label'=>'Grupo de Favorito'));
 
 		$WestPanel = $grid->deploywestp();
 
@@ -305,6 +306,18 @@ class Spre extends Controller {
 			} else { $.prompt("<h1>Por favor Seleccione un Presupuesto</h1>");}
 		});';
 
+
+		$bodyscript .= '
+		$("#bgrfavo").click(function(){
+			$.post("'.site_url('ventas/spre/grform').'",
+			function(data){
+				$("#fshow").html(data);
+				$("#fshow").dialog( { title:"GRUPOS", width: 370, height: 400, modal: true } );
+				$("#fshow").dialog( "open" );
+			});
+		});';
+
+
 		$bodyscript .= '
 		$("#bffact").click(function(){
 			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
@@ -378,179 +391,6 @@ class Spre extends Controller {
 
 		$bodyscript .= '
 		$("#fedita").dialog({ autoOpen: false, height: 550, width: 800, modal: true });';
-
-/*
-		$bodyscript .= '
-		function bfedita( tipo ){
-			if (tipo == 1){
-				$("#fedita").dialog({
-					buttons: {
-						"Guardar": function() {
-							if($("#scliexp").dialog( "isOpen" )===true) {
-								$("#scliexp").dialog("close");
-							}
-							var murl = $("#df1").attr("action");
-							allFields.removeClass( "ui-state-error" );
-							$.ajax({
-								type: "POST", dataType: "html", async: false,
-								url: murl,
-								data: $("#df1").serialize(),
-								success: function(r,s,x){
-									try{
-										var json = JSON.parse(r);
-										if (json.status == "A"){
-											apprise("Registro Guardado");
-											$( "#fedita" ).dialog( "close" );
-											grid.trigger("reloadGrid");
-											'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
-											return true;
-										} else {
-											apprise(json.mensaje);
-										}
-									}catch(e){
-										$("#fedita").html(r);
-									}
-								}
-							})
-						},
-						"Cancelar": function() {
-							$("#fedita").html("");
-							$( this ).dialog( "close" );
-						}
-					},
-					close: function() { 
-						cierra("fedita");
-					}
-				});
-			} else if( tipo == 2) {
-				$("#fedita").dialog({buttons: {
-					"Duplicar": function() {
-						if($("#scliexp").dialog( "isOpen" )===true) {
-							$("#scliexp").dialog("close");
-						}
-						var bValid = true;
-						var murl = $("#df1").attr("action");
-						var m = 0;
-						murl = murl.replace("update","insert");
-						m = murl.indexOf("insert")+6;
-						if ( m > 6){murl = murl.substring(0,m);}
-						alert(murl);
-						allFields.removeClass( "ui-state-error" );
-						$.ajax({
-							type: "POST", dataType: "html", async: false,
-							url: murl,
-							data: $("#df1").serialize(),
-							success: function(r,s,x){
-								try{
-									var json = JSON.parse(r);
-									if (json.status == "A"){
-										//apprise("Registro Guardado");
-										$( "#fedita" ).dialog( "close" );
-										grid.trigger("reloadGrid");
-										'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
-										return true;
-									} else {
-										apprise(json.mensaje);
-									}
-								}catch(e){
-									$("#fedita").html(r);
-								}
-							}
-						})
-					},
-					"Cancelar": function() {
-						if($("#scliexp").dialog( "isOpen" )===true) {
-							$("#scliexp").dialog("close");
-						}
-		
-						$("#fedita").html("");
-						$( this ).dialog( "close" );
-					}
-				}});
-			} else {
-		
-		
-			}
-		};
-		';
-*/
-
-
-/*
-						"Guardar": function() {
-							if($("#scliexp").dialog( "isOpen" )===true) {
-								$("#scliexp").dialog("close");
-							}
-							var murl = $("#df1").attr("action");
-							allFields.removeClass( "ui-state-error" );
-							$.ajax({
-								type: "POST", dataType: "html", async: false,
-								url: murl,
-								data: $("#df1").serialize(),
-								success: function(r,s,x){
-									try{
-										var json = JSON.parse(r);
-										if (json.status == "A"){
-											apprise("Registro Guardado");
-											$( "#fedita" ).dialog( "close" );
-											grid.trigger("reloadGrid");
-											'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
-											return true;
-										} else {
-											apprise(json.mensaje);
-										}
-									}catch(e){
-										$("#fedita").html(r);
-									}
-								}
-							})
-						},
-						"Cancelar": function() {
-							$("#fedita").html("");
-							$( this ).dialog( "close" );
-						}
-					},
-					close: function() { cierra("fedita");}
-				});
-			} else if( tipo == 2) {
-				$("#fedita").dialog({buttons: {
-					"Duplicar": function() {
-						if($("#scliexp").dialog( "isOpen" )===true) {
-							$("#scliexp").dialog("close");
-						}
-						var bValid = true;
-						var murl = $("#df1").attr("action");
-						var m = 0;
-						murl = murl.replace("update","insert");
-						m = murl.indexOf("insert")+6;
-						if ( m > 6){murl = murl.substring(0,m);}
-						alert(murl);
-						allFields.removeClass( "ui-state-error" );
-						$.ajax({
-							type: "POST", dataType: "html", async: false,
-							url: murl,
-							data: $("#df1").serialize(),
-							success: function(r,s,x){
-								try{
-									var json = JSON.parse(r);
-									if (json.status == "A"){
-										//apprise("Registro Guardado");
-										$( "#fedita" ).dialog( "close" );
-										grid.trigger("reloadGrid");
-										'.$this->datasis->jwinopen(site_url('formatos/ver/PRESUP').'/\'+json.pk.id+\'/id\'').';
-										return true;
-									} else {
-										apprise(json.mensaje);
-									}
-								}catch(e){
-									$("#fedita").html(r);
-								}
-							}
-						})
-					},
-
-
-*/
 
 		$bodyscript .= '
 		function cierra(dlg){
@@ -683,6 +523,121 @@ class Spre extends Controller {
 		$bodyscript .= '</script>';
 		return $bodyscript;
 	}
+
+
+	//******************************************************************
+	// Grupos de favorito
+	//
+	function grform(){
+		$grid  = new $this->jqdatagrid;
+
+		$grid->addField('id');
+		$grid->label('Id');
+		$grid->params(array(
+			'align'         => "'center'",
+			'frozen'        => 'true',
+			'width'         => 40,
+			'editable'      => 'false',
+			'search'        => 'false',
+			'hidden'        => 'true'
+		));
+
+		$grid->addField('grupo');
+		$grid->label('Grupo');
+		$grid->params(array(
+			'search'        => 'true',
+			'editable'      => 'true',
+			'align'         => "'left'",
+			'edittype'      => "'text'",
+			'width'         => 80,
+		));
+
+		$grid->showpager(true);
+		$grid->setViewRecords(false);
+		$grid->setWidth('350');
+		$grid->setHeight('220');
+
+		$grid->setUrlget(site_url('ventas/spre/grgd/'));
+		$grid->setUrlput(site_url('ventas/spre/grsd/'));
+
+		$mgrid = $grid->deploy();
+
+		$msalida  = '<script type="text/javascript">'."\n";
+		$msalida .= '
+		$("#newapi'.$mgrid['gridname'].'").jqGrid({
+			ajaxGridOptions : {type:"POST"}
+			,jsonReader : { root:"data", repeatitems: false }
+			'.$mgrid['table'].'
+			,scroll: true
+			,pgtext: null, pgbuttons: false, rowList:[]
+		})
+		$("#newapi'.$mgrid['gridname'].'").jqGrid(\'navGrid\',  "#pnewapi'.$mgrid['gridname'].'",{edit:false, add:false, del:true, search: false});
+		$("#newapi'.$mgrid['gridname'].'").jqGrid(\'inlineNav\',"#pnewapi'.$mgrid['gridname'].'");
+		$("#newapi'.$mgrid['gridname'].'").jqGrid(\'filterToolbar\');
+		';
+
+		$msalida .= "\n</script>\n";
+		$msalida .= '<id class="anexos"><table id="newapi'.$mgrid['gridname'].'"></table>';
+		$msalida .= '<div   id="pnewapi'.$mgrid['gridname'].'"></div></div>';
+
+		echo $msalida;
+
+	}
+
+	//******************************************************************
+	// Busca la data en el Servidor por json
+	//
+	function grgd(){
+		$grid       = $this->jqdatagrid;
+		// CREA EL WHERE PARA LA BUSQUEDA EN EL ENCABEZADO
+		$mWHERE = $grid->geneTopWhere('spregr');
+		$response   = $grid->getData('spregr', array(array()), array(), false, $mWHERE );
+		$rs = $grid->jsonresult( $response);
+		echo $rs;
+	}
+
+	//******************************************************************
+	// Guarda la Informacion del Grid o Tabla
+	//
+	function grsd(){
+		$this->load->library('jqdatagrid');
+		$oper   = $this->input->post('oper');
+		$id     = $this->input->post('id');
+		$data   = $_POST;
+		$check  = 0;
+
+		unset($data['oper']);
+		unset($data['id']);
+		if($oper == 'add'){
+			if(false == empty($data)){
+				$check = 0; //$this->datasis->dameval("SELECT count(*) FROM medesp WHERE especialidad=".$this->db->escape($data['especialidad']));
+				if ( $check == 0 ){
+					$this->db->insert('spregr', $data);
+					echo "Registro Agregado";
+					logusu('SPREGR',"Registro  INCLUIDO");
+				} else
+					echo "Ya existe un registro con ese nombre";
+			} else
+				echo "Fallo Agregado!!!";
+
+		} elseif($oper == 'edit') {
+			$this->db->where("id", $id);
+			$this->db->update('spregr', $data);
+			logusu('SPREGR',"Grupos de presupuesto  ".$data['grupo']." MODIFICADO");
+			echo "$mcodp Modificado";
+
+		} elseif($oper == 'del') {
+			$check = $this->datasis->dameval("SELECT count(*) FROM spre WHERE grupo=$id");
+			if ($check > 0){
+				echo " El registro no puede ser eliminado; tiene presupuestos asignados ";
+			} else {
+				$this->db->query("DELETE FROM spregr WHERE id=$id ");
+				logusu('SPREGR',"Registro $id ELIMINADO");
+				echo "Registro Eliminado";
+			}
+		};
+	}
+
 
 	//******************************************************************
 	// Notificar por Correo
@@ -829,6 +784,19 @@ datos vía telefónica.";
 			'editoptions'   => '{ size:40, maxlength: 40 }',
 		));
 
+		$grid->addField('totalg');
+		$grid->label('Total');
+		$grid->params(array(
+			'search'        => 'true',
+			'editable'      => $editar,
+			'align'         => "'right'",
+			'edittype'      => "'text'",
+			'width'         => 100,
+			'editrules'     => '{ required:true }',
+			'editoptions'   => '{ size:10, maxlength: 10, dataInit: function (elem) { $(elem).numeric(); }  }',
+			'formatter'     => "'number'",
+			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
+		));
 
 		$grid->addField('totals');
 		$grid->label('Base');
@@ -858,19 +826,26 @@ datos vía telefónica.";
 			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
 		));
 
-		$grid->addField('totalg');
-		$grid->label('Total');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'align'         => "'right'",
-			'edittype'      => "'text'",
-			'width'         => 100,
-			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:10, maxlength: 10, dataInit: function (elem) { $(elem).numeric(); }  }',
-			'formatter'     => "'number'",
-			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
-		));
+
+		$hay = $this->datasis->dameval( "SELECT count(*) FROM spregr ORDER BY grupo ");
+
+		if ( $hay > 0 ){
+			$mSQL = "SELECT id, grupo FROM spregr ORDER BY grupo ";
+			$agrupo  = $this->datasis->llenajqselect($mSQL, false );
+	
+			$grid->addField('grupo');
+			$grid->label('Grupo');
+			$grid->params(array(
+				'search'        => 'true',
+				'editable'      => 'true',
+				'align'         => "'center'",
+				'edittype'      => "'text'",
+				'width'         => 50,
+				'edittype'      => "'select'",
+				'editrules'     => '{ required:false}',
+				'editoptions'   => '{value: '.$agrupo.', style:"width:150px" }',
+			));
+		}
 
 		$grid->addField('vd');
 		$grid->label('Vendedor');
@@ -1078,10 +1053,11 @@ datos vía telefónica.";
 		$data   = $_POST;
 		$mcodp  = 'numero';
 		$check  = 0;
-/*
+
 		unset($data['oper']);
 		unset($data['id']);
 		if($oper == 'add'){
+/*
 			if(false == empty($data)){
 				$check = $this->datasis->dameval("SELECT count(*) FROM spre WHERE $mcodp=".$this->db->escape($data[$mcodp]));
 				if ( $check == 0 ){
@@ -1093,25 +1069,26 @@ datos vía telefónica.";
 					echo "Ya existe un registro con ese $mcodp";
 			} else
 				echo "Fallo Agregado!!!";
-
+*/
 		} elseif($oper == 'edit') {
-			$nuevo  = $data[$mcodp];
-			$anterior = $this->datasis->dameval("SELECT $mcodp FROM spre WHERE id=$id");
-			if ( $nuevo <> $anterior ){
-				//si no son iguales borra el que existe y cambia
-				$this->db->query("DELETE FROM spre WHERE $mcodp=?", array($mcodp));
-				$this->db->query("UPDATE spre SET $mcodp=? WHERE $mcodp=?", array( $nuevo, $anterior ));
-				$this->db->where("id", $id);
-				$this->db->update("spre", $data);
-				logusu('SPRE',"$mcodp Cambiado/Fusionado Nuevo:".$nuevo." Anterior: ".$anterior." MODIFICADO");
-				echo "Grupo Cambiado/Fusionado en clientes";
-			} else {
+			//$nuevo  = $data[$mcodp];
+			//$anterior = $this->datasis->dameval("SELECT $mcodp FROM spre WHERE id=$id");
+			
+			//if ( $nuevo <> $anterior ){
+			//	//si no son iguales borra el que existe y cambia
+			//	$this->db->query("DELETE FROM spre WHERE $mcodp=?", array($mcodp));
+			//	$this->db->query("UPDATE spre SET $mcodp=? WHERE $mcodp=?", array( $nuevo, $anterior ));
+			//	$this->db->where("id", $id);
+			//	$this->db->update("spre", $data);
+			//	logusu('SPRE',"$mcodp Cambiado/Fusionado Nuevo:".$nuevo." Anterior: ".$anterior." MODIFICADO");
+			//	echo "Grupo Cambiado/Fusionado en clientes";
+			//} else {
 				unset($data[$mcodp]);
 				$this->db->where("id", $id);
 				$this->db->update('spre', $data);
-				logusu('SPRE',"Grupo de Cliente  ".$nuevo." MODIFICADO");
-				echo "$mcodp Modificado";
-			}
+				logusu('SPRE',"Grupo de Cliente  ".$id." MODIFICADO");
+				echo "Presupuesto Modificado";
+			//}
 
 		} elseif($oper == 'del') {
 			$meco = $this->datasis->dameval("SELECT $mcodp FROM spre WHERE id=$id");
@@ -1124,7 +1101,7 @@ datos vía telefónica.";
 				echo "Registro Eliminado";
 			}
 		};
-*/
+
 	}
 
 	//******************************************************************
@@ -2279,6 +2256,7 @@ datos vía telefónica.";
 		if(!in_array('fechadep', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN fechadep DATE         NULL DEFAULT NULL AFTER tipo_op' );
 		if(!in_array('notifica', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN notifica CHAR(1)      NULL DEFAULT NULL AFTER fechadep');
 		if(!in_array('favorito', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN favorito CHAR(1)      NULL DEFAULT NULL AFTER notifica');
+		if(!in_array('grupo',    $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN grupo    INT          NULL DEFAULT "0"  AFTER favorito');
 	}
 
 	function en_utf8($str){

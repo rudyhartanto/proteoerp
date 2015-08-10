@@ -102,7 +102,7 @@ class Medhisto extends Common {
 		$bodyscript .= '});';
 
 		$bodyscript .= '
-		jQuery("#phistoria").click( function(){
+		$("#phistoria").click( function(){
 			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id)	{
 				var ret = jQuery("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
@@ -111,7 +111,7 @@ class Medhisto extends Common {
 		});';
 
 		$bodyscript .= '
-		jQuery("#gvisitas").click( function(){
+		$("#gvisitas").click( function(){
 			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id)	{
 				$.post("'.site_url('medico/medhvisita/dataefla/create').'/"+id, function(data){
@@ -503,6 +503,7 @@ class Medhisto extends Common {
 	function getdata(){
 		$grid       = $this->jqdatagrid;
 
+		$this->db->simple_query('SET group_concat_max_len=1500');
 		// CREA EL WHERE PARA LA BUSQUEDA EN EL ENCABEZADO
 		$mWHERE = $grid->geneTopWhere('view_medhisto');
 
