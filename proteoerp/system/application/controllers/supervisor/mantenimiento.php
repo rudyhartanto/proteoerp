@@ -1532,6 +1532,84 @@ function elminacenti(cual){
 		echo $mSQL;
 	}
 
+/*
+PARA CREAR SFAC A PARTIR DE LAS DEMAS TABLAS 
+ 
+INSERT IGNORE INTO sfac (tipo_doc,numero,fecha,vence,vd,cod_cli,rifci,nombre,direc,dire1,orden,referen,iva,inicial,totals,totalg,status,observa,observ1,devolu,cajero,almacen,peso,factura,pedido,usuario,estampa,hora,transac,nfiscal,zona,ciudad,comision,pagada,sepago,dias,fpago,comical,exento,tasa,reducida,sobretasa,montasa,monredu,monadic,notcred,fentrega,fpagom,fdespacha,udespacha,numarma,maqfiscal,id,dmaqfiscal,nromanual,fmanual)
+SELECT 
+aa.tipoa                     AS tipo_doc    ,                                                   
+aa.numa                      AS numero      ,
+aa.fecha                     AS fecha       ,
+aa.fecha                     AS vence       ,
+aa.vendedor                  AS vd          ,
+aa.cliente                   AS cod_cli     ,
+aa.rifci                     AS rifci       ,
+aa.nombre                    AS nombre      ,
+aa.dire11                    AS direc       ,
+aa.dire12                    AS dire1       ,
+''                           AS orden       ,
+'C'                          AS referen     ,
+SUM(aa.iva)                  AS iva         ,
+0                            AS inicial     ,
+SUM(aa.tota)                 AS totals      ,
+SUM(aa.tota+aa.iva)          AS totalg      ,
+''                           AS status      ,
+''                           AS observa     ,
+'RC'                         AS observ1     ,
+0                            AS devolu      ,
+aa.cajero                    AS cajero      ,
+'0001'                       AS almacen     ,
+0                            AS peso        ,
+''                           AS factura     ,
+''                           AS pedido      ,
+aa.usuario                   AS usuario     ,
+aa.estampa                   AS estampa     ,
+aa.hora                      AS hora        ,
+aa.transac                   AS transac     ,
+''                           AS nfiscal     ,
+''                           AS zona        ,
+''                           AS ciudad      ,
+0                            AS comision    ,
+'N'                          AS pagada      ,
+'N'                          AS sepago      ,
+0                            AS dias        ,
+NULL                         AS fpago       ,
+0                            AS comical     ,
+SUM(aa.tota*(aa.sinviva=0))  AS exento      ,
+SUM(aa.iva*(aa.sinviva=12))  AS tasa        ,
+SUM(aa.iva*(aa.sinviva=8))   AS reducida    ,
+SUM(aa.iva*(aa.sinviva=22))  AS sobretasa   ,
+SUM(aa.tota*(aa.sinviva=12)) AS montasa     ,
+SUM(aa.tota*(aa.sinviva=8))  AS monredu     ,
+SUM(aa.tota*(aa.sinviva=22)) AS monadic     ,
+''                           AS notcred     ,
+''                           AS fentrega    ,
+''                           AS fpagom      ,
+''                           AS fdespacha   ,
+''                           AS udespacha   ,
+''                           AS numarma     ,
+''                           AS maqfiscal   ,
+null                         AS id          ,                
+''                           AS dmaqfiscal  ,                
+''                           AS nromanual   ,                
+''                           AS fmanual                                               
+
+FROM
+(
+SELECT b.*,c.iva AS sinviva,c.peso,e.cliente,e.nombre,e.dire11,e.dire12,e.rifci
+FROM sfac AS a
+RIGHT JOIN sitems AS b ON a.tipo_doc=b.tipoa AND a.numero=b.numa
+JOIN sinv AS c ON b.codigoa=c.codigo
+#JOIN sfpa AS d ON d.numero=b.numa AND d.tipo_doc='FE' AND b.tipoa='F'
+JOIN smov AS d ON d.numero=b.numa AND d.tipo_doc='FC' AND b.tipoa='F'
+JOIN scli AS e ON d.cod_cli=e.cliente WHERE a.numero IS NULL
+AND b.fecha = 20150727
+#BETWEEN  20100918 AND 20111231
+) AS aa
+GROUP BY aa.tipoa,aa.numa
+
+*/
+
 	function factraza($numero=null){
 		$this->datasis->modulo_id('900',1);
 		if(empty($numero)) show_error('Falta n&uacute;mero de factura');

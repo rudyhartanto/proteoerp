@@ -1506,6 +1506,12 @@ if(isset($form->error_string))echo '<div class="alert">'.$form->error_string.'</
 				</tr>
 			</table>
 			</fieldset>
+			<table width='100%' cellpadding='0' cellspacing='0'>
+				<tr>
+					<td class='littletableheaderc'><?php echo $form->servidor->label ?></td>
+					<td class='littletablerow'    ><?php echo $form->servidor->output ?></td>
+				</tr>
+			</table>
 		</td>
 	</tr>
 	</table>

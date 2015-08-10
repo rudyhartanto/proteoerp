@@ -3129,6 +3129,15 @@ class Sinv extends Controller {
 		$edit->redecen->insertValue='N';
 		$edit->redecen->onchange='calculos(\'S\');';
 
+		$edit->servidor = new dropdownField('Registrar quien o que presta o fabrica este servicio', 'servidor');
+		$edit->servidor->style='width:45px;';
+		$edit->servidor->option('N' ,'No');
+		$edit->servidor->option('S' ,'Si');
+		$edit->servidor->insertValue='N';
+		//$edit->servidor->rule='enum[N,S]';
+		$edit->servidor->title='Activar si este item es instalado o realizado por alguien o utiliza algun recurso';
+
+
 		$edit->linfe = new dropdownField('Limitar ventas', 'linfe');
 		$edit->linfe->style='width:45px;';
 		$edit->linfe->option('N' ,'No');
@@ -6657,6 +6666,7 @@ class Sinv extends Controller {
 		if (!in_array('cpe'        ,$campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `cpe`         VARCHAR(20)   NULL  COMMENT 'Registro de CPE'");
 		if (!in_array('tasa'       ,$campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `cpe`         VARCHAR(20)   NULL  COMMENT 'Tasa asociada'");
 
+		if (!in_array('servidor'   ,$campos)) $this->db->simple_query("ALTER TABLE sinv ADD COLUMN servidor        CHAR(1)       NULL DEFAULT 'N' AFTER mmargen");
 		if (!in_array('linfe'      ,$campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `linfe`       CHAR(1)       NULL DEFAULT 'N' ");
 		if (!in_array('lindia'     ,$campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `lindia`      INT(5)        NULL DEFAULT '0'");
 		if (!in_array('lincan'     ,$campos)) $this->db->simple_query("ALTER TABLE `sinv` ADD COLUMN `lincan`      INT(5)        NULL DEFAULT '0' AFTER lindia");
