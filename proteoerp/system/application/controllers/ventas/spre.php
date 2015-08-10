@@ -2267,4 +2267,23 @@ datos vía telefónica.";
 		}
 	}
 
+
+		if(!$this->db->table_exists('spregr')){
+			$mSQL="
+			CREATE TABLE spregr (
+				grupo VARCHAR(60) NOT NULL DEFAULT '',
+				id INT(11) NOT NULL AUTO_INCREMENT,
+			PRIMARY KEY (id),
+			UNIQUE INDEX grupo (grupo)
+			)
+			COMMENT='Grupos de presupuestos'
+			COLLATE='latin1_swedish_ci'
+			ENGINE=MyISAM
+			ROW_FORMAT=DYNAMIC;";
+			$this->db->simple_query($mSQL);
+
+
+
+
+
 }
