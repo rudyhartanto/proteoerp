@@ -22,7 +22,7 @@ class Mantenimiento extends Controller{
 
 		$contenido .= $this->opciontb(
 			'Actualizar Proteo',
-			anchor('#',img(array('src'=>'assets/default/images/logo.png','border'=>'0','alt'=>'Actualizar','width'=>'130px')),array('onclick'=>'bobo(\''.base_url().'supervisor/mantenimiento/actualizaproteo\');return false;')),
+			anchor('#',img(array('src'=>'assets/default/images/logo.png','border'=>'0','alt'=>'Actualizar','width'=>'130px')),array('onclick'=>'actualiza(\''.base_url().'supervisor/mantenimiento/actualizaproteo\');return false;')),
 			'Actualiza a la &uacute;ltima vesi&oacute;n'
 		);
 
@@ -136,6 +136,21 @@ function bobo(url,mensa){'."
 	if ( !mensa ){ $.prompt(data); }
 
 	});
+	return false;
+}
+
+function actualiza(url,mensa){'."
+
+	var r = confirm('Tenga presente que la actualización no toma en cuenta las personalizaciones de cada cliente y puede ser necesario actualizar otros sistemas dependientes como Cerix, Farmasis o PDVA, esta acción es bajo su propia responsabilidad, desea continuar?');
+	if(r == true){
+		$.blockUI({message: $('#displayBox'),css:{top:($(window).height()-400)/2+'px',left:($(window).width() -300)/2+'px',width:'400px'}".'});
+		$.get(url, function(data){
+			setTimeout($.unblockUI, 2);
+			if(!mensa){
+				$.prompt(data);
+			}
+		});
+	}
 	return false;
 }
 
@@ -1533,11 +1548,11 @@ function elminacenti(cual){
 	}
 
 /*
-PARA CREAR SFAC A PARTIR DE LAS DEMAS TABLAS 
- 
+PARA CREAR SFAC A PARTIR DE LAS DEMAS TABLAS
+
 INSERT IGNORE INTO sfac (tipo_doc,numero,fecha,vence,vd,cod_cli,rifci,nombre,direc,dire1,orden,referen,iva,inicial,totals,totalg,status,observa,observ1,devolu,cajero,almacen,peso,factura,pedido,usuario,estampa,hora,transac,nfiscal,zona,ciudad,comision,pagada,sepago,dias,fpago,comical,exento,tasa,reducida,sobretasa,montasa,monredu,monadic,notcred,fentrega,fpagom,fdespacha,udespacha,numarma,maqfiscal,id,dmaqfiscal,nromanual,fmanual)
-SELECT 
-aa.tipoa                     AS tipo_doc    ,                                                   
+SELECT
+aa.tipoa                     AS tipo_doc    ,
 aa.numa                      AS numero      ,
 aa.fecha                     AS fecha       ,
 aa.fecha                     AS vence       ,
@@ -1589,10 +1604,10 @@ SUM(aa.tota*(aa.sinviva=22)) AS monadic     ,
 ''                           AS udespacha   ,
 ''                           AS numarma     ,
 ''                           AS maqfiscal   ,
-null                         AS id          ,                
-''                           AS dmaqfiscal  ,                
-''                           AS nromanual   ,                
-''                           AS fmanual                                               
+null                         AS id          ,
+''                           AS dmaqfiscal  ,
+''                           AS nromanual   ,
+''                           AS fmanual
 
 FROM
 (
