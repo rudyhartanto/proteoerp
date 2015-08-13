@@ -96,7 +96,7 @@ class Spre extends Controller {
 					$("#scliexp").dialog("close");
 				}
 				var murl = $("#df1").attr("action");
-				allFields.removeClass( "ui-state-error" );
+				//allFields.removeClass( "ui-state-error" );
 				$.ajax({
 					type: "POST", dataType: "html", async: false,
 					url: murl,
@@ -161,7 +161,7 @@ class Spre extends Controller {
 		';
 
 		$btcerrar = '
-			close: function() { 
+			close: function() {
 				if($("#scliexp").dialog( "isOpen" )===true) {
 					$("#scliexp").dialog("close");
 				}
@@ -177,7 +177,7 @@ class Spre extends Controller {
 			var id  = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			var favo = "N";
 			var ruta = "'.site_url('ventas/spre/dataedit/create').'";
-			if(id){	
+			if(id){
 				var ret = $("#newapi'.$grid0.'").getRowData(id);
 				favo = ret.favorito;
 				ruta = "'.site_url('ventas/spre/dataedit/modify/').'/"+id;
@@ -187,7 +187,7 @@ class Spre extends Controller {
 			function(data){
 				if (favo != "S"){  // Guardar y Cancelar
 					$("#fedita").dialog({
-						buttons: { 
+						buttons: {
 							'.$btguardar.'
 							'.$btcancelar.'
 						},
@@ -195,7 +195,7 @@ class Spre extends Controller {
 					});
 				} else { // Solo Duplicar
 					$("#fedita").dialog({
-						buttons: { 
+						buttons: {
 							'.$btduplicar.'
 							'.$btcancelar.'
 						},
@@ -214,11 +214,11 @@ class Spre extends Controller {
 				var ret  = $("#newapi'.$grid0.'").getRowData(id);
 				var favo = ret.favorito;
 				mId = id;
-				$.post("'.site_url($this->url.'dataedit/modify').'/"+id, 
+				$.post("'.site_url($this->url.'dataedit/modify').'/"+id,
 				function(data){
 					if (favo != "S"){  // Guardar y Cancelar
 						$("#fedita").dialog({
-							buttons: { 
+							buttons: {
 								'.$btguardar.'
 								'.$btcancelar.'
 							},
@@ -226,7 +226,7 @@ class Spre extends Controller {
 						});
 					} else { // Solo Duplicar
 						$("#fedita").dialog({
-							buttons: { 
+							buttons: {
 								'.$btduplicar.'
 								'.$btcancelar.'
 							},
@@ -832,7 +832,7 @@ datos vía telefónica.";
 		if ( $hay > 0 ){
 			$mSQL = "SELECT id, grupo FROM spregr ORDER BY grupo ";
 			$agrupo  = $this->datasis->llenajqselect($mSQL, false );
-	
+
 			$grid->addField('grupo');
 			$grid->label('Grupo');
 			$grid->params(array(
@@ -1073,7 +1073,7 @@ datos vía telefónica.";
 		} elseif($oper == 'edit') {
 			//$nuevo  = $data[$mcodp];
 			//$anterior = $this->datasis->dameval("SELECT $mcodp FROM spre WHERE id=$id");
-			
+
 			//if ( $nuevo <> $anterior ){
 			//	//si no son iguales borra el que existe y cambia
 			//	$this->db->query("DELETE FROM spre WHERE $mcodp=?", array($mcodp));
@@ -2195,8 +2195,8 @@ datos vía telefónica.";
 
 			$mSQL="
 			SELECT TRIM(a.descrip) AS descrip, TRIM(a.codigo) AS codigo, a.unidad,
-			a.precio1,a.precio2,a.precio3,a.precio4, a.iva, a.existen, a.tipo, a.peso, a.ultimo, 
-			a.pond, a.barras, 0 AS descufijo, 0 AS dgrupo,0 AS promo, a.existen, 
+			a.precio1,a.precio2,a.precio3,a.precio4, a.iva, a.existen, a.tipo, a.peso, a.ultimo,
+			a.pond, a.barras, 0 AS descufijo, 0 AS dgrupo,0 AS promo, a.existen,
 			a.marca, a.ubica,a.id, c.cana
 			FROM itspre AS c
 			JOIN spre   AS b ON c.numero = b.numero
