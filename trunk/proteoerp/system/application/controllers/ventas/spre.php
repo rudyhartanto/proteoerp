@@ -45,10 +45,10 @@ class Spre extends Controller {
 		$grid->wbotonadd(array('id'=>'boton1',  'img'=>'assets/default/images/print.png',   'alt' => 'Reimprimir',      'label'=>'Reimprimir'));
 
 		if($this->datasis->sidapuede('SFAC','INCLUIR%' ))
-			$grid->wbotonadd(array('id'=>'bffact',  'img'=>'images/agregar.jpg', 'alt' => 'Facturar',        'label'=>'Facturar'));
+			$grid->wbotonadd(array('id'=>'bffact',  'img'=>'images/RedoGreen.png', 'alt' => 'Facturar',        'label'=>'Facturar'));
 
 		if($this->datasis->sidapuede('SNTE','INCLUIR%' ))
-			$grid->wbotonadd(array('id'=>'bsnte',   'img'=>'images/agregar.jpg', 'alt' => 'Nota de Entrega', 'label'=>'N.Entrega'));
+			$grid->wbotonadd(array('id'=>'bsnte',   'img'=>'images/RedoBlue.png', 'alt' => 'Nota de Entrega', 'label'=>'N.Entrega'));
 
 		$grid->wbotonadd(array('id'=>'bcorreo', 'img'=>'assets/default/images/mail_btn.png','alt' => 'Notificacion',  'label'=>'Notificar por email'));
 		$grid->wbotonadd(array('id'=>'bfavori', 'img'=>'images/star.png','alt'     => 'Marcar Favorito',      'label'=>'Marcar Favorito'));

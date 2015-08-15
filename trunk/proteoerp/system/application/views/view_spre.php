@@ -41,6 +41,7 @@ $(function(){
 	$(".inputnum").numeric(".");
 	$("#fecha").datepicker({ dateFormat: "dd/mm/yy" });
 	$("#fechadep").datepicker({dateFormat:"dd/mm/yy"});
+	$("#cod_cli").focus();
 	totalizar();
 	for(var i=0;i < <?php echo $form->max_rel_count['itspre']; ?>;i++){
 		cdropdown(i);

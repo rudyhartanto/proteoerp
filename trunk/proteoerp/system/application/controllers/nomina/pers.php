@@ -1295,7 +1295,7 @@ class Pers extends Controller {
 		$edit->contrato = new dropdownField('Contrato','contrato');
 		$edit->contrato->style ='width:350px;';
 		$edit->contrato->option('','Ninguno');
-		$edit->contrato->options("SELECT codigo,CONCAT_WS('',codigo,nombre) AS nombre FROM noco ORDER BY codigo");
+		$edit->contrato->options("SELECT codigo,CONCAT_WS('-',codigo,nombre) AS nombre FROM noco ORDER BY codigo");
 
 		$edit->vencimiento = new DateonlyField('Vencimiento', 'vence','d/m/Y');
 		$edit->vencimiento->size = 10;

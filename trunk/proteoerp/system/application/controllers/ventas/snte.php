@@ -48,7 +48,7 @@ class Snte extends Controller {
 
 		//Botones Panel Izq
 		$grid->wbotonadd(array('id'=>'imprimir' ,'img'=>'assets/default/images/print.png','alt' => 'Reimprimir', 'label'=>'Reimprimir documento'));
-		$grid->wbotonadd(array('id'=>'bffact'   ,'img'=>'images/star.png'                ,'alt' => 'Facturar'  , 'label'=>'Facturar'));
+		$grid->wbotonadd(array('id'=>'bffact'   ,'img'=>'images/RedoGreen.png'           ,'alt' => 'Facturar'  , 'label'=>'Facturar'));
 
 		$WestPanel = $grid->deploywestp();
 		//Panel Central y Sur
@@ -1661,7 +1661,7 @@ class Snte extends Controller {
 		// Coloca el cliente en spre
 		$this->db->where('numero',$numero);
 		$this->db->update('spre',array('cod_cli'=>$cod_cli));
-		
+
 		$sel=array('a.cod_cli','b.nombre','b.tipo','b.rifci','b.dire11 AS direc'
 		,'a.totals','a.iva','a.totalg', 'a.observa');
 		$this->db->select($sel);
