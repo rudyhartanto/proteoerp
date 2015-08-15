@@ -1679,7 +1679,7 @@ class Scst extends Controller {
 			'edittype'      => "'text'",
 			'width'         => 60,
 			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:10, maxlength: 10, dataInit: function (elem) { $(elem).numeric(); }  }',
+			'editoptions'   => '{ size:5, maxlength: 10, dataInit: function (elem) { $(elem).numeric(); $(elem).select(); }  }',
 			'formatter'     => "'number'",
 			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
 		));
@@ -1996,7 +1996,7 @@ class Scst extends Controller {
 
 		// Busca si esta en CXP
 		$mSQL = "SELECT count(*) FROM sprm WHERE tipo_doc= transac=";
-/*		
+/*
 
 		$mSQL = $this->datasis->damereg("SELECT * FROM sprm WHERE tipo_doc= transac=");
 

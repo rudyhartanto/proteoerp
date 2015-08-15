@@ -41,7 +41,6 @@ class Configurar extends Controller {
 
 		$edit->formato = new inputField('Formato', 'formato');
 		$edit->formato->group = 'Ejercicio Fiscal';
-		//$edit->formato->maxlength =17;
 		$edit->formato->rule='trim|strtoupper|callback_chformato|required';
 		$edit->formato->size=22;
 		$edit->formato->autocomplete=false;
@@ -99,10 +98,11 @@ class Configurar extends Controller {
 	}
 
 	function _pre_update($do){
+
+		//Chequea si debe ajustar la longitdos en las cuentas
 		$formato =trim($this->datasis->dameval('SELECT formato FROM cemp LIMIT 0,1'));
 		$nformato=trim($do->get('formato'));
 		if(strlen($nformato) > strlen($formato)){
-			//Arregla la longitud de la cuenta en las tablas
 			$length = strlen($nformato);
 			if($length>0){
 				$tables = $this->db->list_tables();
@@ -126,8 +126,6 @@ class Configurar extends Controller {
 						}
 					}
 				}
-
-
 			}
 		}
 		return true;

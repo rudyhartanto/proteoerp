@@ -3289,10 +3289,10 @@ function chrif(rif){
 		{name:'id',      index:'id',      label:'id',      width:  2, sortable:false, hidden:'true'},
 		{name:'id_scli', index:'id_scli', label:'scli',    width:  2, sortable:false, hidden:'true'}";
 
+		$mapa = $this->datasis->puede_proteo('mapa');
 		$url=site_url($this->url.'citrut');
 		$Salida  = '<script>';
-		$Salida .= '
-		$("#'.$nombre.'").jqGrid({
+		$Salida .= '$("#'.$nombre.'").jqGrid({
 			datatype: "local",
 			height: 350,
 			colModel:['.$colModel.'],
@@ -3304,13 +3304,17 @@ function chrif(rif){
 			loadonce: true,
 			viewrecords: true,
 			editurl: "",
-			multiSort: false,
-			ondblClickRow: function(id,row,col,e){
-				var ret = $("#'.$nombre.'").jqGrid(\'getRowData\',id);
-				if(ret){
-					window.open("'.site_url('ventas/scli/mapa').'/"+ret.id_scli, "mapa", "directories=no, location=no, menubar=no, scrollbars=yes, statusbar=no, tittlebar=no, width=605, height=615");
-				}
+			multiSort: false,';
+
+			if($mapa){
+				$Salida.= 'ondblClickRow: function(id,row,col,e){
+					var ret = $("#'.$nombre.'").jqGrid(\'getRowData\',id);
+					if(ret){
+						window.open("'.site_url('ventas/scli/mapa').'/"+ret.id_scli+"/'.$ruta.'", "mapa", "directories=no, location=no, menubar=no, scrollbars=yes, statusbar=no, tittlebar=no, width=605, height=615");
+					}
+				}';
 			}
+		$Salida .= '
 		}).jqGrid("sortableRows",{
 			update: function (ev, ui){
 
@@ -3392,7 +3396,7 @@ function chrif(rif){
 		}
 
 		'.$columnas['data'].'
-		for(var i=0;i<='.$nombre."dat".'.length;i++) $("#'.$nombre.'").jqGrid(\'addRowData\',i+1,'.$nombre.'dat[i]);
+		for(var i=0;i<='.$nombre.'dat'.'.length;i++) $("#'.$nombre.'").jqGrid(\'addRowData\',i+1,'.$nombre.'dat[i]);
 		';
 
 		$Salida .= '
@@ -3436,12 +3440,26 @@ function chrif(rif){
 			}
 		}
 
+		$atts = array(
+			'width'      => '800',
+			'height'     => '600',
+			'scrollbars' => 'yes',
+			'status'     => 'yes',
+			'resizable'  => 'yes',
+			'screenx'    => '0',
+			'screeny'    => '0'
+        );
+
 		for($i=1;$i<8;$i++){
-			$detalle .= '<td style="text-align:center" id="tdsum_'.$i.'">';
+			$detalle .= '<td style="text-align:center"><span id="tdsum_'.$i.'">';
 			if(isset($arrsclis[$i])){
 				$detalle .= $arrsclis[$i];
 			}else{
 				$detalle .= '0';
+			}
+			$detalle .= '</span>';
+			if($mapa){
+				$detalle .= anchor_popup($this->url.'rmapa/'.$ruta.'/'.$i, img(array('src'=>'images/globe.png','style'=>'width:10px')), $atts);
 			}
 			$detalle .= '</td>';
 		}
@@ -3455,7 +3473,7 @@ function chrif(rif){
 	//******************************************************************
 	// Crea un cliente desde Pers AJAX
 	//
-	function creafrompers( $status=null, $id_pers=null ){
+	function creafrompers($status=null, $id_pers=null){
 		if($status=='insert' && !empty($id_pers)){
 			$codigo    = $this->input->post('codigo');
 			$dbid_pers = $this->db->escape($id_pers);
@@ -4085,7 +4103,132 @@ function chrif(rif){
 
 	}
 
-	function mapa($id){
+	function rmapa($ruta,$dia){
+		$dbruta = $this->db->escape($ruta);
+		$dia    = intval($dia);
+		$semna  = array('','Domingo','Lunes','Martes','Mi&eacute;rcoles','Jueves','Viernes','S&aacute;bado');
+
+		$width = 740;
+		$arr_lista=array();
+		$sql = "SELECT b.nombre, CONCAT(b.dire11,b.dire12) AS direc,
+			b.telefono,a.pos,b.latitud,b.longitud,a.pos
+			FROM sclitrut AS a
+			JOIN scli AS b ON a.cliente=b.cliente
+			WHERE a.ruta=${dbruta} AND a.dia=${dia}
+			ORDER BY a.pos";
+		$markplace='';
+		$query = $this->db->query($sql);
+		if($query->num_rows() > 0){
+			foreach ($query->result() as $row){
+				$lat   = floatval($row->latitud);
+				$lon   = floatval($row->longitud);
+				$pos   = $row->pos;
+				$desc  = addcslashes($row->nombre,"'");
+				if($pos<0 && $pos>100){
+					$icon  = '';
+
+				}else{
+					$icon  = 'icon:\''.$this->config->slash_item('base_url').'/images/mapicon/number_'.$pos.'.png'.'\',';
+				}
+
+				if($lat*$lon!=0){
+					$stl = '';
+					$markplace.="
+					marker = new google.maps.Marker({
+						map: map,
+						${icon}
+						position: new google.maps.LatLng(${lat},${lon})
+					});
+
+					bounds.extend(marker.position);
+
+					infowindow = new google.maps.InfoWindow({
+						content: '${desc}'
+					});
+					//infowindow.open(map,marker);
+					markers.push(marker);";
+					$clat = $lat;
+					$clon = $lon;
+					$zoon = 15;
+				}else{
+					$stl = 'style="color:red"';
+				}
+				$arr_lista[] = "<b ${stl}>".$pos.'</b> '.'<span style="font-size:0.6em"><b>'.$row->nombre.'</b> '.$row->direc.'</span>';
+			}
+
+			$clat = 6.795535025719518;
+			$clon = -66.1376953125;
+			$zoon = 6;
+
+			$mapscript=<<<MAPGO
+			<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+			<div style="overflow:hidden;height:500px;width:${width}px;">
+				<div id="gmap_canvas" style="height:500px;width:${width}px;"></div>
+				<style>#gmap_canvas img{max-width:none!important;background:none!important}</style>
+
+			</div>
+			<script type="text/javascript">
+			var markers = [];
+
+			function init_map(){
+				var bounds = new google.maps.LatLngBounds();
+				var myOptions = {
+					zoom:${zoon},
+					center:new google.maps.LatLng(${clat},${clon}),
+					mapTypeId: google.maps.MapTypeId.ROADMAP,
+					mapTypeControl:false,
+					scaleControl:true,
+					streetViewControl:false,
+				};
+
+				map = new google.maps.Map(document.getElementById("gmap_canvas"), myOptions);
+				map.set('styles', [
+					{
+						featureType: 'landscape',
+						elementType: 'geometry',
+						stylers: [
+						{ hue: '#ffff00' },
+						{ gamma: 1.4 },
+						{ saturation: 82 },
+						{ lightness: 96 }
+						]
+					}
+				]);
+
+				google.maps.event.addListener(map, 'click', function(event) {
+					placeMarker(event.latLng);
+				});
+
+				${markplace}
+
+				map.fitBounds(bounds);
+			}
+
+			google.maps.event.addDomListener(window, 'load', init_map);
+			</script>
+MAPGO;
+		}else{
+			$mapscript = '';
+			$arr_lista = array('No hay cliente asignados a este dia.');
+		}
+		$data = array();
+		$data['content'] = $mapscript.'<p style="font-size:0.8em;width:'.$width.'px">'.ul($arr_lista).'</p>';
+		$data['title']   = "<table style='margin:0;padding:0;width:${width}px'><tr><td><span style='font-size:1.3em'>Mapa ruta: <b>${ruta}</b> D&iacute;a <b>".$semna[$dia].'</b></span></td>';
+		if(!empty($mapscript))
+			$data['title']  .= '<td align="right"><form><input type="button" value="Imprimir" onClick="window.print()" class="no-print"></form></td></tr></table>';
+		$data['head']    = script('jquery.js');
+		$data['head']   .= '<style type="text/css">
+		@media print{
+			.no-print, .no-print *{
+				display: none !important;
+			}
+		}
+		</style>';
+		$this->load->view('view_ventanas_sola', $data);
+	}
+
+
+	function mapa($id,$ruta=null){
 		$dbid= intval($id);
 		$sql = "SELECT nombre,dire11,latitud,longitud FROM scli WHERE id=${dbid} LIMIT 1";
 		$row = $this->datasis->damerow($sql);
@@ -4113,9 +4256,40 @@ function chrif(rif){
 
 		}else{
 			$markplace='';
-			$clat = 6.795535025719518;
-			$clon = -66.1376953125;
-			$zoon = 6;
+			$sql     = 'SELECT
+				MAX(latitud)  AS mala,
+				MIN(latitud)  AS mila,
+				MAX(longitud) AS malo,
+				MIN(longitud) AS milo
+				FROM scli AS a ';
+			if(!empty($ruta)){
+				$sql .= 'JOIN sclitrut AS b ON a.cliente=b.cliente AND b.ruta='.$this->db->escape($ruta);
+			}
+			$sql .= 'WHERE latitud IS NOT NULL AND longitud IS NOT NULL';
+			$arr_lat = $this->datasis->damerow($sql);
+			if(!empty($arr_lat)){
+				$mala = floatval($arr_lat['mala']);
+				$mila = floatval($arr_lat['mila']);
+				$malo = floatval($arr_lat['malo']);
+				$milo = floatval($arr_lat['milo']);
+
+				if($mala!=$mila){
+					$clat = $mila+(($mala-$mila)/2);
+				}else{
+					$clat = $mila;
+				}
+
+				if($milo!=$malo){
+					$clon = $milo+(($malo-$milo)/2);
+				}else{
+					$clon = $milo;
+				}
+				$zoon = 10;
+			}else{
+				$clat = 6.795535025719518;
+				$clon = -66.1376953125;
+				$zoon = 6;
+			}
 		}
 
 		$url = site_url('ventas/scli/ajaxcoor/'.$id);

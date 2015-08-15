@@ -313,7 +313,7 @@ class Datasis {
 		if ($CI->session->userdata('logged_in')){
 			$usuario  = $CI->session->userdata['usuario'];
 			$dbusuario= $CI->db->escape($usuario);
-			$propio   = $CI->datasis->dameval("SELECT propio FROM usuario WHERE us_codigo=$dbusuario ");
+			$propio   = $this->dameval("SELECT propio FROM usuario WHERE us_codigo=${dbusuario}");
 			if ($propio == 'S' ){
 				if ( $us == $usuario )
 					return true;
@@ -328,20 +328,43 @@ class Datasis {
 
 	// Verifica acceso en tmenus por funcion a ejecutar
 	function puede_ejecuta($nombre, $modulo){
-		$CI =& get_instance();
-		$m = $this->dameval("SELECT codigo FROM tmenus WHERE ejecutar like '".$nombre."%'") ;
-		if ( $m > 0 )
-			if ($this->dameval("SELECT acceso FROM sida WHERE modulo=$m AND usuario=".$CI->db->escape($CI->session->userdata('usuario'))) == 'S')
+		$CI        =& get_instance();
+		$dbnombre  =  $CI->db->escape($nombre.'%');
+		$dbusuario =  $CI->db->escape($CI->session->userdata('usuario'));
+		$m  =  intval($this->dameval("SELECT codigo FROM tmenus WHERE ejecutar LIKE ${dbnombre}"));
+		if($m > 0){
+			$sal = intval($this->dameval("SELECT acceso FROM sida WHERE modulo=${m} AND usuario=${dbusuario}"));
+			if($sal == 'S'){
 				return true;
-			else
+			}else{
 				return false;
-		else
+			}
+		}else{
 			return false;
+		}
+	}
+
+	// Verifica acceso en tmenus por funcion a ejecutar en proteo
+	function puede_proteo($nombre){
+		$CI        =& get_instance();
+		$dbnombre  =  $CI->db->escape($nombre.'%');
+		$dbusuario =  $CI->db->escape($CI->session->userdata('usuario'));
+		$m  =  intval($this->dameval("SELECT codigo FROM tmenus WHERE proteo LIKE ${dbnombre}"));
+		if($m > 0){
+			$sal = intval($this->dameval("SELECT acceso FROM sida WHERE modulo=${m} AND usuario=${dbusuario}"));
+			if($sal == 'S'){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
 	}
 
 	// Coloca un input con calendario
 	function calendario($forma,$nombre){
-		return "<input type=\"text\" name=\"$nombre\" /><a href=\"#\" onclick=\"return getCalendar(document.$forma.$nombre);\"/><img src='calendar.png' border='0' /></a>";
+		return "<input type=\"text\" name=\"${nombre}\" /><a href=\"#\" onclick=\"return getCalendar(document.$forma.$nombre);\"/><img src='calendar.png' border='0' /></a>";
 	}
 
 	// Script con calendario javascript
@@ -797,9 +820,9 @@ class Datasis {
 				$reg = $this->damereg("SELECT * FROM bmov WHERE id=${id}");
 				if ( $reg['tipo_op'] == 'DE' || $reg['tipo_op'] == 'NC' )
 					$this->actusal($reg['fondo'], $reg['fecha'], -$reg['monto'] );
-				else 
+				else
 					$this->actusal($reg['fondo'], $reg['fecha'], $reg['monto'] );
-			
+
 				$CI->db->query("DELETE FROM bmov WHERE id=${id}");
 			}
 		}
