@@ -3310,7 +3310,7 @@ function chrif(rif){
 				$Salida.= 'ondblClickRow: function(id,row,col,e){
 					var ret = $("#'.$nombre.'").jqGrid(\'getRowData\',id);
 					if(ret){
-						window.open("'.site_url('ventas/scli/mapa').'/"+ret.id_scli+"/'.$ruta.'", "mapa", "directories=no, location=no, menubar=no, scrollbars=yes, statusbar=no, tittlebar=no, width=605, height=615");
+						window.open("'.site_url('ventas/scli/mapa').'/"+ret.id_scli+"/'.$ruta.'", "mapa", "directories=no, location=no, menubar=no, scrollbars=yes, statusbar=no, tittlebar=no, width=620, height=630, screenx="+((screen.availWidth/2 )-307)+", screeny="+((screen.availHeight/2)-302));
 					}
 				}';
 			}
@@ -3446,8 +3446,8 @@ function chrif(rif){
 			'scrollbars' => 'yes',
 			'status'     => 'yes',
 			'resizable'  => 'yes',
-			'screenx'    => '0',
-			'screeny'    => '0'
+			'screenx'    => "'+((screen.availWidth/2 )-400)+'",
+			'screeny'    => "'+((screen.availHeight/2)-300)+'"
         );
 
 		for($i=1;$i<8;$i++){
@@ -4285,7 +4285,9 @@ MAPGO;
 					$clon = $milo;
 				}
 				$zoon = 10;
-			}else{
+			}
+
+			if($clat+$clon==0){
 				$clat = 6.795535025719518;
 				$clon = -66.1376953125;
 				$zoon = 6;
