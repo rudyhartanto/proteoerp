@@ -489,6 +489,136 @@ class Reparto extends Controller {
 		return $bodyscript;
 	}
 
+	function rmapa($reparto=null){
+
+		if(empty($reparto)) return false;
+		$dbreparto = $this->db->escape($reparto);
+
+		$width = 740;
+		$arr_lista=array();
+		$sql = "SELECT COUNT(DISTINCT numero) AS fact,b.nombre, CONCAT(b.dire11,b.dire12) AS direc,
+			b.telefono,a.pos,b.latitud,b.longitud,a.pos
+			FROM sclitrut AS a
+			JOIN scli     AS b ON a.cliente=b.cliente
+			JOIN sfac     AS c ON b.cliente=c.cod_cli
+			WHERE c.reparto=${dbreparto}
+			GROUP BY b.cliente
+			ORDER BY a.pos";
+		$markplace='';
+		$query = $this->db->query($sql);
+		if($query->num_rows() > 0){
+			$ii = 0;
+			foreach ($query->result() as $row){
+				$ii++;
+				$lat   = floatval($row->latitud);
+				$lon   = floatval($row->longitud);
+				$pos   = $row->pos;
+				$desc  = addcslashes($row->nombre,"'");
+				if($ii<0 && $ii>100){
+					$icon  = '';
+				}else{
+					$icon  = 'icon:\''.$this->config->slash_item('base_url').'/images/mapicon/number_'.$ii.'.png'.'\',';
+				}
+
+				if($lat*$lon!=0){
+					$stl = '';
+					$markplace.="
+					marker = new google.maps.Marker({
+						map: map,
+						${icon}
+						position: new google.maps.LatLng(${lat},${lon})
+					});
+
+					bounds.extend(marker.position);
+
+					infowindow = new google.maps.InfoWindow({
+						content: '${desc}'
+					});
+					//infowindow.open(map,marker);
+					markers.push(marker);";
+					$clat = $lat;
+					$clon = $lon;
+					$zoon = 15;
+				}else{
+					$stl = 'style="color:red"';
+				}
+				$arr_lista[] = "<b ${stl}>".$ii.'</b> Doc. <b>'.$row->fact.'</b>'.' <span style="font-size:0.6em"><b>'.$row->nombre.'</b> '.$row->direc.'</span>';
+			}
+
+			$clat = 6.795535025719518;
+			$clon = -66.1376953125;
+			$zoon = 6;
+
+			$mapscript=<<<MAPGO
+			<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+			<div style="overflow:hidden;height:500px;width:${width}px;">
+				<div id="gmap_canvas" style="height:500px;width:${width}px;"></div>
+				<style>#gmap_canvas img{max-width:none!important;background:none!important}</style>
+
+			</div>
+			<script type="text/javascript">
+			var markers = [];
+
+			function init_map(){
+				var bounds = new google.maps.LatLngBounds();
+				var myOptions = {
+					zoom:${zoon},
+					center:new google.maps.LatLng(${clat},${clon}),
+					mapTypeId: google.maps.MapTypeId.ROADMAP,
+					mapTypeControl:false,
+					scaleControl:true,
+					streetViewControl:false,
+				};
+
+				map = new google.maps.Map(document.getElementById("gmap_canvas"), myOptions);
+				map.set('styles', [
+					{
+						featureType: 'landscape',
+						elementType: 'geometry',
+						stylers: [
+						{ hue: '#ffff00' },
+						{ gamma: 1.4 },
+						{ saturation: 82 },
+						{ lightness: 96 }
+						]
+					}
+				]);
+
+				google.maps.event.addListener(map, 'click', function(event) {
+					placeMarker(event.latLng);
+				});
+
+				${markplace}
+
+				map.fitBounds(bounds);
+			}
+
+			google.maps.event.addDomListener(window, 'load', init_map);
+			</script>
+MAPGO;
+		}else{
+			$mapscript = '';
+			$arr_lista = array('No hay cliente asignados a este dia.');
+		}
+		$sreparto = str_pad($reparto, 8, '0', STR_PAD_LEFT);
+		$data = array();
+		$data['content'] = $mapscript.'<p style="font-size:0.8em;width:'.$width.'px">'.ul($arr_lista).'</p>';
+		$data['title']   = "<table style='margin:0;padding:0;width:${width}px'><tr><td><span style='font-size:1.3em'>Mapa del reparto: <b>${sreparto}</b> ".'</b></span></td>';
+		if(!empty($mapscript))
+			$data['title']  .= '<td align="right"><form><input type="button" value="Imprimir" onClick="window.print()" class="no-print"></form></td></tr></table>';
+		$data['head']    = script('jquery.js');
+		$data['head']   .= '<style type="text/css">
+		@media print{
+			.no-print, .no-print *{
+				display: none !important;
+			}
+		}
+		</style>';
+		$this->load->view('view_ventanas_sola', $data);
+	}
+
+
+
 	//******************************************************************
 	// Cambia Tipo de Reparto
 	//
