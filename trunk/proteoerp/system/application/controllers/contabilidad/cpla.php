@@ -268,8 +268,7 @@ class Cpla extends Controller {
 		$edit->codigo = new inputField('C&oacute;digo', 'codigo');
 		$edit->codigo->rule= 'trim|required|callback_chcodigo';
 		$edit->codigo->mode= 'autohide';
-		$edit->codigo->size=20;
-		$edit->codigo->maxlength =15 ;
+		$edit->codigo->size=25;
 
 		$edit->descrip = new inputField('Descripci&oacute;n', 'descrip');
 		$edit->descrip->rule= 'required|trim';
@@ -405,7 +404,7 @@ class Cpla extends Controller {
 		if(strlen($semilla)>0 ){
 			$mSQL .= " AND ( codigo LIKE '$semilla%' OR descrip LIKE '%$semilla%' ) ";
 		} else {
-			if ( strlen($cuenta)>0 ) $mSQL .= " AND ( codigo LIKE '$cuenta%' OR descrip LIKE '%$cuenta%' ) ";
+			if ( strlen($cuenta)>0 ) $mSQL .= " AND ( codigo LIKE '${cuenta}%' OR descrip LIKE '%${cuenta}%' ) ";
 		}
 		$mSQL .= "ORDER BY descrip ";
 		$results = $this->db->count_all('cpla');
