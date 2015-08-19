@@ -3149,7 +3149,6 @@ class gser extends Controller {
 		$edit->reteter->showformat ='decimal';
 		$edit->reteter->autocomplete=false;
 
-
 		$edit->nfiscal  = new inputField('Control Fiscal', 'nfiscal');
 		$edit->nfiscal->size = 10;
 		$edit->nfiscal->autocomplete=false;
@@ -3932,6 +3931,9 @@ class gser extends Controller {
 		$totiva   = $do->get('totiva');
 		$credito  = $do->get('credito');
 		$fondo    = $do->get('fondo');
+		$reteter  = $do->get('reteter');
+		$tercero  = $do->get('tercero');
+
 
 		$totbruto = $do->get('totbruto');
 		$totneto  = $do->get('totneto');
@@ -4017,7 +4019,17 @@ class gser extends Controller {
 			$sql=$this->db->insert_string('sprm', $data);
 			$ban=$this->db->simple_query($sql);
 			if($ban==false){ memowrite($sql,'gser'); }
-			$this->_gserrete($fecha,$tipo,$fechafac,$numero,$nfiscal,$afecta,$codprv,$montasa,$monredu,$monadic,$tasa,$reducida,$sobretasa,$exento,$reiva,$transac);
+			
+			// Si es por cuenta de tercero
+			/*if ( $reteter > 0 && $tercero ){
+				if ( $reiva == $reteter ) hace la retencion a nombre del tercero
+					$this->_gserrete($fecha,$tipo,$fechafac,$numero,$nfiscal,$afecta,$tercero,$montasa,$monredu,$monadic,$tasa,$reducida,$sobretasa,$exento,$reteter,$transac);
+				else {
+					$this->_gserrete($fecha,$tipo,$fechafac,$numero,$nfiscal,$afecta,$codprv,$montasa,$monredu,$monadic,$tasa,$reducida,$sobretasa,$exento,$reiva-$reteter,$transac);
+				}
+			} else */
+				$this->_gserrete($fecha,$tipo,$fechafac,$numero,$nfiscal,$afecta,$codprv,$montasa,$monredu,$monadic,$tasa,$reducida,$sobretasa,$exento,$reiva,$transac);
+
 		}
 		//Fin de la retencion de IVA
 
