@@ -204,17 +204,32 @@ class Ajax extends Controller {
 			$mid=str_replace($comodin,'%',$mid);
 		}
 
+		// Crea el indice en pers si 
+		$indice = $this->datasis->dameval('SHOW INDEX FROM pers WHERE Column_name="enlace"');
+		$mSQL = 'ALTER TABLE pers ADD INDEX enlace (enlace);';
+		if ($indice != 'pers') $this->db->query($mSQL);
+		
 		$qmid = $this->db->escape($mid);
 		$qdb  = $this->db->escape('%'.$mid.'%');
 
 		$data = '[ ]';
 		if($mid !== false){
 			$retArray = $retorno = array();
-			$sel ='id,TRIM(nombre) AS nombre, TRIM(rifci) AS rifci, cliente, tipo, CONCAT(TRIM(dire11)," ",dire12) AS direc, CONCAT(TRIM(telefono)," ",telefon2) telefono, mmargen, ciudad1, estado, vendedor, observa, grupo, contacto';
+			$sel ='
+				a.id, TRIM(a.nombre) AS nombre, TRIM(a.rifci) AS rifci, a.cliente, a.tipo, 
+				CONCAT(TRIM(a.dire11)," ",a.dire12) AS direc, CONCAT(TRIM(a.telefono)," ",
+				a.telefon2) telefono, a.mmargen, a.ciudad1, a.estado, a.vendedor, a.observa, 
+				a.grupo, a.contacto, b.codigo empleado';
 
 			//Mira si existe el codigo
-			$mSQL="SELECT ${sel}
-				FROM scli WHERE cliente=${qmid} AND tipo<>0  LIMIT 1";
+			$mSQL="
+			SELECT ${sel}
+			FROM scli a 
+			LEFT JOIN pers b ON a.cliente = b.enlace
+			WHERE a.cliente=${qmid} AND a.tipo<>0";
+
+			// DEBE SER ACTIVO
+
 			$query = $this->db->query($mSQL);
 			if ($query->num_rows() == 1){
 				$row = $query->row_array();
@@ -234,6 +249,7 @@ class Ajax extends Controller {
 				$retArray['observa'] = $this->en_utf8($row['observa']);
 				$retArray['contacto']= $this->en_utf8($row['contacto']);
 				$retArray['grupo']   = $row['grupo'];
+				$retArray['empleado']= $row['empleado'];
 				$retArray['id']      = $row['id'];
 				array_push($retorno, $retArray);
 				$ww=" AND cliente<>${qmid}";
@@ -241,9 +257,12 @@ class Ajax extends Controller {
 				$ww='';
 			}
 
-			$mSQL="SELECT ${sel}
-				FROM scli WHERE (cliente LIKE ${qdb} OR rifci LIKE ${qdb} OR nombre LIKE ${qdb}) AND tipo<>0 ${ww}
-				ORDER BY nombre LIMIT ".$this->autolimit;
+			$mSQL="
+			SELECT ${sel}
+			FROM scli a 
+			LEFT JOIN pers b ON a.cliente = b.enlace
+			WHERE (a.cliente LIKE ${qdb} OR a.rifci LIKE ${qdb} OR a.nombre LIKE ${qdb}) AND a.tipo<>0 ${ww}
+			ORDER BY a.nombre LIMIT ".$this->autolimit;
 
 			$query = $this->db->query($mSQL);
 			if ($query->num_rows() > 0){
@@ -264,6 +283,7 @@ class Ajax extends Controller {
 					$retArray['observa'] = $this->en_utf8($row['observa']);
 					$retArray['contacto']= $this->en_utf8($row['contacto']);
 					$retArray['grupo']   = $row['grupo'];
+					$retArray['empleado']= $row['empleado'];
 					$retArray['id']      = $row['id'];
 					array_push($retorno, $retArray);
 				}

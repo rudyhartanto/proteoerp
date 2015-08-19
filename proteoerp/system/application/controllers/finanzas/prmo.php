@@ -169,7 +169,7 @@ class Prmo extends Controller {
 		$("#prmo1").click( function() {
 			$.post("'.site_url($this->url.'deprmo1/create').'",
 			function(data){
-				$("#fedita").dialog( {height: 400, width: 620, title: "Prestamo Otorgado"} );
+				$("#fedita").dialog( {height: 450, width: 620, title: "Prestamo Otorgado"} );
 				$("#fedita").html(data);
 				$("#fedita").dialog( "open" );
 			})
@@ -924,11 +924,17 @@ class Prmo extends Controller {
 		$edit->monto->size =10;
 		$edit->monto->maxlength =13;
 
-		$edit->cuotas = new inputField('Cuotas','cuotas');
+		$edit->cuotas = new inputField('Nro. de Cuotas','cuotas');
 		$edit->cuotas->rule='integer';
 		$edit->cuotas->css_class='inputonlynum';
 		$edit->cuotas->size =4;
 		$edit->cuotas->maxlength =2;
+
+		$edit->mcuota = new inputField('Forzar','mcuota');
+		$edit->mcuota->rule='numeric';
+		$edit->mcuota->css_class='inputnum';
+		$edit->mcuota->size =10;
+		$edit->mcuota->maxlength =13;
 
 		$edit->vence = new dateonlyField('Fecha de Vencimiento','vence');
 		$edit->vence->rule        = 'chfecha';
@@ -1017,7 +1023,21 @@ class Prmo extends Controller {
 		});
 		$("#clipro").change( function() {
 			$("#observa1").val("PRESTAMO OTORGADO A ("+$("#clipro").val()+") "+$("#nombre").val() );
-		});';
+		});
+
+		$("#cuotas").keyup(
+		function(e) {
+			var monto  = Number($("#monto").val());
+			var cuotas = Number($("#cuotas").val());
+			var calculo = 0;
+			if ( cuotas > 0 && monto > 0){
+				calculo = roundNumber(monto/cuotas,2);
+				$("#moncuo").text(" "+nformat(calculo,2));
+			} else {
+				$("#moncuo").text("");
+			}
+		});
+		';
 
 		$edit->script($this->scriptscli().$script,'modify');
 		$edit->script($this->scriptscli().$script,'create');
@@ -2447,5 +2467,8 @@ class Prmo extends Controller {
 			$this->db->simple_query('ALTER TABLE prmo ADD UNIQUE INDEX numero (numero)');
 			$this->db->simple_query('ALTER TABLE prmo ADD COLUMN id INT(11) NULL AUTO_INCREMENT, ADD PRIMARY KEY (id)');
 		}
+
+		if(!in_array('mcuota',$campos)) $this->db->query('ALTER TABLE prmo ADD mcuota DECIMAL(12,2) NULL DEFAULT 0 AFTER cuotas ');
+
 	}
 }

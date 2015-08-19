@@ -74,6 +74,7 @@ foreach ($_query->result() as $_row){
 	if($interval->m >1 ) $antiguedad .= $interval->m.' meses y '    ; else $antiguedad .= $interval->m.' mes y ';
 	if($interval->d >1 ) $antiguedad .= $interval->d.' d&iacute;as '; else $antiguedad .= $interval->d.' d&iacute;a ';
 
+   
 	if($tipo=='M'){
 		$dias = $datetime2->format('d')-1;
 	}elseif($tipo=='Q'){
@@ -87,7 +88,7 @@ foreach ($_query->result() as $_row){
 			$dias = 14;
 		}
 	}elseif($tipo=='S'){
-		$dias = 7;
+		$dias = 6;
 	}elseif($tipo=='B'){
 		$dias = 14;
 	}elseif($tipo=='O'){
@@ -95,15 +96,13 @@ foreach ($_query->result() as $_row){
 	}else{
 		$dias = 0;
 	}
-
+   
 	if($dias>0){
 		$datetime2->sub(new DateInterval('P'.$dias.'D'));
 		$datetime2->format('d');
-		$periodo   = 'DEL PERIODO '.$datetime2->format('d').' AL '.$hfecha;
-	}else{
-		$periodo   = '';
+		$periodo   = 'PERIODO '.$datetime2->format('d').' AL '.$hfecha;
 	}
-
+  
 	$dbfecha   = $this->db->escape($fecha);
 	$dbenlace  = $this->db->escape($enlace);
 
@@ -123,16 +122,19 @@ foreach ($_query->result() as $_row){
 	if($mSQL_2->num_rows()==0) show_error('Error en registro');
 	$detalle  = $mSQL_2->result();
 
-	$mSQL = "SELECT
-		a.tipo_doc,
-		a.numero,
-		b.monto,
-		b.abonos,
-		a.cuota,
+	$mSQL = "
+	SELECT
+		b.tipo_doc,
+		MAX(b.numero) numero,
+		sum(b.monto) monto,
+		sum(b.abonos) abonos,
+		sum(a.cuota) cuota,
 		b.monto-b.abonos AS saldo
 	FROM pres AS a
 	JOIN smov AS b ON a.cod_cli=b.cod_cli AND a.tipo_doc=b.tipo_doc AND a.numero=b.numero
-	WHERE a.cod_cli=${dbenlace} AND b.monto>b.abonos AND a.apartir<=${dbfecha}";
+	WHERE a.cod_cli=${dbenlace} AND b.monto>b.abonos AND a.apartir<=${dbfecha}
+	GROUP BY b.tipo_doc";
+
 	$mSQL_3   = $this->db->query($mSQL);
 	$detalle3 = $mSQL_3->result();
 
@@ -301,7 +303,7 @@ echo $pie_final;
 			Recibi Conforme:
 		</td>
 		<td style="text-align:center; border-style:solid; border-width:1px;width:30%;">
-			<table>
+			<table colspan='100%'>
 				<tr>
 					<td colspan='3'>Pr&eacute;stamos:</td>
 				</tr>

@@ -1790,3 +1790,11 @@ class Pfac extends Controller {
 
 	}
 }
+
+/*
+
+Modulo de Requisiciones a obras del material
+Los materiales deben ir a solicitud de presupuesto
+donde se coloca los precios del proveedor y se hace la orden de pedido
+
+*/

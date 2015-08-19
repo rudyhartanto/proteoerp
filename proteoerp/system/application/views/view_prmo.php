@@ -91,6 +91,25 @@ if($form->_status <> 'show'){ ?>
 		</table>
 		</fieldset>
 		</td>
+	<tr>
+		<td>
+		<fieldset  style='border: 1px outset #FEB404;background: #EFECDA;'>
+		<table width='100%'>
+			<tr>
+			<th colspan='6' style='background:#CCFF33;text-align:center;'>DESCONTAR POR NOMINA</th>
+			</tr>
+			<tr>
+				<td class="littletablerowth"><?php echo $form->cuotas->label;  ?></td>
+				<td class="littletablerow"  ><?php echo $form->cuotas->output; ?></td>
+				<td class="littletablerowth">Cuota</td>
+				<td class="littletablerow" ><div id='moncuo'></div></td>
+				<td class="littletablerowth"><?php echo $form->mcuota->label;  ?></td>
+				<td class="littletablerow"  ><?php echo $form->mcuota->output; ?></td>
+			</tr>
+		</table>
+		</fieldset>
+		</td>
+
 
 <?php } elseif ($form->tipop->value == 2) { // Prestamo Recibido?>
 		<td>
@@ -104,7 +123,6 @@ if($form->_status <> 'show'){ ?>
 		</td>
 	</tr>
 	<tr>
-
 		<td>
 		<fieldset  style='border: 1px outset #919994; background: #D5E0D9;'>
 		<table width='100%'>

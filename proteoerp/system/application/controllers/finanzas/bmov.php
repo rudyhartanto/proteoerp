@@ -456,7 +456,7 @@ class Bmov extends Controller {
 
 
 		$grid->addField('liable');
-		$grid->label('Liable');
+		$grid->label('Conciliable');
 		$grid->params(array(
 			'align'         => "'center'",
 			'search'        => 'true',
