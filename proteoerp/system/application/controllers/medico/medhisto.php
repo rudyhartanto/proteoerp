@@ -206,7 +206,6 @@ class Medhisto extends Common {
 		$fields = $this->db->field_data('view_medhisto');
 		foreach ($fields as $field){
 			//$field->type
-			//$field->max_length
 
 			if($field->name == 'id') continue;
 
@@ -216,6 +215,13 @@ class Medhisto extends Common {
 			}else{
 				$len=ceil(65*intval($max_length)/8);
 			}
+			if($len < 10) $len=10;
+
+			if(in_array($field->name,array('date','fecha','ingreso','nacimiento','nacio'))){
+				$edrule = '{required:true,date:true}';
+			}else{
+				$edrule = '{required:true}';
+			}
 
 			$grid->addField($field->name);
 			$grid->label(ucfirst($field->name));
@@ -224,7 +230,7 @@ class Medhisto extends Common {
 				'editable'      => $editar,
 				'width'         => $len,
 				'edittype'      => "'text'",
-				'editrules'     => '{ required:true}',
+				'editrules'     => $edrule,
 				'editoptions'   => '{ size:20, maxlength: 20 }',
 			));
 
