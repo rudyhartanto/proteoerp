@@ -859,6 +859,7 @@ class Bmov extends Controller {
 					return false;
 				}
 			}
+			//if ( $data['concilia'] = '000-00-00' ) $data['concilia'] = '';
 
 			$this->db->where('id', $id);
 			$this->db->update('bmov', $data);

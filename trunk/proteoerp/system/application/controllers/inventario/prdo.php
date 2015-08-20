@@ -358,8 +358,16 @@ class Prdo extends Controller {
 		$("#fimprime").click( function(){
 			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id)	{
-				var ret = $("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
-				window.open(\''.site_url('formatos/ver/PRDO').'/\'+id, \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
+				$.prompt( "<h1>Formato de salida ?</h1>", {
+					buttons: { Produccion: 1, Planilla: 2, Cancelar: 0 },
+					submit: function(e,v,m,f){
+						if( v == 1 ){
+							window.open(\''.site_url('formatos/ver/PRDO').'/\'+id, \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
+						} elseif ( v == 2 ) {
+							window.open(\''.site_url('formatos/ver/PRDO1').'/\'+id, \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
+						}
+					}
+				});
 			} else { $.prompt("<h1>Por favor Seleccione una tranferencia</h1>");}
 		});';
 
