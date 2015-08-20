@@ -203,254 +203,32 @@ class Medhisto extends Common {
 
 		$grid  = new $this->jqdatagrid;
 
-		$grid->addField('numero');
-		$grid->label('N&uacute;mero');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 60,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:20, maxlength: 20 }',
-		));
+		$fields = $this->db->field_data('view_medhisto');
+		foreach ($fields as $field){
+			//$field->type
+			//$field->max_length
 
-		/*$grid->addField('nacional');
-		$grid->label('Nac');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'align'         => "'right'",
-			'edittype'      => "'text'",
-			'align'         => "'center'",
-			'width'         => 40,
-			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:1, maxlength: 1 }',
-		));*/
+			if($field->name == 'id') continue;
 
+			$max_length = intval($field->max_length);
+			if($max_length<=0){
+				$len=65;
+			}else{
+				$len=ceil(65*intval($max_length)/8);
+			}
 
-		$grid->addField('cedula');
-		$grid->label('Cedula');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 80,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:20, maxlength: 20 }',
-		));
+			$grid->addField($field->name);
+			$grid->label(ucfirst($field->name));
+			$grid->params(array(
+				'search'        => 'true',
+				'editable'      => $editar,
+				'width'         => $len,
+				'edittype'      => "'text'",
+				'editrules'     => '{ required:true}',
+				'editoptions'   => '{ size:20, maxlength: 20 }',
+			));
 
-
-		$grid->addField('nombre');
-		$grid->label('Nombre');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 150,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:50, maxlength: 50 }',
-		));
-
-
-		$grid->addField('apellido');
-		$grid->label('Apellidos');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 150,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:50, maxlength: 50 }',
-		));
-
-/*
-		$grid->addField('sapellido');
-		$grid->label('Segundo Apellido');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 150,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:50, maxlength: 50 }',
-		));
-*/
-
-		/*$grid->addField('sexo');
-		$grid->label('Sexo');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'align'         => "'right'",
-			'edittype'      => "'text'",
-			'width'         => 40,
-			'align'         => "'center'",
-			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:1, maxlength: 1  }',
-		));*/
-
-		$grid->addField('ingreso');
-		$grid->label('Ingreso');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 70,
-			'align'         => "'center'",
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true,date:true}',
-			'formoptions'   => '{ label:"Fecha" }'
-		));
-
-		/*$grid->addField('nacio');
-		$grid->label('F.Nacio');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 80,
-			'align'         => "'center'",
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true,date:true}',
-			'formoptions'   => '{ label:"Fecha" }'
-		));*/
-
-
-		/*$grid->addField('estado');
-		$grid->label('Estado');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 100,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:50, maxlength: 50 }',
-		));*/
-
-		/*$grid->addField('ciudad');
-		$grid->label('Ciudad');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 100,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:50, maxlength: 50 }',
-		));*/
-
-		/*$grid->addField('ecivil');
-		$grid->label('Edo.civil');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'align'         => "'right'",
-			'edittype'      => "'text'",
-			'align'         => "'center'",
-			'width'         => 50,
-			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:1, maxlength: 1 }',
-		));
-
-		$grid->addField('ocupacion');
-		$grid->label('Ocupacion');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 150,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:50, maxlength: 50 }',
-		));
-
-		$grid->addField('direccion');
-		$grid->label('Direccion');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 150,
-			'edittype'      => "'textarea'",
-			'editoptions'   => "'{rows:2, cols:60}'",
-		));
-
-		$grid->addField('telefono');
-		$grid->label('Telefono');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 100,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:50, maxlength: 50 }',
-		));
-
-		$grid->addField('referido');
-		$grid->label('Referido');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 200,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:50, maxlength: 50 }',
-		));
-
-		$grid->addField('email');
-		$grid->label('Email');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 200,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:100, maxlength: 100 }',
-		));
-
-		$grid->addField('usuario');
-		$grid->label('Usuario');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 200,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:20, maxlength: 20 }',
-		));
-
-
-		$grid->addField('estampa');
-		$grid->label('Estampa');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 80,
-			'align'         => "'center'",
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true,date:true}',
-			'formoptions'   => '{ label:"Fecha" }'
-		));
-
-
-		$grid->addField('hora');
-		$grid->label('Hora');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 100,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:10, maxlength: 10 }',
-		));
-
-
-		$grid->addField('edad');
-		$grid->label('Edad');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 200,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:255, maxlength: 255 }',
-		));*/
-
+		}
 
 		$grid->addField('id');
 		$grid->label('Id');
@@ -667,7 +445,7 @@ class Medhisto extends Common {
 		$edit->identifica->rule='strtoupper|unique';
 		$edit->identifica->size =30;
 		$edit->identifica->maxlength =50;
-		$edit->identifica->append("C&eacute;dula, pasaporte o partida");
+		$edit->identifica->append("C&eacute;dula, pasaporte, partida u otro");
 
 /*
 		$edit->nombre = new inputField('Nombre del paciente','nombre');

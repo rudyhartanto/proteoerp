@@ -1304,8 +1304,8 @@ class Apan extends Controller {
 					break;
 				}
 
-				$ind = 'iteaplicar_'.$i; $abono  = $this->input->post($ind);
-				$ind = 'itemonto_'.$i;   $monto  = $this->input->post($ind);
+				$ind = 'iteaplicar_'.$i; $abono  = floatval($this->input->post($ind));
+				$ind = 'itemonto_'.$i;   $monto  = floatval($this->input->post($ind));
 				$ind = 'iteid_'.$i;      $id     = $this->input->post($ind);
 
 				if($ttipo=='C'){

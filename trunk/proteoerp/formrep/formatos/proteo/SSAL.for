@@ -141,7 +141,7 @@ foreach ($detalle AS $items){ $i++;
 
 					while(count($arr_des)>0){
 						$uline   = array_shift($arr_des);
-						echo htmlspecialchars($uline).'<br />';
+						echo $this->us_ascii2html($uline).'<br />';
 						$lineas++;
 						if($lineas >= $maxlin){
 							$lineas =0;
@@ -158,7 +158,7 @@ foreach ($detalle AS $items){ $i++;
 					?>
 				</td>
 				<td style="text-align:right;" ><?php echo ($clinea)? '': nformat($items->cana); ?></td>
-				<td style="text-align:center;"><?php echo ($clinea)? '': htmlspecialchars(trim($items->concepto)); ?></td>
+				<td style="text-align:center;"><?php echo ($clinea)? '': $this->us_ascii2html($items->concepto); ?></td>
 			</tr>
 <?php
 		if($npagina){
