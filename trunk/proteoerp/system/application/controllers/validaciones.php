@@ -17,10 +17,10 @@ class validaciones extends Controller {
 		if($this->datasis->traevalor("VELCED")=='N'){
 			return TRUE;
 		}
-		if (preg_match("/((^[VEJG][0-9]+[[:blank:]]*$)|(^[P][A-Z0-9]+[[:blank:]]*$))|(^[[:blank:]]*$)/", $rifci)>0){
+		if (preg_match("/((^[CVEJG][0-9]+[[:blank:]]*$)|(^[P][A-Z0-9]+[[:blank:]]*$))|(^[[:blank:]]*$)/", $rifci)>0){
 			return TRUE;
 		}else {
-			$this->validation->set_message('chci', "El campo <b>%s</b> debe tener el siguiente formato V=Venezolano(a), E=Extranjero(a), G=Gobierno, P=Pasaporte o J=Juridico Como primer caracter seguido del n&uacute;mero de documento. Ej: V123456, J5555555, P56H454");
+			$this->validation->set_message('chci', "El campo <b>%s</b> debe tener el siguiente formato V=Venezolano(a), E=Extranjero(a), G=Gobierno, P=Pasaporte, J=Juridico o C=Consejo Comunal. Como primer caracter seguido del n&uacute;mero de documento. Ej: V123456, J5555555, P56H454");
 			return FALSE;
 		}
 	}

@@ -1591,6 +1591,7 @@ class gser extends Controller {
 			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
 		));
 
+/*
 		$grid->addField('R. ICA');
 		$grid->label('Reteica');
 		$grid->params(array(
@@ -1604,6 +1605,7 @@ class gser extends Controller {
 			'formatter'     => "'number'",
 			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
 		));
+*/
 
 		$grid->showpager(true);
 		$grid->setWidth('');
