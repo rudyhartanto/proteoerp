@@ -227,11 +227,10 @@ class Medhisto extends Common {
 			$grid->label(ucfirst($field->name));
 			$grid->params(array(
 				'search'        => 'true',
-				'editable'      => $editar,
+				'editable'      => 'false',
 				'width'         => $len,
 				'edittype'      => "'text'",
-				'editrules'     => $edrule,
-				'editoptions'   => '{ size:20, maxlength: 20 }',
+				'editrules'     => $edrule
 			));
 
 		}
