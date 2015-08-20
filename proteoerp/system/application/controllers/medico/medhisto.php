@@ -215,7 +215,7 @@ class Medhisto extends Common {
 			}else{
 				$len=ceil(65*intval($max_length)/8);
 			}
-			if($len < 10) $len=10;
+			if($len < 60) $len=60;
 
 			if(in_array($field->name,array('date','fecha','ingreso','nacimiento','nacio'))){
 				$edrule = '{required:true,date:true}';
