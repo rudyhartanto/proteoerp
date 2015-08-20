@@ -847,7 +847,7 @@ class Bmov extends Controller {
 
 		}elseif($oper == 'edit'){
 
-			if($this->datasis->sidapuede('BMOV','MODIFICA%')){
+			if(!$this->datasis->sidapuede('BMOV','MODIFICA%')){
 				echo 'No tiene acceso a modificar';
 				return false;
 			}

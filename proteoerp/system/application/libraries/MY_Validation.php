@@ -44,10 +44,10 @@ class MY_Validation extends CI_Validation{
 		if($this->CI->datasis->traevalor('VELCED')=='N'){
 			return true;
 		}
-		if (preg_match("/((^[VEJG][0-9]+[[:blank:]]*$)|(^[P][A-Z0-9]+[[:blank:]]*$))|(^[[:blank:]]*$)/", $rifci)>0){
+		if (preg_match("/((^[CVEJG][0-9]+[[:blank:]]*$)|(^[P][A-Z0-9]+[[:blank:]]*$))|(^[[:blank:]]*$)/", $rifci)>0){
 			return true;
 		}else {
-			$this->set_message('chci', "El campo <b>%s</b> debe tener el siguiente formato V=Venezolano(a), E=Extranjero(a), G=Gobierno, P=Pasaporte o J=Juridico Como primer caracter seguido del n&uacute;mero de documento. Ej: V123456, J5555555, P56H454");
+			$this->set_message('chci', "El campo <b>%s</b> debe tener el siguiente formato V=Venezolano(a), E=Extranjero(a), G=Gobierno, P=Pasaporte, J=Juridico o C=Consejo Comunal. Como primer caracter seguido del n&uacute;mero de documento. Ej: V123456, J5555555, P56H454");
 			return false;
 		}
 	}
@@ -56,10 +56,10 @@ class MY_Validation extends CI_Validation{
 		if($this->CI->datasis->traevalor('VELCED')=='N'){
 			return true;
 		}
-		if (preg_match("/(^[VEJG][0-9]{9}[[:blank:]]*$)|(^[[:blank:]]*$)/", $rif)>0){
+		if (preg_match("/(^[CVEJG][0-9]{9}[[:blank:]]*$)|(^[[:blank:]]*$)/", $rif)>0){
 			return true;
 		}else {
-			$this->set_message('chrif', "El campo <b>%s</b> debe tener el siguiente formato V=Venezolano(a), G=Gobierno, J=Juridico Como primer caracter seguido del n&uacute;mero de documento. Ej: V123456789, J123456789");
+			$this->set_message('chrif', "El campo <b>%s</b> debe tener el siguiente formato V=Venezolano(a), G=Gobierno, J=Juridico o C=Consejo Comunal Como primer caracter seguido del n&uacute;mero de documento. Ej: V123456789, J123456789");
 			return false;
 		}
 	}
