@@ -762,6 +762,17 @@ class gser extends Controller {
 			'editoptions'   => '{ size:30, maxlength: 8 }',
 		));
 
+		$grid->addField('cnd');
+		$grid->label('Iva deducible');
+		$grid->params(array(
+			'search'        => 'true',
+			'editable'      => 'true',
+			'edittype'      => "'checkbox'",
+			'width'         => 20,
+			'editrules'     => '{ required:true }',
+			'editoptions'   => '{ value:"S:N" }',
+			//'hidden'        => 'true'
+		));
 
 		$grid->addField('anticipo');
 		$grid->label('Anticipo');
@@ -1194,7 +1205,7 @@ class gser extends Controller {
 					return false;
 				}
 
-				$posibles=array('nfiscal','serie','fondo');
+				$posibles=array('nfiscal','serie','fondo','cnd');
 				foreach($data as $ind=>$val){
 					if(!in_array($ind,$posibles)){
 						echo 'Campo no permitido ('.$ind.')';
@@ -1204,7 +1215,7 @@ class gser extends Controller {
 
 				$dbid = $this->db->escape($id);
 
-				$row = $this->datasis->damerow("SELECT fecha,tipo_doc, numero, proveed, transac, cajachi, fondo, totbruto FROM gser WHERE id=${dbid}");
+				$row = $this->datasis->damerow("SELECT fecha,tipo_doc, numero, proveed, transac, cajachi, fondo, totbruto,cnd FROM gser WHERE id=${dbid}");
 				if(!empty($row)){
 					$data['numero'] = substr($data['serie'],-8);
 					$transac = $row['transac'];
@@ -1234,15 +1245,17 @@ class gser extends Controller {
 					}
 
 					//Reversa el fondo si lo hay
-					$fondo = $row['fondo'];
-					if ( $row['fondo'] <> $data['fondo'] ){
-						// Elimina el movimiento en banco
-						$mSQL = "SELECT b.id FROM gser a JOIN bmov b ON a.transac = b.transac AND b.codbanc=a.fondo WHERE a.id=${id} ";
-						$hay = $this->datasis->dameval($mSQL);
-						$this->datasis->reverbmov($hay);
-						// Elimina el cargo en cxp
-						$mSQL = "DELETE FROM sprm WHERE transac='".$row['transac']."' AND cod_prv='".$row['fondo']."'";
-						$this->db->query($mSQL);
+					if(isset($data['fondo'])){
+						$fondo = $row['fondo'];
+						if ( $row['fondo'] <> $data['fondo'] ){
+							// Elimina el movimiento en banco
+							$mSQL = "SELECT b.id FROM gser a JOIN bmov b ON a.transac = b.transac AND b.codbanc=a.fondo WHERE a.id=${id} ";
+							$hay = $this->datasis->dameval($mSQL);
+							$this->datasis->reverbmov($hay);
+							// Elimina el cargo en cxp
+							$mSQL = "DELETE FROM sprm WHERE transac='".$row['transac']."' AND cod_prv='".$row['fondo']."'";
+							$this->db->query($mSQL);
+						}
 					}
 
 					//Cambia el gasto
@@ -4019,7 +4032,7 @@ class gser extends Controller {
 			$sql=$this->db->insert_string('sprm', $data);
 			$ban=$this->db->simple_query($sql);
 			if($ban==false){ memowrite($sql,'gser'); }
-			
+
 			// Si es por cuenta de tercero
 			/*if ( $reteter > 0 && $tercero ){
 				if ( $reiva == $reteter ) hace la retencion a nombre del tercero
@@ -4550,11 +4563,11 @@ class gser extends Controller {
 		if ( $query->num_rows() > 0 ){
 			if ( $tercero > 0 ) {
 				$tislr = $this->datasis->dameval('SELECT COUNT(*) FROM gereten WHERE tercero!="" AND idd='.$dbid);
-				if ( $tislr > 0 ) 
+				if ( $tislr > 0 )
 					$salida = '<button onclick="impislr()" style="width:100%;font-size:12pt;background:#0099FF;" >Retencion ISLR a Terceros </button>';
 				else
 					$salida = '';
-					
+
 				$salida = '<button onclick="teriva()" style="width:100%;font-size:12pt;background:#00FF00;" >Retencion IVA a Terceros </button>';
 
 			}
