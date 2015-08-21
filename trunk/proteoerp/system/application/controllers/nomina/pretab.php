@@ -180,9 +180,7 @@ class Pretab extends Controller {
 					buttons: { Ok:true }
 				}
 			};
-
 			$.prompt(mrege);
-
 		});';
 
 		// Guarda Nomina
@@ -197,9 +195,9 @@ class Pretab extends Controller {
 					if (v) {
 						$.post("'.site_url($this->url.'nomina').'/",
 							function(data){
-								jQuery.prompt.goToState(\'state1\');
+								$.prompt.goToState(\'state1\');
 								$(\'#in_prome1\').text(data);
-								jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+								$("#newapi'.$grid0.'").trigger("reloadGrid");
 						});
 						return false;
 					}
@@ -257,9 +255,9 @@ class Pretab extends Controller {
 					if (v == 1 ) {
 						$.post("'.site_url($this->url.'respalda').'/",
 							function(data){
-								jQuery.prompt.goToState(\'state1\');
+								$.prompt.goToState(\'state1\');
 								$(\'#in_prom\').text(data);
-								jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+								$("#newapi'.$grid0.'").trigger("reloadGrid");
 						});
 						return false;
 
@@ -268,7 +266,7 @@ class Pretab extends Controller {
 							function(data){
 								$.prompt.goToState(\'state1\');
 								$(\'#in_prome\').text(data);
-								jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+								$("#newapi'.$grid0.'").trigger("reloadGrid");
 						});
 						return false;
 					}
@@ -286,10 +284,21 @@ class Pretab extends Controller {
 		});
 		';
 
-
 		$bodyscript .= '
 		$("#irecibos").click( function() {
-			'.$this->datasis->jwinopen(site_url('formatos/ver/RECIBO')."'").';
+			$.prompt("<h2>Numero de recibos por impresion?</h2><center><input class=\'inputnum\' type=\'text\' id=\'ilimite\' name=\'ilimite\' value=\'20\' maxlengh=\'2\' size=\'10\' >  ",{
+				buttons: { Imprimir: true, Salir: false },
+				submit: function(e,v,m,f){
+					if(v){
+						$.post("'.site_url('nomina/pretab/irecibos').'/"+f.ilimite, 
+						function (data){
+							$("#fshow").html(data);
+							$("#fshow").dialog( "open" );
+						});
+					}
+				}
+			});
+			
 		});
 		';
 
@@ -317,7 +326,7 @@ class Pretab extends Controller {
 
 		$bodyscript .= '
 		function pretabedit(){
-			var id     = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id     = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if(id){
 				var ret    = $("#newapi'.$grid0.'").getRowData(id);
 				mId = id;
@@ -332,7 +341,7 @@ class Pretab extends Controller {
 
 		$bodyscript .= '
 		function pretabshow(){
-			var id     = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id     = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if(id){
 				var ret    = $("#newapi'.$grid0.'").getRowData(id);
 				mId = id;
@@ -357,7 +366,7 @@ class Pretab extends Controller {
 							var json = JSON.parse(data);
 							if (json.status == "A"){
 								apprise("Registro eliminado");
-								jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+								$("#newapi'.$grid0.'").trigger("reloadGrid");
 							}else{
 								apprise("Registro no se puede eliminado");
 							}
@@ -379,10 +388,10 @@ class Pretab extends Controller {
 			var mId = 0;
 			var montotal = 0;
 			var ffecha = $("#ffecha");
-			var grid = jQuery("#newapi'.$grid0.'");
+			var grid = $("#newapi'.$grid0.'");
 			var s;
 			var allFields = $( [] ).add( ffecha );
-			var tips = $( ".validateTips" );
+			var tips = $(".validateTips" );
 			s = grid.getGridParam(\'selarrrow\');
 			';
 
@@ -450,12 +459,12 @@ class Pretab extends Controller {
 			buttons: {
 				"Aceptar": function() {
 					$("#fborra").html("");
-					jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+					$("#newapi'.$grid0.'").trigger("reloadGrid");
 					$( this ).dialog( "close" );
 				},
 			},
 			close: function() {
-				jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+				$("#newapi'.$grid0.'").trigger("reloadGrid");
 				$("#fborra").html("");
 			}
 		});';
@@ -464,6 +473,63 @@ class Pretab extends Controller {
 		return $bodyscript;
 	}
 
+
+	// Fracciona los recibos para no sobrecargar el servidor
+	//
+	function irecibos($limite = 10){
+		$limite = intval($limite);
+		if ( $limite <= 4 ) $limite = 10;
+		
+		$msalida  = '
+		<script>
+		function mandaimp(desde,hasta){
+			'.$this->datasis->jwinopen(site_url('formatos/ver/RECIBO')."/'+desde+'/'+hasta").';
+		}
+		</script>';
+
+		$msalida .= '<h1>IMPRIMIR RECIBOS DE NOMINA</h1>';
+		$cantidad = $this->datasis->dameval('SELECT COUNT(*) FROM pretab');
+		$grupos   = intval(1+$cantidad/$limite);
+		$msalida .= '<div align="center">
+<style scoped>
+.botonir {
+	border-top: 1px solid #96d1f8;
+	background: #65a9d7;
+	background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+	background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+	background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+	background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+	background: -o-linear-gradient(top, #3e779d, #65a9d7);
+	padding: 9.5px 19px;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	border-radius: 7px;
+	-webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+	-moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+	box-shadow: rgba(0,0,0,1) 0 1px 0;
+	text-shadow: rgba(0,0,0,.4) 0 1px 0;
+	color: white;
+	font-size: 15px;
+	font-family: Helvetica, Arial, Sans-Serif;
+	text-decoration: none;
+	vertical-align: middle;
+	width:150px;
+	}
+.botonir:hover {border-top-color: #28597a;background: #28597a;color: #ccc;}
+.botonir:active {border-top-color: #1b435e;background: #1b435e;}
+</style>';
+
+		for ( $i=1;$i<=$grupos;$i++ ){
+			$desde = $i*$limite-$limite+1;
+			$hasta = $i*$limite;
+			if ( $hasta > $cantidad) $hasta = $cantidad;
+			$msalida .= '<button class="botonir" onclick="mandaimp('.($desde-1).','.$limite.')"><strong>'.$i.'</strong> del '.$desde.' Al '.$hasta.'</button>';
+		}
+		$msalida .= '</div>';
+		
+		echo $msalida;
+
+	}
 
 	//******************************************************************
 	//  Recibo de Nomina
