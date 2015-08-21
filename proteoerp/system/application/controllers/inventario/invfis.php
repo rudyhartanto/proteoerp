@@ -210,7 +210,7 @@ class Invfis extends Controller {
 		$this->db->_escape_char='';
 		$this->db->_protect_identifiers=false;
 
-		$filter->db->select("e.existen,e.modificado,e.contado,e.agregar,e.quitar,e.sustituir,a.tipo AS tipo,a.id,e.codigo,a.descrip,precio1,precio2,precio3,precio4,b.nom_grup AS nom_grup,a.barras,b.grupo AS grupoid,c.descrip AS nom_linea,c.linea AS linea,d.descrip AS nom_depto,d.depto AS depto,e.id AS idfis,e.despacha, if( a.activo = 'S', ' ' , '*' ) activo");
+		$filter->db->select("e.existen,e.modificado,e.contado,e.agregar,e.quitar,e.sustituir,a.tipo AS tipo,a.id,e.codigo,a.descrip,precio1,precio2,precio3,precio4,b.nom_grup AS nom_grup,a.barras,b.grupo AS grupoid,c.descrip AS nom_linea,c.linea AS linea,d.descrip AS nom_depto,d.depto AS depto,e.id AS idfis,e.despacha, a.ubica, if( a.activo = 'S', ' ' , '*' ) activo");
 		$filter->db->from("${tabla} AS e");
 		$filter->db->join('sinv AS a','a.codigo=e.codigo');
 		$filter->db->join('grup AS b','a.grupo=b.grupo');
@@ -299,6 +299,12 @@ class Invfis extends Controller {
 		$filter->marca->options("SELECT TRIM(marca) AS clave, TRIM(marca) AS valor FROM marc ORDER BY marca");
 		$filter->marca -> style='width:220px;';
 
+		$filter->ubica = new inputField('Ubicacion', 'ubica');
+		$filter->ubica ->db_name = 'a.ubica';
+		$filter->ubica -> size=15;
+
+
+
 		$filter->buttons('reset','search');
 		$filter->build();
 
@@ -353,6 +359,7 @@ class Invfis extends Controller {
 		$grid->column_orderby('Linea',             'linea'                                                 ,'c.linea' ,'align=center');
 		$grid->column_orderby('Grupo',             'grupoid'                                               ,'b.grupo' ,'align=center');
 		$grid->column_orderby('Barras',            'barras'                                               ,'b.grupo' ,'align=center');
+		$grid->column_orderby('Ubica',             'ubica'                                               ,'a.ubica' ,'align=center');
 		$grid->column_orderby('Codigo',            '<pinta><#modificado#>|<#codigo#>|<#idfis#>|a</pinta>'  ,'codigo'  ,'align=center');
 		$grid->column_orderby('Descripci&oacute;n','<pinta><#modificado#>|<#descrip#>|<#idfis#>|b</pinta>' ,'descrip' );
 		$grid->column_orderby('P.Desp.',           '<pinta><#modificado#>|<#despacha#>|<#idfis#>|d</pinta>','despacha','align=right');
