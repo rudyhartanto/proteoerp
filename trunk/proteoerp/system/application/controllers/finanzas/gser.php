@@ -137,7 +137,7 @@ class gser extends Controller {
 			$.post("'.site_url('finanzas/gser/solo/create').'",
 			function(data){
 				$("#fgasto").html(data);
-				$("#fgasto").dialog({height: 570, width: 880, title: "Agregar Gasto/Egreso"});
+				$("#fgasto").dialog({height: 590, width: 880, title: "Agregar Gasto/Egreso"});
 				$( "#fgasto" ).dialog( "open" );
 			})
 		};';
@@ -366,7 +366,7 @@ class gser extends Controller {
 
 		$bodyscript .= '
 			$("#fgasto").dialog({
-				autoOpen: false, height: 450, width: 900, modal: true,
+				autoOpen: false, height:500, width: 900, modal: true,
 				buttons: {
 					"Guardar": function() {
 						var bValid = true;
