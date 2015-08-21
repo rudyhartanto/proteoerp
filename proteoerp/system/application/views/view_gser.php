@@ -219,7 +219,12 @@ $(document).ready(function() {
 		}
 	});
 
-
+	$('input[name^="precio_"]').keypress(function(e) {
+		if(e.keyCode == 13) {
+		    add_gitser();
+			return false;
+		}
+	});
 
 	$('#tipo_doc').change();
 });
@@ -493,6 +498,15 @@ function add_gitser(){
 	$("#departa_"+can).val(departa);
 	$("#sucursal_"+can).val(sucursal);
 	$("#cargo_"+can).val(cargo);
+	$('#codigo_'+can).focus();
+
+	$("#precio_"+can).numeric(".");
+	$('#precio_'+can).keypress(function(e) {
+		if(e.keyCode == 13) {
+		    add_gitser();
+			return false;
+		}
+	});
 
 	autocod(gitser_cont);
 	gitser_cont = gitser_cont+1;

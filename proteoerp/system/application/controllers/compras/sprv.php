@@ -86,7 +86,7 @@ class Sprv extends Controller {
 				var mnuevo = "";
 				var ret = $("#newapi'.$param['grids'][0]['gridname'].'").jqGrid(\'getRowData\',id);
 				var mviejo = ret.proveed;
-				$.prompt("<h1>Cambiar Codigo</h1>Proveedor: <b>"+ret.nombre+"</b><br>Codigo Actual: <b>"+ret.proveed+"</b><br><br>Codigo Nuevo <input type=\'text\' id=\'codnuevo\' name=\'mcodigo\' size=\'6\' maxlength=\'5\' >",{
+				$.prompt("<h1>Cambiar C&oacute;digo</h1>Proveedor: <b>"+ret.nombre+"</b><br>C&oacute;digo Actual: <b>"+ret.proveed+"</b><br><br>C&oacute;digo Nuevo <input type=\'text\' id=\'codnuevo\' name=\'mcodigo\' size=\'6\' maxlength=\'5\' autocomplete=\'off\' ><p style=\'color:red;text-align:center;font-weight: bold;font-size:1.2em\'>**Tenga en cuenta de que esta operaci&oacute;n es irreversible**</p>",{
 					buttons: { Cambiar:true, Salir:false},
 					submit: function(e,v,m,f){
 						mnuevo = f.mcodigo;
@@ -96,7 +96,7 @@ class Sprv extends Controller {
 								url: "'.site_url('compras/sprv/sprvexiste').'",
 								global: false,
 								type: "POST",
-								data: ({ codigo : encodeURIComponent(mnuevo) }),
+								data: { codigo : mnuevo },
 								dataType: "text",
 								async: false,
 								success: function(sino) {
@@ -113,7 +113,7 @@ class Sprv extends Controller {
 
 		function sprvcambia( sino, mviejo, mnuevo, nviejo ) {
 			var aprueba = false;
-			if (sino.substring(0,1)=="S"){
+			if(sino.substring(0,1)=="S"){
 				apprise("<h1>FUSIONAR: Ya existe el proveedor</h1><h2 style=\"background: #ffdddd;text-align:center;\">("+mnuevo+") "+sino.substring(1)+"</h2><p style=\"font-size:130%\">Si prosigue se eliminara el proveedor ("+mviejo+") "+nviejo+"<br>y los movimientos seran agregados a ("+mnuevo+") </"+"p> <p style=\"align:center;font-size:150%\">Desea <strong>Fusionarlos?</"+"strong></"+"p>",
 					{ "confirm":true, "textCancel":"Salir", "textOk":"Proseguir"},
 					function(v){
@@ -123,16 +123,16 @@ class Sprv extends Controller {
 						}
 					}
 				);
-			} else {
-				apprise("<h1>Sustitur Codigo actual</h1> <center><h2 style=\"background: #ddeedd\">"+mviejo+" por "+mnuevo+"</"+"h2></"+"center> <p style=\"font-size:130%\">Al cambiar de codigo del proveedor, todos los movimientos y estadisticas <br>se cambiaran correspondientemente.</"+"p> ",
+			}else{
+				apprise("<h1>Sustitur C&oacute;digo actual</h1> <center><h2 style=\"background: #ddeedd\">"+mviejo+" por "+mnuevo+"</"+"h2></"+"center> <p style=\"font-size:130%\">Al cambiar de codigo del proveedor, todos los movimientos y estadisticas <br>se cambiaran correspondientemente.</"+"p> ",
 					{ "confirm":true, "textCancel":"Salir", "textOk":"Proseguir"},
 					function(v){
-						if (v) {
+						if(v){
 							sprvfusdef(mnuevo, mviejo);
 							$(gridId1).trigger("reloadGrid");
 						}
 					}
-				)
+				);
 			}
 		};
 
@@ -141,8 +141,7 @@ class Sprv extends Controller {
 				url: "'.site_url('compras/sprv/sprvfusion').'",
 				global: false,
 				type: "POST",
-				data: ({mviejo: encodeURIComponent(mviejo),
-					mnuevo: encodeURIComponent(mnuevo) }),
+				data: {mviejo: mviejo, mnuevo: mnuevo },
 				dataType: "text",
 				async: false,
 				success: function(sino) {
@@ -1398,13 +1397,13 @@ class Sprv extends Controller {
 			}
 			$text = "BEGIN:VCARD\n";
 			$text.= "VERSION:2.1\n";
-			$text.= "N:$nombre\n";
-			$text.= "FN:$nombre\n";
-			if(!empty($empresa)) $text.= "ORG:$empresa\n";
+			$text.= "N:${nombre}\n";
+			$text.= "FN:${nombre}\n";
+			if(!empty($empresa)) $text.= "ORG:${empresa}\n";
 			//$text.= "TITLE:$cargo\n";
-			if(!empty($telf1)) $text.= "TEL;WORK;VOICE:$telf1\n";
-			//if(!empty($telf2)) $text.= "TEL;WORK;VOICE:$telf2\n";
-			$text.= "ADR;WORK:$direc\n";
+			if(!empty($telf1)) $text.= "TEL;WORK;VOICE:${telf1}\n";
+			//if(!empty($telf2)) $text.= "TEL;WORK;VOICE:${telf2}\n";
+			$text.= "ADR;WORK:${direc}\n";
 			$text.= "END:VCARD";
 			$this->qr->imgcode($text);
 		}
@@ -1414,105 +1413,116 @@ class Sprv extends Controller {
 	// Fusionar
 	//
 	function sprvfusion(){
-		$mviejo    = strtoupper($_REQUEST['mviejo']);
-		$mnuevo    = strtoupper($_REQUEST['mnuevo']);
+		$mviejo    = $this->input->post('mviejo');
+		$mnuevo    = $this->input->post('mnuevo');
 
-		//ELIMINAR DE SCLI
-		$mYaEsta = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM sprv WHERE proveed=".$this->db->escape($mnuevo)));
-		if($mYaEsta > 0)
-			$this->db->query("DELETE FROM sprv WHERE proveed=".$this->db->escape($mviejo));
-		else
-			$this->db->query("UPDATE sprv SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo));
+		if($mviejo !== false && $mviejo !== false){
 
-		// SPRM
-		$mSQL = "UPDATE sprm SET cod_prv=".$this->db->escape($mnuevo)." WHERE cod_prv=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			$mviejo    = strtoupper($_REQUEST['mviejo']);
+			$mnuevo    = strtoupper($_REQUEST['mnuevo']);
 
-		// APAN
-		$mSQL = "UPDATE apan SET clipro=".$this->db->escape($mnuevo)." WHERE clipro=".$this->db->escape($mviejo)." AND tipo='P' ";
-		$this->db->simple_query($mSQL);
+			$dbmviejo  = $this->db->escape(strtoupper($mviejo));
+			$dbmnuevo  = $this->db->escape(strtoupper($mnuevo));
 
-		//APAN
-		$mSQL = "UPDATE apan SET reinte=".$this->db->escape($mnuevo)." WHERE reinte=".$this->db->escape($mviejo)." AND tipo='C' ";
+			//ELIMINAR DE SCLI
+			$mYaEsta = intval($this->datasis->dameval("SELECT COUNT(*) AS cana FROM sprv WHERE proveed=${dbmnuevo}"));
+			if($mYaEsta > 0){
+				$this->db->query("DELETE FROM sprv WHERE proveed=${dbmviejo}");
+			}else{
+				$this->db->query("UPDATE sprv SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}");
+			}
 
-		// ITPPRO
-		$mSQL = "UPDATE itppro SET cod_prv=".$this->db->escape($mnuevo)." WHERE cod_prv=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			// SPRM
+			$mSQL = "UPDATE sprm SET cod_prv=${dbmnuevo} WHERE cod_prv=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// BMOV CLIPRO='P'  CODCP
-		$mSQL = "UPDATE bmov SET codcp=".$this->db->escape($mnuevo)." WHERE codcp=".$this->db->escape($mviejo)." AND clipro='P'";
-		$this->db->simple_query($mSQL);
+			// APAN
+			$mSQL = "UPDATE apan SET clipro=${dbmnuevo} WHERE clipro=${dbmviejo} AND tipo='P' ";
+			$this->db->query($mSQL);
 
-		// SCST
-		$mSQL = "UPDATE scst SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			//APAN
+			$mSQL = "UPDATE apan SET reinte=${dbmnuevo} WHERE reinte=${dbmviejo} AND tipo='P' ";
+			$this->db->query($mSQL);
 
-		// ITSCST
-		$mSQL = "UPDATE itscst SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			// ITPPRO
+			$mSQL = "UPDATE itppro SET cod_prv=${dbmnuevo} WHERE cod_prv=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// ORDS
-		$mSQL = "UPDATE ords SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			// BMOV CLIPRO='P'  CODCP
+			$mSQL = "UPDATE bmov SET codcp=${dbmnuevo} WHERE codcp=${dbmviejo} AND clipro='P'";
+			$this->db->query($mSQL);
 
-		// ITORDS
-		$mSQL = "UPDATE itords SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			// SCST
+			$mSQL = "UPDATE scst SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// ORDC
-		$mSQL = "UPDATE ordc SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			// ITSCST
+			$mSQL = "UPDATE itscst SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// ITORDS
-		$mSQL = "UPDATE itordc SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			// ORDS
+			$mSQL = "UPDATE ords SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// GSER
-		$mSQL = "UPDATE gser SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			// ITORDS
+			$mSQL = "UPDATE itords SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// GITSER
-		$mSQL = "UPDATE gitser SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			// ORDC
+			$mSQL = "UPDATE ordc SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// CRUC
-		$mSQL = "UPDATE cruc SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo)." AND MID(tipo,1,1)='P'";
-		$this->db->simple_query($mSQL);
+			// ITORDS
+			$mSQL = "UPDATE itordc SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// CRUC
-		$mSQL = "UPDATE cruc SET cliente=".$this->db->escape($mnuevo)." WHERE cliente=".$this->db->escape($mviejo)." AND MID(tipo,3,1)='P'";
-		$this->db->simple_query($mSQL);
+			// GSER
+			$mSQL = "UPDATE gser SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// PRMO
-		$mSQL = "UPDATE prmo SET clipro=".$this->db->escape($mnuevo)." WHERE clipro=".$this->db->escape($mviejo)." AND tipop NOT IN ('1','3','6')";
-		$this->db->simple_query($mSQL);
+			// GITSER
+			$mSQL = "UPDATE gitser SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// RIVA
-		$mSQL = "UPDATE riva SET clipro=".$this->db->escape($mnuevo)." WHERE clipro=".$this->db->escape($mviejo);
-		$this->db->simple_query($mSQL);
+			// CRUC
+			$mSQL = "UPDATE cruc SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo} AND MID(tipo,1,1)='P'";
+			$this->db->query($mSQL);
 
-		// LVACA
-		if($this->datasis->istabla('lvaca')){
-			$mSQL = "UPDATE lvaca SET codprv=".$this->db->escape($mnuevo)." WHERE codprv=".$this->db->escape($mviejo);
-			$this->db->simple_query($mSQL);
-		}
+			// CRUC
+			$mSQL = "UPDATE cruc SET cliente=${dbmnuevo} WHERE cliente=${dbmviejo} AND MID(tipo,3,1)='P'";
+			$this->db->query($mSQL);
 
-		// LRUTA
-		if($this->datasis->istabla('lruta')){
-			$mSQL = "UPDATE lruta SET codprv=".$this->db->escape($mnuevo)." WHERE codprv=".$this->db->escape($mviejo);
-			$this->db->simple_query($mSQL);
-		}
+			// PRMO
+			$mSQL = "UPDATE prmo SET clipro=${dbmnuevo} WHERE clipro=${dbmviejo} AND tipop NOT IN ('1','3','6')";
+			$this->db->query($mSQL);
 
-		// LPAGO
-		if($this->datasis->istabla('lpago')){
-			$mSQL = "UPDATE lpago SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo);
-			$this->db->simple_query($mSQL);
-		}
+			// RIVA
+			$mSQL = "UPDATE riva SET clipro=${dbmnuevo} WHERE clipro=${dbmviejo}";
+			$this->db->query($mSQL);
 
-		// LREDU
-		if($this->datasis->istabla('lgasto')){
-			$mSQL = "UPDATE lgasto SET proveed=".$this->db->escape($mnuevo)." WHERE proveed=".$this->db->escape($mviejo);
-			$this->db->simple_query($mSQL);
+			// LVACA
+			if($this->datasis->istabla('lvaca')){
+				$mSQL = "UPDATE lvaca SET codprv=${dbmnuevo} WHERE codprv=${dbmviejo}";
+				$this->db->query($mSQL);
+			}
+
+			// LRUTA
+			if($this->datasis->istabla('lruta')){
+				$mSQL = "UPDATE lruta SET codprv=${dbmnuevo} WHERE codprv=${dbmviejo}";
+				$this->db->query($mSQL);
+			}
+
+			// LPAGO
+			if($this->datasis->istabla('lpago')){
+				$mSQL = "UPDATE lpago SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}";
+				$this->db->query($mSQL);
+			}
+
+			// LREDU
+			if($this->datasis->istabla('lgasto')){
+				$mSQL = "UPDATE lgasto SET proveed=${dbmnuevo} WHERE proveed=${dbmviejo}";
+				$this->db->query($mSQL);
+			}
 		}
 	}
 
