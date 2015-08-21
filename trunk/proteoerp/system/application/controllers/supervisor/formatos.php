@@ -169,27 +169,18 @@ class formatos extends validaciones {
 		$edit->back_cancel_save=true;
 		$edit->back_url = site_url('supervisor/formatos/filteredgrid');
 
-		//$edit->proteo= new htmlField('', 'proteo');
 		$edit->proteo= new textareaField('', 'proteo');
 		$edit->proteo->rows =30;
 		$edit->proteo->cols=130;
-		//$edit->proteo->css_class='codepress php linenumbers-on readonly-off';
 
-		//$edit->buttons('modify', 'save', 'undo','back');
 		$edit->build();
-
-		//$this->rapyd->jquery[]='$("#proteo").tabby();';
-		//$this->rapyd->jquery[]='$("#proteo").linedtextarea();';
-		//$this->rapyd->jquery[]='estilo=$("#proteo").attr("style"); $("#proteo").attr("style",estilo+"-moz-tab-size:2 !important; tab-size:2 !important;")';
 
 		if($this->genesal){
 			$data['content'] = $edit->output;
 			$data['title']   = "$id";
 			$data['head']    = $this->rapyd->get_head();
-			//$data['head']   .= script('plugins/jquery-linedtextarea.js').script('plugins/jquery.textarea.js').style('jquery-linedtextarea.css');
 
 			$this->load->view('editform', $data);
-			//$this->load->view('view_ventanas_sola', $data);
 		}else{
 			echo $edit->error_string;
 		}

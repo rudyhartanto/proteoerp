@@ -95,11 +95,10 @@ $(function() { $( "#tabs" ).tabs();	});
 	<table style='width:100%;border-collapse:collapse;padding:0px;align:center;'>
 		<tr style='background: #3498db;'>
 			<td style='text-align:center;background: #000000;color:#FFFF00;font-weight:bold'><?php if (isset($title)) echo $title; ?></td>
-			<!--td><button name="btn_probar"  class="btn" type="button" onclick="window.open('/proteoerp/reportes/ver/EXMINCO', '_blank', 'width=800,height=600,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-400), screeny=((screen.availWidth/2)-300)')" >Probar</button></td-->
 			<td><button name="btn_guardar" class="btn" type="button" onclick="fguardar()">Guardar a Archivo</button></td>
 			<td><button name="btn_cargar"  class="btn" type="button" onclick="fcargar()">Cargar desde Archivo</button></td>
 			<td><button name="btn_submit"  class="btn" type="button" onclick="guarda()" >Guardar</button></td>
-			<td><button name="btn_undo"    class="btn" type="button" onclick="javascript:window.location='/proteoerp/supervisor/formatos/filteredgrid'"><?php echo img(array('src' =>"assets/default/images/go-previous.png", 'height' => 12, 'alt'=>'Regresar', 'title' => 'Regresar', 'border'=>'0')); ?> Regresar</button></td>
+			<td><button name="btn_undo"    class="btn" type="button" onclick="javascript:window.location='<?php echo $this->site_url('supervisor/formatos/filteredgrid'); ?>'"><?php echo img(array('src' =>"assets/default/images/go-previous.png", 'height' => 12, 'alt'=>'Regresar', 'title' => 'Regresar', 'border'=>'0')); ?> Regresar</button></td>
 		</tr>
 	</table>
 	<table width="100%" border=1 align="center">
