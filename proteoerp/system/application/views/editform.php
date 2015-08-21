@@ -98,7 +98,7 @@ $(function() { $( "#tabs" ).tabs();	});
 			<td><button name="btn_guardar" class="btn" type="button" onclick="fguardar()">Guardar a Archivo</button></td>
 			<td><button name="btn_cargar"  class="btn" type="button" onclick="fcargar()">Cargar desde Archivo</button></td>
 			<td><button name="btn_submit"  class="btn" type="button" onclick="guarda()" >Guardar</button></td>
-			<td><button name="btn_undo"    class="btn" type="button" onclick="javascript:window.location='<?php echo $this->site_url('supervisor/formatos/filteredgrid'); ?>'"><?php echo img(array('src' =>"assets/default/images/go-previous.png", 'height' => 12, 'alt'=>'Regresar', 'title' => 'Regresar', 'border'=>'0')); ?> Regresar</button></td>
+			<td><button name="btn_undo"    class="btn" type="button" onclick="javascript:window.location='<?php echo site_url('supervisor/formatos/filteredgrid'); ?>'"><?php echo img(array('src' =>"assets/default/images/go-previous.png", 'height' => 12, 'alt'=>'Regresar', 'title' => 'Regresar', 'border'=>'0')); ?> Regresar</button></td>
 		</tr>
 	</table>
 	<table width="100%" border=1 align="center">

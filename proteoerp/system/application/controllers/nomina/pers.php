@@ -90,9 +90,9 @@ class Pers extends Controller {
 
 		$bodyscript .= '
 		jQuery("#a1").click( function(){
-			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id)	{
-				var ret = jQuery("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
+				var ret = $("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
 				window.open(\''.base_url().'formatos/ver/PERS/\'+id, \'_blank\', \'width=800,height=600,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-400), screeny=((screen.availWidth/2)-300)\');
 			} else { $.prompt("<h1>Por favor Seleccione un Movimiento</h1>");}
 		});';
@@ -154,7 +154,7 @@ class Pers extends Controller {
 		$bodyscript .= '
 		$("#reposo").click(
 			function(){
-			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 				if (id)	{
 					$.post("'.site_url('nomina/pers/reposoform').'/"+id,
 					function(data){
@@ -171,7 +171,7 @@ class Pers extends Controller {
 		$bodyscript .= '
 		$("#vacacion").click(
 			function(){
-			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 				if (id)	{
 					$.post("'.site_url('nomina/pers/vacaform').'/"+id,
 					function(data){
@@ -194,10 +194,10 @@ class Pers extends Controller {
 
 		$bodyscript .= '
 		function variables(){
-			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id)	{
 				var mnuevo = "";
-				var ret = jQuery("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
+				var ret = $("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
 				$.prompt('.$fvari.',{
 					buttons: { Cambiar:true, Salir:false},
 					callback: function(e,v,m,f){
@@ -217,7 +217,7 @@ class Pers extends Controller {
 								async: false,
 								success: function(sino) {
 									apprise(sino);
-									jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+									$("#newapi'.$grid0.'").trigger("reloadGrid");
 								},
 								error: function(h,t,e) { apprise("Error..codigo="+yurl+" ",e) }
 							});
