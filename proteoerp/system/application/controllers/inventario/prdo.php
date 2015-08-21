@@ -363,7 +363,7 @@ class Prdo extends Controller {
 					submit: function(e,v,m,f){
 						if( v == 1 ){
 							window.open(\''.site_url('formatos/ver/PRDO').'/\'+id, \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
-						} elseif ( v == 2 ) {
+						} else if ( v == 2 ) {
 							window.open(\''.site_url('formatos/ver/PRDO1').'/\'+id, \'_blank\', \'width=900,height=800,scrollbars=yes,status=yes,resizable=yes,screenx=((screen.availHeight/2)-450), screeny=((screen.availWidth/2)-400)\');
 						}
 					}
