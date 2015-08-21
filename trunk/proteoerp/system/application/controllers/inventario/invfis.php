@@ -207,13 +207,16 @@ class Invfis extends Controller {
 		}';
 
 		$filter = new DataFilter2('');
-		$filter->db->select("e.existen,e.modificado,e.contado,e.agregar,e.quitar,e.sustituir,a.tipo AS tipo,a.id,e.codigo,a.descrip,precio1,precio2,precio3,precio4,b.nom_grup AS nom_grup,a.barras,b.grupo AS grupoid,c.descrip AS nom_linea,c.linea AS linea,d.descrip AS nom_depto,d.depto AS depto,e.id AS idfis,e.despacha");
+		$this->db->_escape_char='';
+		$this->db->_protect_identifiers=false;
+
+		$filter->db->select("e.existen,e.modificado,e.contado,e.agregar,e.quitar,e.sustituir,a.tipo AS tipo,a.id,e.codigo,a.descrip,precio1,precio2,precio3,precio4,b.nom_grup AS nom_grup,a.barras,b.grupo AS grupoid,c.descrip AS nom_linea,c.linea AS linea,d.descrip AS nom_depto,d.depto AS depto,e.id AS idfis,e.despacha, if( a.activo = 'S', ' ' , '*' ) activo");
 		$filter->db->from("${tabla} AS e");
 		$filter->db->join('sinv AS a','a.codigo=e.codigo');
 		$filter->db->join('grup AS b','a.grupo=b.grupo');
 		$filter->db->join('line AS c','b.linea=c.linea');
 		$filter->db->join('dpto AS d','c.depto=d.depto');
-		$filter->db->where('activo','S');
+		//$filter->db->where('activo','S');
 		$filter->db->where('actualizado IS NULL','',false);
 		//$filter->db->order_by("d.depto,c.linea,b.grupo,a.descrip");
 		$filter->script($script);
@@ -244,6 +247,7 @@ class Invfis extends Controller {
 		$filter->activo->option('S','Si');
 		$filter->activo->option('N','No');
 		$filter->activo ->style='width:220px;';
+		$filter->activo->db_name='a.activo';
 
 		$filter->proveed = new inputField('Proveedor', 'proveed');
 		$filter->proveed->append($bSPRV);
@@ -344,6 +348,7 @@ class Invfis extends Controller {
 		$action = "javascript:window.location='".site_url($this->url)."'";
 		$grid->button('btn_regresa', 'Regresar', $action, 'TR');
 
+		$grid->column('X',                       'activo'                                                ,'activo' ,'align=center');
 		$grid->column_orderby('Dpto',              'depto'                                                 ,'d.depto' ,'align=center');
 		$grid->column_orderby('Linea',             'linea'                                                 ,'c.linea' ,'align=center');
 		$grid->column_orderby('Grupo',             'grupoid'                                               ,'b.grupo' ,'align=center');
