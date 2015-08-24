@@ -26,6 +26,7 @@ $scampos .= $campos['itiva']['field'];
 $scampos .= $campos['sinvtipo']['field'];
 $scampos .= $campos['combo']['field'];
 $scampos .= $campos['sinvpeso']['field'].'</td>';
+$scampos .= $campos['recurso']['field'];
 $scampos .= '<td class="littletablerow" align="center"><a href=# onclick="del_sitems(<#i#>);return false;">'.img('images/delete.png').'</a></td></tr>';
 $campos=$form->js_escape($scampos);
 
