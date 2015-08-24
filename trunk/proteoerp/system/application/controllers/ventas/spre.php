@@ -1206,19 +1206,6 @@ datos vía telefónica.";
 			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
 		));
 
-/*
-		$grid->addField('vendedor');
-		$grid->label('Vendedor');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 50,
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true}',
-			'editoptions'   => '{ size:5, maxlength: 5 }',
-		));
-*/
-
 		$grid->addField('iva');
 		$grid->label('IVA');
 		$grid->params(array(
@@ -1233,128 +1220,28 @@ datos vía telefónica.";
 			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
 		));
 
-/*
-		$grid->addField('fecha');
-		$grid->label('Fecha');
+
+		$mSQL = "SELECT codigo, CONCAT(codigo, ' ', nombre) nombre FROM medrec ORDER BY codigo";
+		$recu = $this->datasis->llenajqselect($mSQL, true );
+
+		$grid->addField('recurso');
+		$grid->label('Recurso');
 		$grid->params(array(
 			'search'        => 'true',
-			'editable'      => $editar,
+			'editable'      => 'true',
 			'width'         => 80,
 			'align'         => "'center'",
-			'edittype'      => "'text'",
-			'editrules'     => '{ required:true,date:true}',
-			'formoptions'   => '{ label:"Fecha" }'
+			'edittype'      => "'select'",
+			'editoptions'   => '{ value: '.$recu.',  style:"width:210px"}',
+			'stype'         => "'text'",
 		));
-
-
-		$grid->addField('pond');
-		$grid->label('Ponderado');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'align'         => "'right'",
-			'edittype'      => "'text'",
-			'width'         => 100,
-			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:10, maxlength: 10, dataInit: function (elem) { $(elem).numeric(); }  }',
-			'formatter'     => "'number'",
-			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
-		));
-
-
-		$grid->addField('precio4');
-		$grid->label('Precio 4');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'align'         => "'right'",
-			'edittype'      => "'text'",
-			'width'         => 100,
-			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:10, maxlength: 10, dataInit: function (elem) { $(elem).numeric(); }  }',
-			'formatter'     => "'number'",
-			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
-		));
-
-
-		$grid->addField('ultimo');
-		$grid->label('&Uacute;ltimo');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'align'         => "'right'",
-			'edittype'      => "'text'",
-			'width'         => 100,
-			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:10, maxlength: 10, dataInit: function (elem) { $(elem).numeric(); }  }',
-			'formatter'     => "'number'",
-			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
-		));
-
-
-		$grid->addField('totaorg');
-		$grid->label('Total.Org');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'align'         => "'right'",
-			'edittype'      => "'text'",
-			'width'         => 100,
-			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:10, maxlength: 10, dataInit: function (elem) { $(elem).numeric(); }  }',
-			'formatter'     => "'number'",
-			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
-		));
-
-
-		$grid->addField('precio1');
-		$grid->label('Precio 1');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'align'         => "'right'",
-			'edittype'      => "'text'",
-			'width'         => 100,
-			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:10, maxlength: 10, dataInit: function (elem) { $(elem).numeric(); }  }',
-			'formatter'     => "'number'",
-			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
-		));
-
-
-		$grid->addField('mostrado');
-		$grid->label('Mostrado');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'align'         => "'right'",
-			'edittype'      => "'text'",
-			'width'         => 100,
-			'editrules'     => '{ required:true }',
-			'editoptions'   => '{ size:10, maxlength: 10, dataInit: function (elem) { $(elem).numeric(); }  }',
-			'formatter'     => "'number'",
-			'formatoptions' => '{decimalSeparator:".", thousandsSeparator: ",", decimalPlaces: 2 }'
-		));
-
-
-		$grid->addField('detalle');
-		$grid->label('Detalle');
-		$grid->params(array(
-			'search'        => 'true',
-			'editable'      => $editar,
-			'width'         => 250,
-			'edittype'      => "'textarea'",
-			'editoptions'   => "'{rows:2, cols:60}'",
-		));
-*/
-
 
 		$grid->addField('combo');
 		$grid->label('Combo');
 		$grid->params(array(
 			'search'        => 'true',
 			'editable'      => $editar,
-			'width'         => 150,
+			'width'         => 80,
 			'edittype'      => "'text'",
 			'editrules'     => '{ required:true}',
 			'editoptions'   => '{ size:15, maxlength: 15 }',
@@ -1455,7 +1342,7 @@ datos vía telefónica.";
 		}
 
 		$grid    = $this->jqdatagrid;
-		$mSQL    = "SELECT a.*, b.existen, b.activo, b.existen-a.cana saldo ";
+		$mSQL    = "SELECT a.*, b.existen, b.activo, if(MID(b.tipo,1,1)='S',1,b.existen-a.cana) saldo ";
 		$mSQL   .= "FROM itspre a JOIN sinv b ON a.codigo=b.codigo WHERE numero=${dbnumero} ${orderby}";
 		$response   = $grid->getDataSimple($mSQL);
 		$rs = $grid->jsonresult( $response);
@@ -1470,8 +1357,34 @@ datos vía telefónica.";
 		$oper   = $this->input->post('oper');
 		$id     = $this->input->post('id');
 		$data   = $_POST;
-		$mcodp  = '??????';
-		$check  = 0;
+
+		if(empty($id)) return false;
+
+		unset($data['oper']);
+		unset($data['id']);
+		if($oper == 'add'){
+			echo 'Deshabilitado';
+		}elseif($oper == 'edit'){
+			$posibles=array('recurso');
+			foreach($data as $ind=>$val){
+				if(!in_array($ind,$posibles)){
+					echo 'Campo no permitido ('.$ind.')';
+					return false;
+				}
+			}
+			$tipo = $this->datasis->dameval("SELECT MID(b.tipo,1,1) tipo FROM itspre a JOIN sinv b ON a.codigoa=b.codigo WHERE a.id=${id} ");
+			if ( $tipo != 'S' )
+				$this->db->where('id',      $id);
+				$this->db->update('itspre', $data);
+				echo 'Guardado ';
+				return true;
+			} else {
+				echo 'Item no es servicio ';
+				return true;
+			}
+		} elseif($oper == 'del') {
+			echo 'Deshabilitado';
+		};
 	}
 
 
@@ -2258,6 +2171,11 @@ datos vía telefónica.";
 		if(!in_array('favorito', $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN favorito CHAR(1)      NULL DEFAULT NULL AFTER notifica');
 		if(!in_array('grupo',    $campos)) $this->db->query('ALTER TABLE spre ADD COLUMN grupo    INT          NULL DEFAULT "0"  AFTER favorito');
 
+		$campos=$this->db->list_fields('itspre');
+		if(!in_array('recurso', $campos)) $this->db->query('ALTER TABLE itspre ADD COLUMN recurso VARCHAR(10) NULL DEFAULT NULL');
+
+		$campos=$this->db->list_fields('sitems');
+		if(!in_array('recurso', $campos)) $this->db->query('ALTER TABLE sitems ADD COLUMN recurso VARCHAR(10) NULL DEFAULT NULL');
 
 		if(!$this->db->table_exists('spregr')){
 			$mSQL="
@@ -2273,6 +2191,7 @@ datos vía telefónica.";
 			ROW_FORMAT=DYNAMIC;";
 			$this->db->simple_query($mSQL);
 		}
+
 
 	}
 

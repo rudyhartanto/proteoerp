@@ -3065,6 +3065,10 @@ class Sfac extends Controller {
 		$edit->combo->db_name   = 'combo';
 		$edit->combo->rel_id    = 'sitems';
 
+		$edit->recurso = new hiddenField('', 'recurso_<#i#>');
+		$edit->recurso->db_name   = 'recurso';
+		$edit->recurso->rel_id    = 'sitems';
+
 		$edit->itiva = new hiddenField('', 'itiva_<#i#>');
 		$edit->itiva->db_name  = 'iva';
 		$edit->itiva->rel_id   = 'sitems';
@@ -5164,7 +5168,7 @@ class Sfac extends Controller {
 			);
 
 			$itsel=array('a.codigo','b.descrip AS desca','a.cana','a.preca','a.importe AS tota','b.iva',
-			'b.precio1','b.precio2','b.precio3','b.precio4','b.tipo','b.peso');
+			'b.precio1','b.precio2','b.precio3','b.precio4','b.tipo','b.peso','a.recurso');
 			$this->db->select($itsel);
 			$this->db->from('itspre AS a');
 			$this->db->join('sinv AS b','b.codigo=a.codigo');
@@ -5191,6 +5195,7 @@ class Sfac extends Controller {
 				$_POST["sinvtipo_${i}"] = $itrow->tipo;
 				$_POST["detalle_${i}"]  = '';
 				$_POST["combo_$i"]      = '';
+				$_POST["recurso_$i"]    = $itrow->recurso;
 				$i++;
 			}
 
@@ -5780,57 +5785,23 @@ class Sfac extends Controller {
 	function instalar(){
 		$campos = $this->db->list_fields('sfac');
 
-		if(!in_array('freiva',$campos)){
-			$this->db->query("ALTER TABLE sfac ADD freiva DATE ");
-		}
-
-		if(!in_array('ereiva',$campos)){
-			$this->db->query("ALTER TABLE sfac ADD ereiva DATE AFTER freiva");
-		}
+		if(!in_array('freiva',$campos)) $this->db->query("ALTER TABLE sfac ADD freiva DATE ");
+		if(!in_array('ereiva',$campos)) $this->db->query("ALTER TABLE sfac ADD ereiva DATE AFTER freiva");
 
 		if(!in_array('entregado',$campos)){
 			$this->db->query("ALTER TABLE sfac ADD entregado DATE ");
 			$this->db->query("UPDATE sfac SET entregado=fecha");
 		}
 
-		if(!in_array('comiadi',$campos)){
-			$this->db->query("ALTER TABLE sfac ADD comiadi DECIMAL(10,2) DEFAULT 0 ");
-		}
-
-		if(!in_array('upago',$campos)){
-			$this->db->query("ALTER TABLE sfac ADD upago INT(10)");
-		}
-
-		if(!in_array('manual',$campos)){
-			$this->db->query("ALTER TABLE sfac ADD COLUMN manual CHAR(50) NULL DEFAULT 'N'");
-		}
-
-		if(!in_array('descuento',$campos)){
-			$this->db->query("ALTER TABLE sfac ADD COLUMN descuento DECIMAL(10,2) NULL DEFAULT '0'");
-		}
-
-		if(!in_array('pagacon',$campos)){
-			$this->db->query("ALTER TABLE sfac ADD COLUMN pagacon DECIMAL(10,2) NULL DEFAULT '0'");
-		}
-
-		if(!in_array('maestra',$campos)){
-			$this->db->query("ALTER TABLE sfac ADD COLUMN maestra VARCHAR(8) NULL DEFAULT '' AFTER descuento");
-		}
-
-		if(!in_array('reparto',$campos)){
-			$mSQL="ALTER TABLE sfac ADD COLUMN reparto INT(11) NULL DEFAULT 0 AFTER manual";
-			$this->db->simple_query($mSQL);
-		}
-
-		if(!in_array('rcobro',$campos)){
-			$mSQL="ALTER TABLE sfac ADD COLUMN rcobro INT(11) NULL DEFAULT 0 AFTER reparto";
-			$this->db->query($mSQL);
-		}
-
-		if(!in_array('basecomi',$campos)){
-			$mSQL="ALTER TABLE `sfac` ADD COLUMN `basecomi` DECIMAL(17,2) NULL DEFAULT '0.00'";
-			$this->db->query($mSQL);
-		}
+		if(!in_array('comiadi',  $campos)) $this->db->query("ALTER TABLE sfac ADD comiadi DECIMAL(10,2) DEFAULT 0 ");
+		if(!in_array('upago',    $campos)) $this->db->query("ALTER TABLE sfac ADD upago INT(10)");
+		if(!in_array('manual',   $campos)) $this->db->query("ALTER TABLE sfac ADD COLUMN manual CHAR(50) NULL DEFAULT 'N'");
+		if(!in_array('descuento',$campos)) $this->db->query("ALTER TABLE sfac ADD COLUMN descuento DECIMAL(10,2) NULL DEFAULT '0'");
+		if(!in_array('pagacon',  $campos)) $this->db->query("ALTER TABLE sfac ADD COLUMN pagacon DECIMAL(10,2) NULL DEFAULT '0'");
+		if(!in_array('maestra',  $campos)) $this->db->query("ALTER TABLE sfac ADD COLUMN maestra VARCHAR(8) NULL DEFAULT '' AFTER descuento");
+		if(!in_array('reparto',  $campos)) $this->db->simple_query("ALTER TABLE sfac ADD COLUMN reparto INT(11) NULL DEFAULT 0 AFTER manual");
+		if(!in_array('rcobro',   $campos)) $this->db->query("ALTER TABLE sfac ADD COLUMN rcobro INT(11) NULL DEFAULT 0 AFTER reparto");
+		if(!in_array('basecomi', $campos)) $this->db->query("ALTER TABLE `sfac` ADD COLUMN `basecomi` DECIMAL(17,2) NULL DEFAULT '0.00'");
 
 		if(!in_array('repcob',$campos)){
 			$mSQL="ALTER TABLE `sfac` ADD COLUMN `repcob` CHAR(2) NULL DEFAULT NULL COMMENT 'Cobro en reparto' AFTER `basecomi`";
@@ -5842,7 +5813,6 @@ class Sfac extends Controller {
 		if(!in_array('descu1',$campos)) $this->db->query("ALTER TABLE sfac ADD COLUMN descu1 DECIMAL(10,2) NULL DEFAULT '0' AFTER descuento ");
 		if(!in_array('descu2',$campos)) $this->db->query("ALTER TABLE sfac ADD COLUMN descu2 DECIMAL(10,2) NULL DEFAULT '0' AFTER descu1 ");
 		if(!in_array('descu3',$campos))	$this->db->query("ALTER TABLE sfac ADD COLUMN descu3 DECIMAL(10,2) NULL DEFAULT '0' AFTER descu2 ");
-
 		if(!in_array('bultos',$campos)) $this->db->query("ALTER TABLE sfac ADD COLUMN bultos INT(10) NULL DEFAULT '0' ");
 
 		if(!in_array('entregable',$campos)){
@@ -5857,13 +5827,10 @@ class Sfac extends Controller {
 		}
 
 		$campos = $this->db->list_fields('sitems');
+		if(!in_array('descu',   $campos)) $this->db->query("ALTER TABLE sitems ADD descu DECIMAL(10,2) DEFAULT '0' AFTER descuento");
+		if(!in_array('lote',    $campos)) $this->db->query("ALTER TABLE sitems ADD lote INT(11) DEFAULT '0' AFTER descu");
+		if(!in_array('recurso', $campos)) $this->db->query('ALTER TABLE sitems ADD COLUMN recurso VARCHAR(10) NULL DEFAULT NULL');
 
-		if(!in_array('descu',$campos)){
-			$this->db->query("ALTER TABLE sitems ADD descu DECIMAL(10,2) DEFAULT '0' AFTER descuento");
-		}
 
-		if(!in_array('lote',$campos)){
-			$this->db->query("ALTER TABLE sitems ADD lote INT(11) DEFAULT '0' AFTER descu");
-		}
 	}
 }

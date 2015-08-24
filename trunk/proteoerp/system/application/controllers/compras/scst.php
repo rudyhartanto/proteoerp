@@ -148,7 +148,7 @@ class Scst extends Controller {
 /*
 		$bodyscript .= '
 		function scstshow(){
-			var id     = jQuery("'.$ngrid.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id     = $("'.$ngrid.'").jqGrid(\'getGridParam\',\'selrow\');
 			if(id){
 				var ret    = $("#newapi'.$grid0.'").getRowData(id);
 				mId = id;
@@ -166,7 +166,7 @@ class Scst extends Controller {
 /*
 		$bodyscript .= '
 		function scstdel() {
-			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if(id){
 				if(confirm(" Seguro desea eliminar el registro?")){
 					var ret    = $("#newapi'.$grid0.'").getRowData(id);
@@ -176,7 +176,7 @@ class Scst extends Controller {
 							var json = JSON.parse(data);
 							if(json.status == "A"){
 								$.prompt("Registro eliminado");
-								jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+								$("#newapi'.$grid0.'").trigger("reloadGrid");
 							}else{
 								if(json.mensaje === undefined){
 									$.prompt("Registro no se puede eliminado");
@@ -213,7 +213,7 @@ class Scst extends Controller {
 		$bodyscript .= '
 		function scstedit() {
 			xestatus = "edit";
-			var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+			var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 			if (id){
 				var ret = $("#newapi'.$grid0.'").getRowData(id);
 				if(ret.actuali >= ret.fecha){
@@ -257,15 +257,15 @@ class Scst extends Controller {
 		//Wraper de javascript
 		$bodyscript .= $this->jqdatagrid->bswrapper($ngrid);
 
-		/*$bodyscript .= '$(function() {$("#dialog:ui-dialog").dialog( "destroy" );var mId = 0;var montotal = 0;var ffecha = $("#ffecha");var grid = jQuery("#newapi'.$grid0.'");var s;var allFields = $( [] ).add( ffecha );var tips = $( ".validateTips" );s = grid.getGridParam(\'selarrrow\');';*/
+		/*$bodyscript .= '$(function() {$("#dialog:ui-dialog").dialog( "destroy" );var mId = 0;var montotal = 0;var ffecha = $("#ffecha");var grid = $("#newapi'.$grid0.'");var s;var allFields = $( [] ).add( ffecha );var tips = $( ".validateTips" );s = grid.getGridParam(\'selarrrow\');';*/
 
 
 		// Imprime Compra
 		$bodyscript .= '
 			$("#imprimir").click( function(){
-				var id = jQuery("#newapi'. $grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+				var id = $("#newapi'. $grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 				if(id){
-					var ret = jQuery("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
+					var ret = $("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
 					'.$this->datasis->jwinopen(site_url('formatos/ver/COMPRA').'/\'+id+"/id"').';
 				} else { $.prompt("<h1>Por favor Seleccione un documento primero</h1>");}
 			});';
@@ -321,7 +321,7 @@ class Scst extends Controller {
 
 		$bodyscript .= '
 			$("#serie").click( function(){
-				var gr = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+				var gr = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 				if( gr != null ){
 					$("#newapi'.$grid0.'").jqGrid(\'editGridRow\',gr,
 					{
@@ -343,7 +343,7 @@ class Scst extends Controller {
 
 		$bodyscript .= '
 			$("#vehiculo").click(function(){
-				var id     = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+				var id     = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 				if (id)	{
 					var rt= $.ajax({ type: "POST", url: "'.site_url($this->url.'getvehicular').'/"+id, async: false }).responseText;
 					if(rt=="1"){
@@ -408,9 +408,9 @@ class Scst extends Controller {
 		//Actualizar y Reversar
 		$bodyscript .= '
 			function acturever(){
-				var id = jQuery("#newapi'. $grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+				var id = $("#newapi'. $grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 				if(id){
-					var ret = jQuery("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
+					var ret = $("#newapi'.$grid0.'").jqGrid(\'getRowData\',id);
 					if(ret.tipo_doc == "XX"){
 						$.prompt( "<h1>Documento Eliminado.</h1>");
 					} else {
@@ -521,7 +521,7 @@ class Scst extends Controller {
 		//Cambiar Precios
 		$bodyscript .= '
 			$("#cprecios").click(function() {
-				var id = jQuery("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
+				var id = $("#newapi'.$grid0.'").jqGrid(\'getGridParam\',\'selrow\');
 				if (id)	{
 					var ret    = $("#newapi'.$grid0.'").getRowData(id);
 					if ( ret.actuali >= ret.fecha ) {
@@ -559,7 +559,7 @@ class Scst extends Controller {
 										var json = JSON.parse(r);
 										if(json.status == "A"){
 											$( "#fcprecio" ).dialog( "close" );
-											jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+											$("#newapi'.$grid0.'").trigger("reloadGrid");
 											$("#fcprecio").html("");
 											$.prompt("Precios guardados");
 											return true;
@@ -600,7 +600,7 @@ class Scst extends Controller {
 										var json = JSON.parse(r);
 										if(json.status == "A"){
 											$( "#fcmonto" ).dialog( "close" );
-											jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+											$("#newapi'.$grid0.'").trigger("reloadGrid");
 											$("#fcmonto").html("");
 											$.prompt("Montos Guardado");
 											return true;
@@ -641,7 +641,7 @@ class Scst extends Controller {
 										var json = JSON.parse(r);
 										if ( json.status == "A" ) {
 											$( "#fvehi" ).dialog( "close" );
-											jQuery("#newapi'.$grid0.'").trigger("reloadGrid");
+											$("#newapi'.$grid0.'").trigger("reloadGrid");
 											$("#fvehi").html("");
 											$.prompt("Seriales Guardado");
 											return true;

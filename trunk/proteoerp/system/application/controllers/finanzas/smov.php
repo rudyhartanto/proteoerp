@@ -929,7 +929,6 @@ class Smov extends Controller {
 			}
 		');
 
-
 		#Set url
 		$grid->setUrlput(site_url($this->url.'setdata/'));
 
